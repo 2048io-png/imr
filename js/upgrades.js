@@ -93,6 +93,7 @@ const UPGS = {
         let x = E(0);
         if (player.mainUpg.rp.includes(1)) x = x.add(tmp.upgs.main ? tmp.upgs.main[1][1].effect : E(0));
         if (player.mainUpg.rp.includes(2)) x = x.add(tmp.upgs.mass[2].bonus);
+        if (player.ranks.rank.gte(1)) x = x.add(RANKS.effect.rank[1]());
         x = x.mul(getEnRewardEff(4));
         return x;
       },
@@ -202,6 +203,7 @@ const UPGS = {
       },
       bonus() {
         let x = E(0);
+        if (player.ranks.tier.gte(7)) x = x.add(RANKS.effect.tier[7]());
         if (player.mainUpg.rp.includes(7)) x = x.add(tmp.upgs.main ? tmp.upgs.main[1][7].effect : 0);
         x = x.mul(getEnRewardEff(4));
         return x;

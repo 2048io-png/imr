@@ -335,7 +335,8 @@ const FORMS = {
       if (tmp.c16active || player.mass.lt(1e15) || CHALS.inChal(7) || CHALS.inChal(10)) return E(0);
       let gain = player.mass.div(1e15).root(3);
       if (player.ranks.rank.gte(14)) gain = gain.mul(2);
-      if (player.ranks.rank.gte(15)) gain = gain.add(RANKS.effect.rank[16]());
+      if (player.ranks.rank.gte(16)) gain = gain.add(RANKS.effect.rank[16]());
+      if (player.ranks.rank.gte(23)) gain = gain.mul(RANKS.effect.rank[23]());
       if (player.ranks.rank.gte(45)) gain = gain.mul(RANKS.effect.rank[45]());
       if (player.ranks.tier.gte(6)) gain = gain.mul(RANKS.effect.tier[6]());
       if (player.mainUpg.bh.includes(6)) gain = gain.mul(tmp.upgs.main ? tmp.upgs.main[2][6].effect : E(1));

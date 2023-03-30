@@ -85,7 +85,7 @@ const RANKS = {
   },
   desc: {
     rank: {
-      1: "unlock mass upgrade 1.",
+      1: "unlock mass upgrade 1, you get 1 free mass upgrade 1 per 10 bought.",
       2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20%.",
       3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, and mass upgrade 1 boosts itself.",
       4: "reduce mass upgrade 3 scaling by 20%.",
@@ -99,6 +99,8 @@ const RANKS = {
       15: "Rank 7 reward effect if better. [x/10 -> x*10]",
       16: "mass increases Rage Powers gain (mass/1e15)log(PI).",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
+      22: "Rank 7 reward effect is massively better [x*10 -> x^15]",
+      23: "Ranks boost Rage Power gain gain*(1+(x/1000), where x is ranks",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
       45: "ranks boosts Rage Powers gain.",
@@ -114,8 +116,12 @@ const RANKS = {
       2: "raise mass gain by 1.15",
       3: "reduce all mass upgrade scalings by 20%.",
       4: "adds +5% tickspeed power for every tier you have, softcaps at +40%.",
+      5: "Rank 7 reward effect is better [x^15 -> x^20]",
       6: "make rage powers boosted by tiers.",
+      7: "every 100 musclers, you get 1 free stronger.",
       8: "Tier 6's reward is boosted based on dark matters.",
+      9: "Raise rank 8 effect softcap to 1% from 0.5%",
+      10: "Rank 16 effect is better [(mass/1e15)log(PI) -> (mass/1e15)log(2)]",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
       30: "stronger effect's softcap is 10% weaker.",
       55: "make rank 380's effect stronger based on tier.",
@@ -154,6 +160,12 @@ const RANKS = {
   },
   effect: {
     rank: {
+      1() {
+        let ret = E(player.massUpg[1] || 0)
+          .div(10)
+          .floor();
+        return ret;
+      },
       3() {
         let ret = E(player.massUpg[1] || 0).div(20);
         return ret;
@@ -169,19 +181,27 @@ const RANKS = {
       7() {
         let ret = player.ranks.rank.div(10);
         if (player.ranks.rank.gte(15)) ret = player.ranks.rank.mul(10);
+        if (player.ranks.rank.gte(22)) ret = player.ranks.rank.pow(15);
+        if (player.ranks.tier.gte(5)) ret = player.ranks.rank.pow(20);
         return ret;
       },
       8() {
-        let ret = player.ranks.rank.div(100).softcap("1", 0.5, 0);
+        let ret = player.ranks.rank.div(100).softcap(0.5, 0.5, 0);
+        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(100).softcap(1, 0.5, 0);
         return ret;
       },
       14() {
-        let ret = E(1).add(player.rp.points.div(1000));
+        let ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.001, 0);
         return ret;
       },
       16() {
         let ret = player.mass.div(1e15).log(3.14);
+        if (player.ranks.tier.gte(10)) ret = player.mass.div(1e15).log(2);
         if (ret.lt(0)) x = E(0);
+        return ret;
+      },
+      23() {
+        let ret = E(1).add(player.ranks.rank.div(1000));
         return ret;
       },
       40() {
@@ -224,6 +244,12 @@ const RANKS = {
         let ret = E(2).pow(player.ranks.tier);
         if (player.ranks.tier.gte(8)) ret = ret.pow(RANKS.effect.tier[8]());
         return overflow(ret, "ee100", 0.5);
+      },
+      7() {
+        let ret = E(player.massUpg[1] || 0)
+          .div(100)
+          .floor();
+        return ret;
       },
       8() {
         let ret = player.bh.dm.max(1).log10().add(1).root(2);
@@ -278,6 +304,9 @@ const RANKS = {
   },
   effDesc: {
     rank: {
+      1(x) {
+        return "+" + format(x);
+      },
       3(x) {
         return "+" + format(x);
       },
@@ -294,11 +323,14 @@ const RANKS = {
         return format(x) + "% weaker" + (x.gte("0.5") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       14(x) {
-        return format(x) + "x";
+        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       16(x) {
         if (x.lt(0)) x = E(0);
         return "+" + format(x);
+      },
+      23(x) {
+        return format(x) + "x";
       },
       40(x) {
         return "+" + format(x.mul(100)) + "%";
@@ -322,6 +354,9 @@ const RANKS = {
       },
       6(x) {
         return format(x) + "x";
+      },
+      7(x) {
+        return "+" + format(x);
       },
       8(x) {
         return "^" + format(x);

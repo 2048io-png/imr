@@ -399,9 +399,9 @@ function cannotSave() {
 function save() {
   let str = btoa(JSON.stringify(player));
   if (cannotSave() || findNaN(str, true)) return;
-  if (localStorage.getItem("IMR-Extra") == "") wipe();
-  localStorage.setItem("IMR-Extra", str);
-  tmp.prevSave = localStorage.getItem("IMR-Extra");
+  if (localStorage.getItem("IMR-Extended") == "") wipe();
+  localStorage.setItem("IMR-Extended", str);
+  tmp.prevSave = localStorage.getItem("IMR-Extended");
   if (tmp.saving < 1) {
     addNotify("Game Saved", 3);
     tmp.saving++;
@@ -427,7 +427,7 @@ function exporty() {
   window.URL = window.URL || window.webkitURL;
   let a = document.createElement("a");
   a.href = window.URL.createObjectURL(file);
-  a.download = "Incremental Mass Rewritten Save - " + new Date().toGMTString() + ".txt";
+  a.download = "IMR Extended Save - " + new Date().toGMTString() + ".txt";
   a.click();
 }
 
@@ -490,7 +490,7 @@ function importy() {
 }
 
 function loadGame(start = true, gotNaN = false) {
-  if (!gotNaN) tmp.prevSave = localStorage.getItem("testSave");
+  if (!gotNaN) tmp.prevSave = localStorage.getItem("IMR-Extended");
   wipe();
   load(tmp.prevSave);
   setupHTML();
