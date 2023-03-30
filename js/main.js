@@ -38,7 +38,9 @@ const FORMS = {
     x = x.add(tmp.upgs.mass[1] ? tmp.upgs.mass[1].eff.eff : 1);
     if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
     if (player.ranks.rank.gte(7)) x = x.add(RANKS.effect.rank[7]());
+    if (player.ranks.rank.gte(9)) x = x.mul(2);
     if (player.ranks.rank.gte(13)) x = x.mul(3);
+    if (player.ranks.rank.gte(14)) x = x.mul(RANKS.effect.rank[14]());
     if (player.mainUpg.bh.includes(10)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][10].effect : E(1));
     if (player.ranks.rank.gte(380)) x = x.mul(RANKS.effect.rank[380]());
     if (!hasElement(162)) x = x.mul(tmp.stars.effect);
@@ -333,6 +335,7 @@ const FORMS = {
       if (tmp.c16active || player.mass.lt(1e15) || CHALS.inChal(7) || CHALS.inChal(10)) return E(0);
       let gain = player.mass.div(1e15).root(3);
       if (player.ranks.rank.gte(14)) gain = gain.mul(2);
+      if (player.ranks.rank.gte(15)) gain = gain.add(RANKS.effect.rank[16]());
       if (player.ranks.rank.gte(45)) gain = gain.mul(RANKS.effect.rank[45]());
       if (player.ranks.tier.gte(6)) gain = gain.mul(RANKS.effect.tier[6]());
       if (player.mainUpg.bh.includes(6)) gain = gain.mul(tmp.upgs.main ? tmp.upgs.main[2][6].effect : E(1));

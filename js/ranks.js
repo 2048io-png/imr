@@ -92,8 +92,12 @@ const RANKS = {
       5: "mass upgrade 2 boosts itself.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
       7: "add x/10 to mass gain, where x is rank.",
+      8: "mass upgrade 1 is (x/100)% cheaper, where x is rank",
+      9: "double mass gain.",
       13: "triple mass gain.",
-      14: "double Rage Powers gain.",
+      14: "double Rage Powers gain and Rage Power now boosts mass gain (1+x)/1000, where x is Rage Powers.",
+      15: "Rank 7 reward effect if better. [x/10 -> x*10]",
+      16: "mass increases Rage Powers gain (mass/1e15)log(PI).",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
@@ -164,6 +168,20 @@ const RANKS = {
       },
       7() {
         let ret = player.ranks.rank.div(10);
+        if (player.ranks.rank.gte(15)) ret = player.ranks.rank.mul(10);
+        return ret;
+      },
+      8() {
+        let ret = player.ranks.rank.div(100).softcap("1", 0.5, 0);
+        return ret;
+      },
+      14() {
+        let ret = E(1).add(player.rp.points.div(1000));
+        return ret;
+      },
+      16() {
+        let ret = player.mass.div(1e15).log(3.14);
+        if (ret.lt(0)) x = E(0);
         return ret;
       },
       40() {
@@ -270,6 +288,16 @@ const RANKS = {
         return format(x) + "x";
       },
       7(x) {
+        return "+" + format(x);
+      },
+      8(x) {
+        return format(x) + "% weaker" + (x.gte("0.5") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      14(x) {
+        return format(x) + "x";
+      },
+      16(x) {
+        if (x.lt(0)) x = E(0);
         return "+" + format(x);
       },
       40(x) {
