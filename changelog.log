@@ -1,4 +1,4 @@
-0.0.1-A (Alpha 1) 3/30/2023
+0.0.1-A (Alpha 1) 3/30/2023 M/D/Y
 Test build
 -Added:
 1 rank for testing purposes and to learn
@@ -13,6 +13,11 @@ More early game ranks
 Test build
 -Changed:
 Game name from IMR-Extras to IMR: Extended
+Some effects are now softcapped
 -Added:
 More ranks
 More tiers
+-Fixed:
+Possible NaN offline loop load because of overpowered effects (Thanks MrSeederShark17)
+
+0.0.4-A 3/30/2023
