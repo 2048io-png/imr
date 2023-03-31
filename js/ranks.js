@@ -91,7 +91,7 @@ const RANKS = {
       4: "reduce mass upgrade 3 scaling by 20%.",
       5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
-      8: "mass upgrade 1 is (x/10)% cheaper, where x is rank.",
+      8: "mass upgrade 1 is (x/10)% cheaper, where x is rank (Softcapt is 5%).",
       9: "double mass gain.",
       13: "triple mass gain.",
       14: "double Rage Powers gain and Rage Power now boosts mass gain (1+x)/1000, where x is Rage Powers.",
@@ -109,7 +109,7 @@ const RANKS = {
       80: "Dark Matter boost Rage Power gain slightly (x)log(PI), where x is Dark Matter.",
       90: "rank 40 reward is stronger.",
       100: "tickspeeds boost Dark Matter gain x/1000, where x is tickspeeds.",
-      105: "raise rank 8 effect softcap to 1.5%",
+      105: "raise rank 8 effect softcap to 15%",
       110: "tick speed reduces mass upgrade 2 scaling slightly.",
       115: "50x mass gain.",
       120: "lessen rank 14 softcap.",
@@ -119,7 +119,7 @@ const RANKS = {
       220: "rank 40 reward is overpowered.",
       300: "rank multiplies quark gain.",
       380: "rank multiplies mass gain.",
-      400: "raise rank 8 softcap to 5%",
+      400: "raise rank 8 softcap to 20%",
       800: "make mass gain softcap 0.25% weaker based on rank.",
       900: "mass is multiplied by the amount of elements bought",
       1000: "make tier 50 reward ^2",
@@ -140,13 +140,13 @@ const RANKS = {
       6: "make rage powers boosted by tiers.",
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
-      9: "raise rank 8 effect softcap to 1% from 0.5%",
+      9: "raise rank 8 effect softcap to 10%",
       10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
       11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
       13: "rank 5 effect is overpowered [x^30 -> x^800]",
       30: "stronger effect's softcap is 10% weaker.",
-      40: "raise rank 8 effect softcap to 10%",
+      40: "raise rank 8 effect softcap to 30%",
       50: "quarks gain is boosted by the amount of elements bought.",
       55: "make rank 380's effect stronger based on tier.",
       60: "colapsed stars boost atom gain.",
@@ -218,12 +218,13 @@ const RANKS = {
         return ret;
       },
       8() {
-        let ret = player.ranks.rank.div(10).softcap(0.5, 0.1, 0);
-        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(10).softcap(1, 0.1, 0);
-        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(1.5, 0.1, 0);
-        if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(5, 0.1, 0);
-        if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(10, 0.1, 0);
-        if (player.ranks.rank.gte(1100)) ret = player.ranks.rank.div(10).softcap(25, 0.1, 0);
+        let ret = player.ranks.rank.div(10).softcap(0.05, 0.1, 0);
+        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(10).softcap(0.1, 0.1, 0);
+        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(0.15, 0.1, 0);
+        if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(0.2, 0.1, 0);
+        if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(0.25, 0.1, 0);
+        if (player.ranks.rank.gte(1050)) ret = player.ranks.rank.div(10).softcap(0.3, 0.1, 0);
+        if (ret.gt(0.5)) ret = E(0.5);
         return ret;
       },
       14() {
@@ -422,7 +423,8 @@ const RANKS = {
         return format(x) + "x";
       },
       8(x) {
-        return format(x) + "% weaker" + (x.gte("0.5") ? "<span class='soft'> (softcapped)</span>" : "");
+        if (player.ranks.rank.gte(1050)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.5") ? "<span class='hard'> (hardcapped)</span>" : "");
+        else return format(x.mul(100)) + "% cheaper" + (x.gte("0.05") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       14(x) {
         return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");

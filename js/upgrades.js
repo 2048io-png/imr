@@ -55,14 +55,9 @@ const UPGS = {
         fp = tmp.massFP;
 
         if (i == 1 && player.ranks.rank.gte(2)) inc = inc.pow(0.8);
-        let a = E(1).sub(RANKS.effect.rank[8]());
-        if (a.lt(0)) div = E(1);
-        if (i == 1 && player.ranks.rank.gte(8)) inc = inc.pow(a);
+        if (i == 1 && player.ranks.rank.gte(8)) inc = inc.pow(E(1).sub(RANKS.effect.rank[8]()));
         if (i == 2 && player.ranks.rank.gte(3)) inc = inc.pow(0.8);
         if (i == 3 && player.ranks.rank.gte(4)) inc = inc.pow(0.8);
-        let b = E(1).sub(RANKS.effect.rank[8]());
-        if (b.lt(0)) div = E(1);
-        if (i == 1 && player.ranks.rank.gte(110)) inc = inc.pow(a);
         if (player.ranks.tier.gte(3)) inc = inc.pow(0.8);
         cost = inc.pow(lvl.div(fp).scaleEvery("massUpg")).mul(start);
         bulk = E(0);
