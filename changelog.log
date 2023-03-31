@@ -40,3 +40,10 @@ README.md
 Modified rank 8 effect to be x/10 instead of x/100
 -Added:
 Tier 13
+
+0.0.6-A 3/31/2023
+Test Build
+-Added:
+More ranks, tiers and tetrs
+-Changed:
+4th dilated mass upgrade also affects atom gain

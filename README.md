@@ -1,7 +1,10 @@
 # IMR: Extended
 
 IMR: Extended is **LIVE** (In Alpha, prone to bugs, NaNs, save loss, etc... Play at your own risk)
-Introduces: Several new Ranks and Tiers (For now)
+Introduces:
+-New ranks
+-New tiers
+-New tetrs
 
 For the (FAR) future:
 -More mass upgrades
@@ -10,7 +13,9 @@ For the (FAR) future:
 -More upgrades post big rip
 -More challenges post c16
 -More elements and element tiers
+-More mass dilation and break dilation upgrades
 -New mass dilation called Dimensional Dilation (Idea on how it will be, will be discussed another time)
+-New currency called Anti-Quarks
 -More neutron tree upgrades and tabs
 -More bosons
 -More fermions

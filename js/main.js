@@ -53,6 +53,10 @@ const FORMS = {
     if (player.ranks.rank.gte(125)) x = x.mul(RANKS.effect.rank[125]());
     if (player.mainUpg.bh.includes(10)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][10].effect : E(1));
     if (player.ranks.rank.gte(380)) x = x.mul(RANKS.effect.rank[380]());
+    if (player.ranks.rank.gte(900)) x = x.mul(RANKS.effect.rank[900]());
+
+    if (player.md.upgs[3].gte(1)) x = x.mul(tmp.md.upgs[3].eff);
+
     if (!hasElement(162)) x = x.mul(tmp.stars.effect);
     if (hasTree("m1") && !hasElement(164)) x = x.mul(tmp.supernova.tree_eff.m1);
 

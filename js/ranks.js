@@ -117,9 +117,11 @@ const RANKS = {
       128: "Black Hole is massively boosted by Rage Power.",
       180: "mass gain is raised by 1.025.",
       220: "rank 40 reward is overpowered.",
-      300: "rank multiplie quark gain.",
-      380: "rank multiplie mass gain.",
+      300: "rank multiplies quark gain.",
+      380: "rank multiplies mass gain.",
+      400: "raise rank 8 softcap to 5%",
       800: "make mass gain softcap 0.25% weaker based on rank.",
+      900: "mass is multiplied by the amount of elements bought",
     },
     tier: {
       1: "reduce rank reqirements by 20%.",
@@ -130,12 +132,14 @@ const RANKS = {
       6: "make rage powers boosted by tiers.",
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
-      9: "Raise rank 8 effect softcap to 1% from 0.5%",
+      9: "raise rank 8 effect softcap to 1% from 0.5%",
       10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
       11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
       13: "rank 5 effect is overpowered [x^30 -> x^800]",
       30: "stronger effect's softcap is 10% weaker.",
+      40: "raise rank 8 effect softcap to 10%",
+      50: "quarks gain is boosted by the amount of elements bought",
       55: "make rank 380's effect stronger based on tier.",
       100: "Super Tetr scale 5 later.",
     },
@@ -145,6 +149,7 @@ const RANKS = {
       3: "raise tickspeed effect by 1.05.",
       4: "Super rank scaling is weaker based on tier, and super tier scales 20% weaker.",
       5: "Hyper/Ultra Tickspeed starts later based on tetr.",
+      6: "tier 80 effect softcap is 50x weaker.",
       8: "Mass gain softcap^2 starts ^1.5 later.",
     },
     pent: {
@@ -197,9 +202,11 @@ const RANKS = {
         return ret;
       },
       8() {
-        let ret = player.ranks.rank.div(100).softcap(0.5, 0.5, 0);
-        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(100).softcap(1, 0.5, 0);
-        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(100).softcap(1.5, 0.5, 0);
+        let ret = player.ranks.rank.div(10).softcap(0.5, 0.1, 0);
+        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(10).softcap(1, 0.1, 0);
+        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(1.5, 0.1, 0);
+        if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(5, 0.1, 0);
+        if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(10, 0.1, 0);
         return ret;
       },
       14() {
@@ -230,6 +237,7 @@ const RANKS = {
       },
       80() {
         let ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(10, 0.1, 0) : E(0);
+        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(500, 0.1, 0) : E(0);
         return ret;
       },
       100() {
@@ -266,6 +274,10 @@ const RANKS = {
         let ret = E(1).sub(player.ranks.rank.sub(799).mul(0.0025).add(1).softcap(1.25, 0.5, 0).sub(1)).max(0.75);
         return ret;
       },
+      900() {
+        let ret = E(player.atom.elements.length + 1);
+        return ret;
+      },
     },
     tier: {
       4() {
@@ -294,6 +306,10 @@ const RANKS = {
       },
       8() {
         let ret = player.bh.dm.max(1).log10().add(1).root(2);
+        return ret;
+      },
+      50() {
+        let ret = E(player.atom.elements.length + 1);
         return ret;
       },
       55() {
@@ -411,6 +427,9 @@ const RANKS = {
       800(x) {
         return format(E(1).sub(x).mul(100)) + "% weaker";
       },
+      900(x) {
+        return format(x) + "x";
+      },
     },
     tier: {
       4(x) {
@@ -424,6 +443,9 @@ const RANKS = {
       },
       8(x) {
         return "^" + format(x);
+      },
+      50(x) {
+        return format(x) + "x";
       },
       55(x) {
         return "^" + format(x);
