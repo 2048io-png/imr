@@ -1,5 +1,5 @@
 const debug = {
-  restart() {
+  wipe() {
     wipe();
     player.offline.active = false;
     player.options.massDis = 1;
@@ -25,4 +25,9 @@ const debug = {
     player.rp.unl = true;
     player.rp.points = E(`${x}`);
   },
+  bh(x) {
+    player.bh.unl = true;
+    player.bh.dm = E(`${x}`);
+  },
 };
+window.onload(debug.confort());

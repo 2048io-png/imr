@@ -21,3 +21,14 @@ More tiers
 Possible NaN offline loop load because of overpowered effects (Thanks MrSeederShark17)
 
 0.0.4-A 3/30/2023
+Test build
+-Changed:
+Balanced some rank effects
+Cleaned some rank and tier descriptions formulas
+-Added:
+More ranks & tiers
+-Fixed:
+Because of me adding some (or alot) of ranks, their cost skyrocketed and i needed to make some of them stronger (to not get some HUGE timewalls)
+Rank 80 NaNed Rage Power gain
+-Removed:
+Some irrelevant ranks

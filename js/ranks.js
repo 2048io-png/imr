@@ -86,25 +86,35 @@ const RANKS = {
   desc: {
     rank: {
       1: "unlock mass upgrade 1, you get 1 free mass upgrade 1 per 10 bought.",
-      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20%.",
-      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, and mass upgrade 1 boosts itself.",
+      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20% and you get 1 free mass upgrade 2 per 10 bought.",
+      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, mass upgrade 1 boosts itself, and you get 1 free mass upgrade 3 per 10 bought of mass upgrade 1 & 2",
       4: "reduce mass upgrade 3 scaling by 20%.",
-      5: "mass upgrade 2 boosts itself.",
+      5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
-      7: "add x/10 to mass gain, where x is rank.",
-      8: "mass upgrade 1 is (x/100)% cheaper, where x is rank",
+      8: "mass upgrade 1 is (x/100)% cheaper, where x is rank.",
       9: "double mass gain.",
       13: "triple mass gain.",
       14: "double Rage Powers gain and Rage Power now boosts mass gain (1+x)/1000, where x is Rage Powers.",
-      15: "Rank 7 reward effect if better. [x/10 -> x*10]",
-      16: "mass increases Rage Powers gain (mass/1e15)log(PI).",
+      15: "Rank 5 reward effect if better. [x/10 -> x*10]",
+      16: "mass increases Rage Powers gain (x/1e15)log(PI), where x is mass.",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
-      22: "Rank 7 reward effect is massively better [x*10 -> x^15]",
-      23: "Ranks boost Rage Power gain gain*(1+(x/1000), where x is ranks",
+      22: "Rank 5 reward effect is massively better [x*10 -> x^20]",
+      23: "Ranks boost Rage Power gain 1+(x/1000), where x is ranks.",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
       45: "ranks boosts Rage Powers gain.",
+      50: "10x mass gain",
+      60: "25x mass gain",
+      70: "10x Rage Power gain",
+      80: "Dark Matter boost Rage Power gain slightly (x)log(PI), where x is Dark Matter.",
       90: "rank 40 reward is stronger.",
+      100: "tickspeeds boost Dark Matter gain x/1000, where x is tickspeeds.",
+      105: "raise rank 8 effect softcap to 1.5%",
+      110: "tick speed reduces mass upgrade 2 scaling slightly.",
+      115: "50x mass gain.",
+      120: "lessen rank 14 softcap.",
+      125: "multiply slighly mass gain by rank 14 effect.",
+      128: "Black Hole is massively boosted by Rage Power.",
       180: "mass gain is raised by 1.025.",
       220: "rank 40 reward is overpowered.",
       300: "rank multiplie quark gain.",
@@ -116,12 +126,13 @@ const RANKS = {
       2: "raise mass gain by 1.15",
       3: "reduce all mass upgrade scalings by 20%.",
       4: "adds +5% tickspeed power for every tier you have, softcaps at +40%.",
-      5: "Rank 7 reward effect is better [x^15 -> x^20]",
+      5: "Rank 5 reward effect is better [x^20 -> x^30]",
       6: "make rage powers boosted by tiers.",
-      7: "every 100 musclers, you get 1 free stronger.",
+      7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
       9: "Raise rank 8 effect softcap to 1% from 0.5%",
-      10: "Rank 16 effect is better [(mass/1e15)log(PI) -> (mass/1e15)log(2)]",
+      10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
+      11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
       30: "stronger effect's softcap is 10% weaker.",
       55: "make rank 380's effect stronger based on tier.",
@@ -166,6 +177,12 @@ const RANKS = {
           .floor();
         return ret;
       },
+      2() {
+        let ret = E(player.massUpg[2] || 0)
+          .div(10)
+          .floor();
+        return ret;
+      },
       3() {
         let ret = E(player.massUpg[1] || 0).div(20);
         return ret;
@@ -178,20 +195,16 @@ const RANKS = {
         let ret = player.ranks.rank.add(1).pow(player.ranks.rank.gte(17) ? player.ranks.rank.add(1).root(3) : 2);
         return ret;
       },
-      7() {
-        let ret = player.ranks.rank.div(10);
-        if (player.ranks.rank.gte(15)) ret = player.ranks.rank.mul(10);
-        if (player.ranks.rank.gte(22)) ret = player.ranks.rank.pow(15);
-        if (player.ranks.tier.gte(5)) ret = player.ranks.rank.pow(20);
-        return ret;
-      },
       8() {
-        let ret = player.ranks.rank.div(100).softcap(0.5, 0.5, 0);
-        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(100).softcap(1, 0.5, 0);
+        let ret = player.ranks.rank.div(1000).softcap(0.5, 0.5, 0);
+        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(1000).softcap(1, 0.5, 0);
+        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(1000).softcap(1.5, 0.5, 0);
         return ret;
       },
       14() {
         let ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.001, 0);
+        if (player.ranks.rank.gte(120)) ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.01, 0);
+        if (player.ranks.tier.gte(11)) ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.1, 0);
         return ret;
       },
       16() {
@@ -212,6 +225,26 @@ const RANKS = {
       },
       45() {
         let ret = player.ranks.rank.add(1).pow(1.5);
+        return ret;
+      },
+      80() {
+        let ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(10, 0.1, 0) : E(0);
+        return ret;
+      },
+      100() {
+        let ret = E(1).add(player.tickspeed.div(1000).softcap(2, 0.5, 0));
+        return ret;
+      },
+      110() {
+        let ret = E(1).add(player.tickspeed.div(1000).softcap(5, 0.5, 0));
+        return ret;
+      },
+      125() {
+        let ret = RANKS.effect.rank[14]().softcap(25, 0.5, 0);
+        return ret;
+      },
+      128() {
+        let ret = player.rp.points.div(1e100).softcap(1e100, 0.01, 0);
         return ret;
       },
       300() {
@@ -246,9 +279,16 @@ const RANKS = {
         return overflow(ret, "ee100", 0.5);
       },
       7() {
-        let ret = E(player.massUpg[1] || 0)
+        let a = E(player.massUpg[1] || 0)
           .div(100)
           .floor();
+        let b = E(player.massUpg[2] || 0)
+          .div(100)
+          .floor();
+        let c = E(player.massUpg[3] || 0)
+          .div(100)
+          .floor();
+        let ret = a.add(b).add(c);
         return ret;
       },
       8() {
@@ -307,27 +347,34 @@ const RANKS = {
       1(x) {
         return "+" + format(x);
       },
-      3(x) {
+      2(x) {
         return "+" + format(x);
       },
+      3(x) {
+        let a = player.massUpg[1].div(10).floor();
+        let b = player.massUpg[2].div(10).floor();
+        let c = a.add(b);
+        return "+" + format(x) + ", +" + format(c);
+      },
       5(x) {
-        return "+" + format(x);
+        let a = player.ranks.rank.div(10);
+        if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
+        if (player.ranks.rank.gte(22)) a = player.ranks.rank.pow(20);
+        if (player.ranks.tier.gte(5)) a = player.ranks.rank.pow(30);
+        return "+" + format(x) + ", +" + format(a);
       },
       6(x) {
         return format(x) + "x";
-      },
-      7(x) {
-        return "+" + format(x);
       },
       8(x) {
         return format(x) + "% weaker" + (x.gte("0.5") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       14(x) {
-        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       16(x) {
         if (x.lt(0)) x = E(0);
-        return "+" + format(x);
+        return format(x) + "x";
       },
       23(x) {
         return format(x) + "x";
@@ -337,6 +384,21 @@ const RANKS = {
       },
       45(x) {
         return format(x) + "x";
+      },
+      80(x) {
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      100(x) {
+        return format(x) + "x" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      110(x) {
+        return format(x) + "% weaker" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      125(x) {
+        return format(x) + "x" + (x.gte("25") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      128(x) {
+        return format(x) + "x" + (x.gte("1e100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       300(x) {
         return format(x) + "x";
