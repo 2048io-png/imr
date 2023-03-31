@@ -138,7 +138,7 @@ const TREE_UPGS = {
       },
       reqDesc: `1e2500000 Rage Points`,
       desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate (Softcaps at 5)`,
-      cost: E(1e3),
+      cost: E(1e4),
       effect() {
         let x = player.md.particles.gt(0) ? player.md.particles.log(3.14).softcap(5, 0.1, 0) : E(1);
         return x;

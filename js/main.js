@@ -36,11 +36,11 @@ const FORMS = {
   massGain() {
     let x = E(1);
     x = x.add(tmp.upgs.mass[1] ? tmp.upgs.mass[1].eff.eff : 1);
-    let a = player.ranks.rank.div(10);
     if (player.ranks.rank.gte(5)) {
+      let a = player.ranks.rank.div(10);
       if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
-      if (player.ranks.rank.gte(22)) a = player.ranks.rank.pow(20);
-      if (player.ranks.tier.gte(5)) a = player.ranks.rank.pow(30);
+      if (player.ranks.rank.gte(22)) a = player.ranks.rank.mul(100);
+      if (player.ranks.tier.gte(5)) a = player.ranks.rank.mul(1e4);
       x = x.add(a);
     }
     if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());

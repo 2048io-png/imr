@@ -98,7 +98,7 @@ const RANKS = {
       15: "Rank 5 reward effect if better. [x/10 -> x*10]",
       16: "mass increases Rage Powers gain (x/1e15)log(PI), where x is mass.",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
-      22: "Rank 5 reward effect is massively better [x*10 -> x^20]",
+      22: "Rank 5 reward effect is even better [x*10 -> x*100]",
       23: "Ranks boost Rage Power gain 1+(x/1000), where x is ranks.",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
@@ -136,7 +136,7 @@ const RANKS = {
       2: "raise mass gain by 1.15",
       3: "reduce all mass upgrade scalings by 20%.",
       4: "adds +5% tickspeed power for every tier you have, softcaps at +40%.",
-      5: "Rank 5 reward effect is better [x^20 -> x^30]",
+      5: "Rank 5 reward effect is better [x*100 -> x*1e4]",
       6: "make rage powers boosted by tiers.",
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
@@ -144,7 +144,7 @@ const RANKS = {
       10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
       11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
-      13: "rank 5 effect is overpowered [x^30 -> x^800]",
+      13: "rank 5 effect is overpowered [x*1e4 -> x*1e8]",
       30: "stronger effect's softcap is 10% weaker.",
       40: "raise rank 8 effect softcap to 30%",
       50: "quarks gain is boosted by the amount of elements bought.",
@@ -418,9 +418,9 @@ const RANKS = {
       5(x) {
         let a = player.ranks.rank.div(10);
         if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
-        if (player.ranks.rank.gte(22)) a = player.ranks.rank.pow(20);
-        if (player.ranks.tier.gte(5)) a = player.ranks.rank.pow(30);
-        if (player.ranks.tier.gte(13)) a = player.ranks.rank.pow(800);
+        if (player.ranks.rank.gte(22)) a = player.ranks.rank.mul(100);
+        if (player.ranks.tier.gte(5)) a = player.ranks.rank.mul(1e4);
+        if (player.ranks.tier.gte(13)) a = player.ranks.rank.mul(1e8);
         return "+" + format(x) + ", +" + format(a);
       },
       6(x) {
