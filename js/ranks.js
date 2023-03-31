@@ -122,6 +122,14 @@ const RANKS = {
       400: "raise rank 8 softcap to 5%",
       800: "make mass gain softcap 0.25% weaker based on rank.",
       900: "mass is multiplied by the amount of elements bought",
+      1000: "make tier 50 reward ^2",
+      1100: "raise rank 8 softcap to 25%",
+      1200: "gain 1 free blackhole condenser per 100 of muscler, booster, stronger and tickspeed.",
+      1250: "tier 70 effect affects collapsed stars.",
+      1300: "Relativistic Particles affects mass gain",
+      1400: "Neutron Star boosts relativistic particles gain.",
+      // 1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
+      // 2000: "Tier 2 effect is better. ^1.15 => ^1.2"
     },
     tier: {
       1: "reduce rank reqirements by 20%.",
@@ -139,9 +147,14 @@ const RANKS = {
       13: "rank 5 effect is overpowered [x^30 -> x^800]",
       30: "stronger effect's softcap is 10% weaker.",
       40: "raise rank 8 effect softcap to 10%",
-      50: "quarks gain is boosted by the amount of elements bought",
+      50: "quarks gain is boosted by the amount of elements bought.",
       55: "make rank 380's effect stronger based on tier.",
+      60: "colapsed stars boost atom gain.",
+      70: "mass affects slighly mass dilation gain.",
       100: "Super Tetr scale 5 later.",
+      // 150: "Mass Dilation scales Super later at logarithimical rate.",
+      // 200: "Instead of adding Tickspeed, Tier 7 now affects tickspeed effect based on supernova amount.",
+      // 300: "Disable Rank 50 and 60 effects, but Mass Softcap^2 starts ^2 later.",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -149,8 +162,11 @@ const RANKS = {
       3: "raise tickspeed effect by 1.05.",
       4: "Super rank scaling is weaker based on tier, and super tier scales 20% weaker.",
       5: "Hyper/Ultra Tickspeed starts later based on tetr.",
-      6: "tier 80 effect softcap is 50x weaker.",
+      6: "rank 80 effect softcap is 50x weaker.",
+      7: "tier 70 effect hardcap is 10x less effective.",
       8: "Mass gain softcap^2 starts ^1.5 later.",
+      // 9: "Rank requirements are 30% weaker.",
+      // 10: "Rank 1100 effect is better. 25% => 35%"
     },
     pent: {
       1: "reduce tetr requirements by 15%, and Meta-Rank starts 1.1x later.",
@@ -207,6 +223,7 @@ const RANKS = {
         if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(1.5, 0.1, 0);
         if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(5, 0.1, 0);
         if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(10, 0.1, 0);
+        if (player.ranks.rank.gte(1100)) ret = player.ranks.rank.div(10).softcap(25, 0.1, 0);
         return ret;
       },
       14() {
@@ -278,6 +295,17 @@ const RANKS = {
         let ret = E(player.atom.elements.length + 1);
         return ret;
       },
+      1200() {
+        let ret = (player.massUpg[1].div(100).floor() || 0)
+          .add(player.massUpg[2].div(100).floor() || 0)
+          .add(player.massUpg[3].div(100).floor() || 0)
+          .add(player.tickspeed.div(100).floor() || 0);
+        return ret;
+      },
+      1400() {
+        let ret = player.supernova.stars.gt(0) ? player.supernova.stars.floor().softcap(1e20, 0.5, 0) : E(1);
+        return ret;
+      },
     },
     tier: {
       4() {
@@ -310,10 +338,19 @@ const RANKS = {
       },
       50() {
         let ret = E(player.atom.elements.length + 1);
+        if (player.ranks.rank.gte(100)) ret = E(player.atom.elements.length + 1).pow(2);
         return ret;
       },
       55() {
         let ret = player.ranks.tier.max(1).log10().add(1).root(4);
+        return ret;
+      },
+      60() {
+        let ret = player.stars.points.gt(0) ? player.stars.points.softcap(1e5, 0.5, 0) : E(1);
+        return ret;
+      },
+      70() {
+        let ret = player.mass.log(1e308).softcap(player.ranks.tetr.gte(7) ? 1e4 : 1000, 0, 0);
         return ret;
       },
     },
@@ -430,6 +467,12 @@ const RANKS = {
       900(x) {
         return format(x) + "x";
       },
+      1200(x) {
+        return "+" + format(x);
+      },
+      1400(x) {
+        return format(x) + "x" + (x.gte("1e20") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
     },
     tier: {
       4(x) {
@@ -449,6 +492,13 @@ const RANKS = {
       },
       55(x) {
         return "^" + format(x);
+      },
+      60(x) {
+        return format(x) + "x" + (x.gte("1e5") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      70(x) {
+        if (player.ranks.tetr.gte(7)) return format(x) + "x" + (x.gte("1e4") ? "<span class='hard'> (hardcapped)</span>" : "");
+        if (player.ranks.tier.gte(70)) return format(x) + "x" + (x.gte("1000") ? "<span class='hard'> (hardcapped)</span>" : "");
       },
     },
     tetr: {

@@ -571,6 +571,7 @@ const FORMS = {
       },
       bonus() {
         let x = E(0);
+        if (player.ranks.rank.gte(1200)) x = x.add(RANKS.effect.rank[1200]());
         if (player.mainUpg.bh.includes(15)) x = x.add(tmp.upgs.main ? tmp.upgs.main[2][15].effect : E(0));
         x = x.mul(getEnRewardEff(4));
         return x;
