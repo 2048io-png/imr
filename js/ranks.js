@@ -151,6 +151,7 @@ const RANKS = {
       55: "make rank 380's effect stronger based on tier.",
       60: "colapsed stars boost atom gain.",
       70: "mass affects slighly mass dilation gain.",
+      80: "Tier requirements are 30% weaker",
       100: "Super Tetr scale 5 later.",
       // 150: "Mass Dilation scales Super later at logarithimical rate.",
       // 200: "Instead of adding Tickspeed, Tier 7 now affects tickspeed effect based on supernova amount.",
@@ -165,7 +166,7 @@ const RANKS = {
       6: "rank 80 effect softcap is 50x weaker.",
       7: "tier 70 effect hardcap is 10x less effective.",
       8: "Mass gain softcap^2 starts ^1.5 later.",
-      // 9: "Rank requirements are 30% weaker.",
+      9: "Tier requirements are 30% weaker.",
       // 10: "Rank 1100 effect is better. 25% => 35%"
     },
     pent: {
@@ -915,7 +916,15 @@ function updateRanksTemp() {
   tmp.ranks.rank.can = player.mass.gte(tmp.ranks.rank.req) && !CHALS.inChal(5) && !CHALS.inChal(10) && !FERMIONS.onActive("03");
 
   fp = RANKS.fp.tier().mul(ffp);
-  tmp.ranks.tier.req = player.ranks.tier.div(ffp2).scaleEvery("tier", false, [1, 1, 1, fp2]).div(fp).add(2).pow(2).floor();
+  tmp.ranks.tier.req = player.ranks.tier
+    .div(ffp2)
+    .scaleEvery("tier", false, [1, 1, 1, fp2])
+    .div(fp)
+    .add(2)
+    .pow(2)
+    .floor()
+    .mul(player.ranks.tetr.gte(9) ? 0.7 : 1)
+    .mul(player.ranks.tier.gte(80) ? 0.7 : 1);
   tmp.ranks.tier.bulk = player.ranks.rank.max(0).root(2).sub(2).mul(fp).scaleEvery("tier", true, [1, 1, 1, fp2]).mul(ffp2).add(1).floor();
 
   fp = E(1).mul(ffp);

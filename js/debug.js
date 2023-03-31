@@ -21,6 +21,9 @@ const debug = {
   tier(x) {
     player.ranks.tier = E(`${x}`);
   },
+  tetr(x) {
+    player.ranks.tetr = E(`${x}`);
+  },
   rage(x) {
     player.rp.unl = true;
     player.rp.points = E(`${x}`);

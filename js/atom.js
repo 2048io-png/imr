@@ -32,6 +32,7 @@ const ATOM = {
     if (hasElement(6)) x = x.mul(tmp.elements.effect[6]);
     if (hasElement(42)) x = x.mul(tmp.elements.effect[42]);
     if (hasTree("qa1")) x = x.mul(TREE_UPGS.ids.qa1.effect());
+    if (hasTree("qa3")) x = x.mul(TREE_UPGS.ids.qa3.effect());
     if (hasElement(67)) x = x.mul(tmp.elements.effect[67]);
     if (player.md.upgs[6].gte(1)) x = x.mul(tmp.md.upgs[6].eff);
     x = x.mul(tmp.md.upgs[9].eff);

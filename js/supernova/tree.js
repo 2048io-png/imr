@@ -25,9 +25,9 @@ const TREE_TAB = [
 const CORRUPTED_TREE = ["s1"];
 
 const TREE_IDS = [
-  [["qa2", "qa1", "", "c", "", "", ""], ["qol1", "", "", "", "qu_qol1", ""], ["chal1"], ["bs4", "bs1", "", "qf1", "", "rad1"], ["qu0"], ["ct1"]],
+  [["", "qa2", "qa1", "c", "", "", ""], ["qol1", "", "", "", "qu_qol1", ""], ["chal1"], ["bs4", "bs1", "", "qf1", "", "rad1"], ["qu0"], ["ct1"]],
   [
-    ["s1", "m1", "rp1", "bh1", "sn1"],
+    ["qa3", "s1", "m1", "rp1", "bh1", "sn1", ""],
     ["qol2", "qol3", "qol4", "qu_qol2", "qu_qol3", "qu_qol4", "qu_qol5", "qu_qol6"],
     ["chal2", "chal4a", "chal4b", "chal3"],
     ["bs5", "bs2", "fn1", "bs3", "qf2", "qf3", "rad2", "rad3"],
@@ -66,6 +66,8 @@ var tree_canvas,
 
 const NO_REQ_QU = [
   "qa1",
+  "qa2",
+  "qa3",
   "qol1",
   "qol2",
   "qol3",
@@ -145,6 +147,22 @@ const TREE_UPGS = {
       },
       effDesc(x) {
         return format(x) + "x" + (x.gte("5") ? " <span class='soft'>(softcapped)</span>" : "");
+      },
+    },
+    qa3: {
+      branch: ["qa2"],
+      req() {
+        return player.mass.gte("1e9000000");
+      },
+      reqDesc: `1e9000000 Mass`,
+      desc: `Supernovas massively boost quark gain.`,
+      cost: E(1e12),
+      effect() {
+        let x = player.supernova.times.gt(0) ? player.supernova.times.pow(5e3) : E(1);
+        return x;
+      },
+      effDesc(x) {
+        return format(x) + "x";
       },
     },
     sn1: {
