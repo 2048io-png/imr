@@ -32,3 +32,11 @@ Because of me adding some (or alot) of ranks, their cost skyrocketed and i neede
 Rank 80 NaNed Rage Power gain
 -Removed:
 Some irrelevant ranks
+
+0.0.5-A 3/31/2023
+Test Build
+-Changed:
+README.md
+Modified rank 8 effect to be x/10 instead of x/100
+-Added:
+Tier 13

@@ -91,7 +91,7 @@ const RANKS = {
       4: "reduce mass upgrade 3 scaling by 20%.",
       5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
-      8: "mass upgrade 1 is (x/100)% cheaper, where x is rank.",
+      8: "mass upgrade 1 is (x/10)% cheaper, where x is rank.",
       9: "double mass gain.",
       13: "triple mass gain.",
       14: "double Rage Powers gain and Rage Power now boosts mass gain (1+x)/1000, where x is Rage Powers.",
@@ -134,6 +134,7 @@ const RANKS = {
       10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
       11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
+      13: "rank 5 effect is overpowered [x^30 -> x^800]",
       30: "stronger effect's softcap is 10% weaker.",
       55: "make rank 380's effect stronger based on tier.",
       100: "Super Tetr scale 5 later.",
@@ -196,9 +197,9 @@ const RANKS = {
         return ret;
       },
       8() {
-        let ret = player.ranks.rank.div(1000).softcap(0.5, 0.5, 0);
-        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(1000).softcap(1, 0.5, 0);
-        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(1000).softcap(1.5, 0.5, 0);
+        let ret = player.ranks.rank.div(100).softcap(0.5, 0.5, 0);
+        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(100).softcap(1, 0.5, 0);
+        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(100).softcap(1.5, 0.5, 0);
         return ret;
       },
       14() {
@@ -361,6 +362,7 @@ const RANKS = {
         if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
         if (player.ranks.rank.gte(22)) a = player.ranks.rank.pow(20);
         if (player.ranks.tier.gte(5)) a = player.ranks.rank.pow(30);
+        if (player.ranks.tier.gte(13)) a = player.ranks.rank.pow(800);
         return "+" + format(x) + ", +" + format(a);
       },
       6(x) {
