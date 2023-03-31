@@ -128,7 +128,7 @@ const RANKS = {
       1250: "tier 70 effect affects collapsed stars.",
       1300: "Relativistic Particles affects mass gain",
       1400: "Neutron Star boosts relativistic particles gain.",
-      // 1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
+      1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
       // 2000: "Tier 2 effect is better. ^1.15 => ^1.2"
     },
     tier: {
@@ -307,6 +307,10 @@ const RANKS = {
         let ret = player.supernova.stars.gt(0) ? player.supernova.stars.floor().softcap(1e20, 0.5, 0) : E(1);
         return ret;
       },
+      1600() {
+        let ret = player.md.upgs[1].gt(0) ? player.md.upgs[1].log(3.14) : E(1);
+        return ret;
+      },
     },
     tier: {
       4() {
@@ -474,6 +478,9 @@ const RANKS = {
       },
       1400(x) {
         return format(x) + "x" + (x.gte("1e20") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      1600(x) {
+        return format(x) + "x";
       },
     },
     tier: {

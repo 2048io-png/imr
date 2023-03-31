@@ -113,6 +113,7 @@ const STARS = {
 
       if (player.ranks.rank.gte(1250)) x = x.times(RANKS.effect.tier[70]());
       if (hasElement(49) && i == 4) x = x.mul(tmp.elements.effect[49]);
+      if (player.ranks.rank.gte(1600) && i == 4) x = x.mul(RANKS.effect.rank[1600]());
       if (hasTree("s1") && i == 4) x = x.mul(tmp.supernova.tree_eff.s1);
       if (player.md.upgs[8].gte(1)) x = x.mul(tmp.md.upgs[8].eff);
       if (hasElement(54)) x = x.mul(tmp.elements.effect[54]);

@@ -2,9 +2,10 @@
 
 IMR: Extended is **LIVE** (In Alpha, prone to bugs, NaNs, save loss, etc... Play at your own risk)
 Introduces:
--New ranks
--New tiers
--New tetrs
+\*Main tab:
+-New ranks, tiers and tetrs
+\*Supernova neutron star tree main tab:
+-New upgrades
 
 For the (FAR) future:
 -More mass upgrades
