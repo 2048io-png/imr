@@ -213,11 +213,13 @@ const ATOM = {
               .log10()
               .add(1)
               .pow(player.rp.points.max(1).log(10).mul(x.max(1).log(10)).root(2.75))
+              .min("ee200")
           : player.mass
               .max(1)
               .log10()
               .add(1)
-              .pow(player.rp.points.max(1).log(100).mul(x.max(1).log(100)).root(3));
+              .pow(player.rp.points.max(1).log(100).mul(x.max(1).log(100)).root(3))
+              .min("ee200");
         return { eff1: a, eff2: b };
       },
       (x) => {
@@ -236,7 +238,13 @@ const ATOM = {
       (x) => {
         return `
                 Boosts Rage Power gain by ${hasElement(105) ? "^" + format(x.eff1) : format(x.eff1) + "x"}<br><br>
-                Makes Mass gain boosted by Rage Powers - ${hasUpgrade("atom", 18) ? "^" + format(x.eff2) : format(x.eff2) + "x"}<br><br>
+                Makes Mass gain boosted by Rage Powers - ${
+                  hasUpgrade("atom", 18)
+                    ? "^" + format(x.eff2)
+                    : format(x.eff2) +
+                      "x" +
+                      (tmp.atom.particles[1].powerGain.gte("ee200") || (tmp.atom.particles[1].powerGain.gte("ee200") && hasElement(19)) ? " <span class='hard'>(hardcapped)</span>" : "")
+                }<br><br>
             `;
       },
       (x) => {

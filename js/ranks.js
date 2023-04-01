@@ -129,7 +129,8 @@ const RANKS = {
       1300: "Relativistic Particles affects mass gain",
       1400: "Neutron Star boosts relativistic particles gain.",
       1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
-      // 2000: "Tier 2 effect is better. ^1.15 => ^1.2"
+      1900: "Black Hole mass is raised to ^1.1",
+      2000: "Tier 2 effect is better. ^1.15 => ^1.2",
     },
     tier: {
       1: "reduce rank reqirements by 20%.",
@@ -151,9 +152,9 @@ const RANKS = {
       55: "make rank 380's effect stronger based on tier.",
       60: "colapsed stars boost atom gain.",
       70: "mass affects slighly mass dilation gain.",
-      80: "Tier requirements are 30% weaker",
+      80: "Rank requirements are 30% weaker",
       100: "Super Tetr scale 5 later.",
-      // 150: "Mass Dilation scales Super later at logarithimical rate.",
+      150: "Dilated Mass scales Super later at logarithimical rate.",
       // 200: "Instead of adding Tickspeed, Tier 7 now affects tickspeed effect based on supernova amount.",
       // 300: "Disable Rank 50 and 60 effects, but Mass Softcap^2 starts ^2 later.",
     },
@@ -359,6 +360,10 @@ const RANKS = {
         let ret = player.mass.log(1e308).softcap(player.ranks.tetr.gte(7) ? 1e4 : 1000, 0, 0);
         return ret;
       },
+      150() {
+        let ret = player.md.particles.gt(0) ? player.md.particles.log("1e1000").softcap(5, 0.01, 0) : E(1);
+        return ret;
+      },
     },
     tetr: {
       2() {
@@ -510,6 +515,9 @@ const RANKS = {
         if (player.ranks.tetr.gte(7)) return format(x) + "x" + (x.gte("1e4") ? "<span class='hard'> (hardcapped)</span>" : "");
         if (player.ranks.tier.gte(70)) return format(x) + "x" + (x.gte("1000") ? "<span class='hard'> (hardcapped)</span>" : "");
       },
+      150(x) {
+        return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
     },
     tetr: {
       2(x) {
@@ -546,13 +554,14 @@ const RANKS = {
     rank() {
       let f = E(1);
       if (player.ranks.tier.gte(1)) f = f.mul(1 / 0.8);
+      if (player.ranks.tier.gte(80)) f = f.mul(1 / 0.7);
       if (!hasCharger(3)) f = f.mul(tmp.chal.eff[5].pow(-1));
       return f;
     },
     tier() {
       let f = E(1);
       f = f.mul(tmp.fermions.effs[1][3]);
-      if (player.ranks.tetr.gte(1)) f = f.mul(1 / 0.75);
+      if (player.ranks.tetr.gte(1)) f = f.mul(1 / 0.8);
       if (player.mainUpg.atom.includes(10)) f = f.mul(2);
       return f;
     },
@@ -923,8 +932,7 @@ function updateRanksTemp() {
     .add(2)
     .pow(2)
     .floor()
-    .mul(player.ranks.tetr.gte(9) ? 0.7 : 1)
-    .mul(player.ranks.tier.gte(80) ? 0.7 : 1);
+    .mul(player.ranks.tetr.gte(9) ? 0.7 : 1);
   tmp.ranks.tier.bulk = player.ranks.rank.max(0).root(2).sub(2).mul(fp).scaleEvery("tier", true, [1, 1, 1, fp2]).mul(ffp2).add(1).floor();
 
   fp = E(1).mul(ffp);

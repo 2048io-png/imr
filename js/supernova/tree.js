@@ -25,7 +25,7 @@ const TREE_TAB = [
 const CORRUPTED_TREE = ["s1"];
 
 const TREE_IDS = [
-  [["", "qa2", "qa1", "c", "", "", ""], ["qol1", "", "", "", "qu_qol1", ""], ["chal1"], ["bs4", "bs1", "", "qf1", "", "rad1"], ["qu0"], ["ct1"]],
+  [["qa4", "qa2", "qa1", "c", "", "", ""], ["qol1", "", "", "", "qu_qol1", ""], ["chal1"], ["bs4", "bs1", "", "qf1", "", "rad1"], ["qu0"], ["ct1"]],
   [
     ["qa3", "s1", "m1", "rp1", "bh1", "sn1", ""],
     ["qol2", "qol3", "qol4", "qu_qol2", "qu_qol3", "qu_qol4", "qu_qol5", "qu_qol6"],
@@ -68,6 +68,7 @@ const NO_REQ_QU = [
   "qa1",
   "qa2",
   "qa3",
+  "qa4",
   "qol1",
   "qol2",
   "qol3",
@@ -122,7 +123,7 @@ const TREE_UPGS = {
       req() {
         return player.mass.gte("1e3500000");
       },
-      reqDesc: `1e3500000 Mass`,
+      reqDesc: `1e3,500,000 g Mass`,
       desc: `Neutron star boosts quark gain (Softcaps at 1e20)`,
       cost: E(1e3),
       effect() {
@@ -138,7 +139,7 @@ const TREE_UPGS = {
       req() {
         return player.rp.points.gte("1e2500000");
       },
-      reqDesc: `1e2500000 Rage Points`,
+      reqDesc: `1e2,500,000 Rage Points`,
       desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate (Softcaps at 5)`,
       cost: E(1e4),
       effect() {
@@ -154,7 +155,7 @@ const TREE_UPGS = {
       req() {
         return player.mass.gte("1e9000000");
       },
-      reqDesc: `1e9000000 Mass`,
+      reqDesc: `1e9,000,000 g Mass`,
       desc: `Supernovas massively boost quark gain.`,
       cost: E(1e12),
       effect() {
@@ -163,6 +164,22 @@ const TREE_UPGS = {
       },
       effDesc(x) {
         return format(x) + "x";
+      },
+    },
+    qa4: {
+      branch: ["qa3"],
+      req() {
+        return player.bh.dm.gte("1e5000000");
+      },
+      reqDesc: `1e5,000,000 g Dark Matter`,
+      desc: `Supernovas boost mass gain at a logarithmical rate.`,
+      cost: E(1e18),
+      effect() {
+        let x = player.supernova.times.gt(0) ? player.supernova.times.log(2).softcap(1.5, 0.1, 0) : E(1);
+        return x;
+      },
+      effDesc(x) {
+        return "^" + format(x) + (x.gte("1.5") ? " <span class='soft'>(softcapped)</span>" : "");
       },
     },
     sn1: {

@@ -59,6 +59,7 @@ const FORMS = {
 
     if (!hasElement(162)) x = x.mul(tmp.stars.effect);
     if (hasTree("m1") && !hasElement(164)) x = x.mul(tmp.supernova.tree_eff.m1);
+    if (hasTree("qa4")) x = x.pow(tmp.supernova.tree_eff.qa4);
 
     x = x.mul(tmp.bosons.effect.pos_w[0]);
 
@@ -72,7 +73,7 @@ const FORMS = {
     if (!hasElement(199) || CHALS.inChal(15)) x = x.mul(tmp.tickspeedEffect.eff || E(1));
     else x = x.pow(tmp.tickspeedEffect.eff || E(1));
 
-    if (player.ranks.tier.gte(2)) x = x.pow(1.15);
+    if (player.ranks.tier.gte(2)) x = x.pow(player.ranks.rank.gte(2000) ? 1.2 : 1.15);
     if (player.ranks.rank.gte(180)) x = x.pow(1.025);
     if (!CHALS.inChal(3) || CHALS.inChal(10) || FERMIONS.onActive("03")) x = x.pow(tmp.chal.eff[3]);
     if (tmp.c16active || player.md.active || CHALS.inChal(10) || FERMIONS.onActive("02") || FERMIONS.onActive("03") || CHALS.inChal(11)) {
@@ -433,6 +434,7 @@ const FORMS = {
       let x = tmp.bh.f.mul(this.condenser.effect().eff);
       if (player.mainUpg.rp.includes(11)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[1][11].effect : E(1));
       if (player.mainUpg.bh.includes(14)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][14].effect : E(1));
+      if (player.ranks.rank.gte(1900)) x = x.pow(1.1);
       if (hasElement(46) && !hasElement(162)) x = x.mul(tmp.elements.effect[46]);
       x = hasElement(204) ? x.pow(tmp.bosons.upgs.photon[0].effect) : x.mul(tmp.bosons.upgs.photon[0].effect);
       if (CHALS.inChal(8) || CHALS.inChal(10) || FERMIONS.onActive("12")) x = x.root(8);

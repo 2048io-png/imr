@@ -29,12 +29,13 @@ function setupHTML() {
   table = "";
   for (let x = 0; x < RANKS.names.length; x++) {
     let rn = RANKS.names[x];
-    table += `<div style="width: 300px" id="ranks_div_${x}">
+    table += `<div id="ranks_div_${x}">
 			<button id="ranks_auto_${x}" class="btn" style="width: 80px;" onclick="RANKS.autoSwitch('${rn}')">OFF</button>
-			<span id="ranks_scale_${x}""></span>${RANKS.fullNames[x]} <span id="ranks_amt_${x}">X</span><br><br>
+			<span id="ranks_scale_${x}""></span>${RANKS.fullNames[x]} [<span style="font-size: 13.5px;"id="ranks_amt_${x}">X</span>]<br><br>
 			<button onclick="RANKS.reset('${rn}')" class="btn reset" id="ranks_${x}">
-				Reset your ${x > 0 ? RANKS.fullNames[x - 1] + "s" : "mass and upgrades"}, but ${RANKS.fullNames[x]} up.<span id="ranks_desc_${x}"></span><br>
-				Req: <span id="ranks_req_${x}">X</span>
+				<span style="font-size: 14px"><b>Reset your ${x > 0 ? RANKS.fullNames[x - 1] + "s" : "mass and upgrades"}, but ${
+      RANKS.fullNames[x]
+    } up.</b></span><br><span style='margin-top: 5px'>Requires <span id="ranks_req_${x}">X</span></span><br><hr></hr><i><span id="ranks_desc_${x}"></span></i>
 			</button>
 		</div>`;
   }
@@ -43,12 +44,13 @@ function setupHTML() {
   let pres_table = new Element("pres_table");
   table = "";
   for (let x = 0; x < PRES_LEN; x++) {
-    table += `<div style="width: 300px" id="pres_div_${x}">
+    table += `<div id="pres_div_${x}">
 			<button id="pres_auto_${x}" class="btn" style="width: 80px;" onclick="PRESTIGES.autoSwitch(${x})">OFF</button>
-			<span id="pres_scale_${x}""></span>${PRESTIGES.fullNames[x]} <span id="pres_amt_${x}">X</span><br><br>
+			<span id="pres_scale_${x}""></span>${PRESTIGES.fullNames[x]} <span style="font-size: 13.5px;" id="pres_amt_${x}">X</span><br><br>
 			<button onclick="PRESTIGES.reset(${x})" class="btn reset" id="pres_${x}">
-				${x > 0 ? "Reset your " + PRESTIGES.fullNames[x - 1] + "s" : "Force a Quantum reset"}, but ${PRESTIGES.fullNames[x]} up.<span id="pres_desc_${x}"></span><br>
-				Req: <span id="pres_req_${x}">X</span>
+			<span style="font-size: 14px"><b>${x > 0 ? "Reset your " + PRESTIGES.fullNames[x - 1] + "s" : "Force a Quantum reset"}, but ${
+      PRESTIGES.fullNames[x]
+    } up.</b></span><br><span style='margin-top: 5px'>Requires <span id="pres_req_${x}">X</span></span><hr></hr><i><span id="pres_desc_${x}"></span></i>
 			</button>
 		</div>`;
   }
