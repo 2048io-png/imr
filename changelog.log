@@ -1,3 +1,6 @@
+0.0.142-A Fix 1 4/1/2023 IMR: Extended update (Not April fools)
+Removed rank 125 because it used rank 14 and rank 14 was removed
+
 0.0.141-A Fix 1 4/1/2023 IMR: Extended update (Not April fools)
 Removed debug.js to see if it fixed a loop bug
 

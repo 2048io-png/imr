@@ -111,7 +111,6 @@ const RANKS = {
       110: "tick speed reduces mass upgrade 2 scaling slightly.",
       115: "50x mass gain.",
       120: "lessen rank 14 softcap.",
-      125: "multiply slighly mass gain by rank 14 effect.",
       128: "Black Hole is massively boosted by Rage Power.",
       180: "mass gain is raised by 1.025.",
       220: "rank 40 reward is overpowered.",
@@ -252,10 +251,6 @@ const RANKS = {
       },
       110() {
         let ret = E(1).add(player.tickspeed.div(1000).softcap(5, 0.5, 0));
-        return ret;
-      },
-      125() {
-        let ret = RANKS.effect.rank[14]().softcap(25, 0.5, 0);
         return ret;
       },
       128() {
@@ -439,9 +434,6 @@ const RANKS = {
       },
       110(x) {
         return format(x) + "% weaker" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      125(x) {
-        return format(x) + "x" + (x.gte("25") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       128(x) {
         return format(x) + "x" + (x.gte("1e100") ? "<span class='soft'> (softcapped)</span>" : "");

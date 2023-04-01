@@ -49,7 +49,6 @@ const FORMS = {
     if (player.ranks.rank.gte(50)) x = x.mul(10);
     if (player.ranks.rank.gte(60)) x = x.mul(25);
     if (player.ranks.rank.gte(115)) x = x.mul(50);
-    if (player.ranks.rank.gte(125)) x = x.mul(RANKS.effect.rank[125]());
     if (player.mainUpg.bh.includes(10)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][10].effect : E(1));
     if (player.ranks.rank.gte(380)) x = x.mul(RANKS.effect.rank[380]());
     if (player.ranks.rank.gte(900)) x = x.mul(RANKS.effect.rank[900]());
