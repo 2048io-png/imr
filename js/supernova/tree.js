@@ -176,9 +176,11 @@ const TREE_UPGS = {
       cost: E(1e18),
       effect() {
         let x = player.supernova.times.gt(0) ? player.supernova.times.log(2).softcap(1.5, 0.1, 0) : E(1);
+        if (x.gt(2)) x = E(2);
         return x;
       },
       effDesc(x) {
+        if (x.gte(2)) return "^" + format(x) + (x.gte("2") ? " <span class='hard'>(hardcapped)</span>" : "");
         return "^" + format(x) + (x.gte("1.5") ? " <span class='soft'>(softcapped)</span>" : "");
       },
     },
