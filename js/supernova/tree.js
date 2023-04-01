@@ -131,7 +131,7 @@ const TREE_UPGS = {
         return x;
       },
       effDesc(x) {
-        return format(x) + "x" + (x.gte("1e20") ? " <span class='soft'>(softcapped)</span>" : "");
+        return format(E(1) + x) + "x" + (x.gte("1e20") ? " <span class='soft'>(softcapped)</span>" : "");
       },
     },
     qa2: {

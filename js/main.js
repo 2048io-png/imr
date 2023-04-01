@@ -44,9 +44,8 @@ const FORMS = {
       x = x.add(a);
     }
     if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
-    if (player.ranks.rank.gte(9)) x = x.mul(2);
     if (player.ranks.rank.gte(13)) x = x.mul(3);
-    if (player.ranks.rank.gte(14)) x = x.mul(RANKS.effect.rank[14]());
+    if (player.ranks.rank.gte(25)) x = x.mul(RANKS.effect.rank[25]());
     if (player.ranks.rank.gte(50)) x = x.mul(10);
     if (player.ranks.rank.gte(60)) x = x.mul(25);
     if (player.ranks.rank.gte(115)) x = x.mul(50);
@@ -348,11 +347,9 @@ const FORMS = {
   },
   rp: {
     gain() {
-      if (tmp.c16active || player.mass.lt(1e15) || CHALS.inChal(7) || CHALS.inChal(10)) return E(0);
-      let gain = player.mass.div(1e15).root(3);
-      if (player.ranks.rank.gte(14)) gain = gain.mul(2);
-      if (player.ranks.rank.gte(16)) gain = gain.mul(RANKS.effect.rank[16]());
-      if (player.ranks.rank.gte(23)) gain = gain.mul(RANKS.effect.rank[23]());
+      if (tmp.c16active || player.mass.lt(1e27) || CHALS.inChal(7) || CHALS.inChal(10)) return E(0);
+      let gain = player.mass.div(1e27).root(3);
+      if (player.ranks.rank.gte(30)) gain = gain.mul(2);
       if (player.ranks.rank.gte(45)) gain = gain.mul(RANKS.effect.rank[45]());
       if (player.ranks.rank.gte(80)) gain = player.bh.dm.gt(0) ? gain.mul(RANKS.effect.rank[80]()) : gain.add(0);
       if (player.ranks.tier.gte(6)) gain = gain.mul(RANKS.effect.tier[6]());

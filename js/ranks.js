@@ -92,14 +92,12 @@ const RANKS = {
       5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
       8: "mass upgrade 1 is (x/10)% cheaper, where x is rank (Softcapt is 5%).",
-      9: "double mass gain.",
       13: "triple mass gain.",
-      14: "double Rage Powers gain and Rage Power now boosts mass gain (1+x)/1000, where x is Rage Powers.",
       15: "Rank 5 reward effect if better. [x/10 -> x*10]",
-      16: "mass increases Rage Powers gain (x/1e15)log(PI), where x is mass.",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
       22: "Rank 5 reward effect is even better [x*10 -> x*100]",
-      23: "Ranks boost Rage Power gain 1+(x/1000), where x is ranks.",
+      25: "rage powers boost mass gain logarithmically.",
+      30: "double rage points gain.",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
       45: "ranks boosts Rage Powers gain.",
@@ -229,20 +227,8 @@ const RANKS = {
         if (ret.gt(0.5)) ret = E(0.5);
         return ret;
       },
-      14() {
-        let ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.001, 0);
-        if (player.ranks.rank.gte(120)) ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.01, 0);
-        if (player.ranks.tier.gte(11)) ret = E(1).add(player.rp.points.div(1000)).softcap(10, 0.1, 0);
-        return ret;
-      },
-      16() {
-        let ret = player.mass.div(1e15).log(3.14);
-        if (player.ranks.tier.gte(10)) ret = player.mass.div(1e15).log(2);
-        if (ret.lt(0)) x = E(0);
-        return ret;
-      },
-      23() {
-        let ret = E(1).add(player.ranks.rank.div(1000));
+      25() {
+        let ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.log(3.14)).softcap(100, 0.5, 0) : E(1);
         return ret;
       },
       40() {
@@ -410,16 +396,16 @@ const RANKS = {
   effDesc: {
     rank: {
       1(x) {
-        return "+" + format(x);
+        return "+" + format(x, 0);
       },
       2(x) {
-        return "+" + format(x);
+        return "+" + format(x, 0);
       },
       3(x) {
         let a = player.massUpg[1].div(10).floor();
         let b = player.massUpg[2].div(10).floor();
         let c = a.add(b);
-        return "+" + format(x) + ", +" + format(c);
+        return "+" + format(x) + ", +" + format(c, 0);
       },
       5(x) {
         let a = player.ranks.rank.div(10);
@@ -436,15 +422,8 @@ const RANKS = {
         if (player.ranks.rank.gte(1050)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.5") ? "<span class='hard'> (hardcapped)</span>" : "");
         else return format(x.mul(100)) + "% cheaper" + (x.gte("0.05") ? "<span class='soft'> (softcapped)</span>" : "");
       },
-      14(x) {
-        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      16(x) {
-        if (x.lt(0)) x = E(0);
-        return format(x) + "x";
-      },
-      23(x) {
-        return format(x) + "x";
+      25(x) {
+        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       40(x) {
         return "+" + format(x.mul(100)) + "%";

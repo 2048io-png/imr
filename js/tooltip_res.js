@@ -19,7 +19,7 @@ const TOOLTIP_RES = {
     full: "Rage Power",
     desc() {
       let h = `<i>
-            Require over <b>${formatMass(1e15)}</b> of normal mass to reset previous features for gain Rage Powers.
+            Require over <b>${formatMass(1e27)}</b> of normal mass to reset previous features to gain Rage Points.
             </i>`;
 
       return h;
