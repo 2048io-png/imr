@@ -350,7 +350,7 @@ const FORMS = {
       let gain = player.mass.div(1e27).root(3);
       if (player.ranks.rank.gte(30)) gain = gain.mul(2);
       if (player.ranks.rank.gte(45)) gain = gain.mul(RANKS.effect.rank[45]());
-      if (player.ranks.rank.gte(80)) gain = player.bh.dm.gt(0) ? gain.mul(RANKS.effect.rank[80]()) : gain.add(0);
+      if (player.ranks.rank.gte(80)) gain = gain.mul(RANKS.effect.rank[80]());
       if (player.ranks.tier.gte(6)) gain = gain.mul(RANKS.effect.tier[6]());
       if (player.mainUpg.bh.includes(6)) gain = gain.mul(tmp.upgs.main ? tmp.upgs.main[2][6].effect : E(1));
       if (hasTree("rp1")) gain = gain.mul(tmp.supernova.tree_eff.rp1);
@@ -392,8 +392,8 @@ const FORMS = {
       if (tmp.c16active) return player.dark.matters.amt[0];
 
       let gain = player.rp.points.div(1e20);
+      if (player.ranks.rank.gte(55)) gain = gain.mul(2);
       if (player.ranks.rank.gte(100)) gain = gain.mul(RANKS.effect.rank[100]());
-      if (player.ranks.rank.gte(128)) gain = gain.mul(RANKS.effect.rank[128]());
       if (CHALS.inChal(7) || CHALS.inChal(10)) gain = player.mass.div(1e180);
       if (gain.lt(1)) return E(0);
       gain = gain.root(4);
@@ -428,6 +428,8 @@ const FORMS = {
     },
     massGain() {
       let x = tmp.bh.f.mul(this.condenser.effect().eff);
+      if (player.ranks.rank.gte(128)) x = x.mul(RANKS.effect.rank[128]());
+      if (player.ranks.rank.gte(600)) x = x.pow(1.1);
       if (player.mainUpg.rp.includes(11)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[1][11].effect : E(1));
       if (player.mainUpg.bh.includes(14)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][14].effect : E(1));
       if (player.ranks.rank.gte(1900)) x = x.pow(1.1);

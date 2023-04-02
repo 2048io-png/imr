@@ -87,43 +87,46 @@ const RANKS = {
     rank: {
       1: "unlock mass upgrade 1, you get 1 free mass upgrade 1 per 10 bought.",
       2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20% and you get 1 free mass upgrade 2 per 10 bought.",
-      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, mass upgrade 1 boosts itself, and you get 1 free mass upgrade 3 per 10 bought of mass upgrade 1 & 2",
+      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, mass upgrade 1 boosts itself, and you get 1 free mass upgrade 3 per 10 bought of mass upgrade 1 & 2.",
       4: "reduce mass upgrade 3 scaling by 20%.",
       5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
       6: "make mass gain is boosted by (x+1)^2, where x is rank.",
       8: "mass upgrade 1 is (x/10)% cheaper, where x is rank (Softcapt is 5%).",
       13: "triple mass gain.",
-      15: "Rank 5 reward effect if better. [x/10 -> x*10]",
-      17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
-      22: "Rank 5 reward effect is even better [x*10 -> x*100]",
+      15: "Rank 5 reward effect if better. [x/10 -> x*10].",
+      17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3].",
+      22: "Rank 5 reward effect is even better [x*10 -> x*100].",
       25: "rage powers boost mass gain logarithmically.",
       30: "double rage points gain.",
       34: "mass upgrade 3 softcaps 1.2x later.",
       40: "adds tickspeed power based on ranks.",
       45: "ranks boosts Rage Powers gain.",
-      50: "10x mass gain",
-      60: "25x mass gain",
-      70: "10x Rage Power gain",
-      80: "Dark Matter boost Rage Power gain slightly (x)log(PI), where x is Dark Matter.",
+      50: "10x mass gain.",
+      55: "2x Dark Matter gain.",
+      60: "25x mass gain.",
+      65: "mass boosts Dark Matter gain in a logarithmic way.",
+      70: "10x Rage Power gain.",
+      80: "Dark Matter boost Rage Power gain in a logarithmic way.",
       90: "rank 40 reward is stronger.",
       100: "tickspeeds boost Dark Matter gain x/1000, where x is tickspeeds.",
-      105: "raise rank 8 effect softcap to 15%",
+      105: "raise rank 8 effect softcap to 15%.",
       110: "tick speed reduces mass upgrade 2 scaling slightly.",
       115: "50x mass gain.",
-      120: "lessen rank 14 softcap.",
-      128: "Black Hole is massively boosted by Rage Power.",
+      128: "Black Hole mass is boosted by Rage Power.",
+      150: "double Atom gain.",
       180: "mass gain is raised by 1.025.",
       220: "rank 40 reward is overpowered.",
       300: "rank multiplies quark gain.",
       380: "rank multiplies mass gain.",
       400: "raise rank 8 softcap to 20%",
+      600: "mass gain is raised by ^1.1",
       800: "make mass gain softcap 0.25% weaker based on rank.",
-      900: "mass is multiplied by the amount of elements bought",
-      1000: "make tier 50 reward ^2",
-      1100: "raise rank 8 softcap to 25%",
+      900: "mass is multiplied by the amount of elements bought.",
+      1000: "make tier 50 reward ^2.",
+      1100: "raise rank 8 softcap to 25%.",
       1200: "gain 1 free blackhole condenser per 100 of muscler, booster, stronger and tickspeed.",
       1250: "tier 70 effect affects collapsed stars.",
-      1300: "Relativistic Particles affects mass gain",
+      1300: "Relativistic Particles affects mass gain.",
       1400: "Neutron Star boosts relativistic particles gain.",
       1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
       1900: "Black Hole mass is raised to ^1.1",
@@ -131,20 +134,19 @@ const RANKS = {
     },
     tier: {
       1: "reduce rank reqirements by 20%.",
-      2: "raise mass gain by 1.15",
+      2: "raise mass gain by 1.15.",
       3: "reduce all mass upgrade scalings by 20%.",
       4: "adds +5% tickspeed power for every tier you have, softcaps at +40%.",
-      5: "Rank 5 reward effect is better [x*100 -> x*1e4]",
+      5: "Rank 5 reward effect is better [x*100 -> x*1e4].",
       6: "make rage powers boosted by tiers.",
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
-      9: "raise rank 8 effect softcap to 10%",
-      10: "Rank 16 effect is better [(x/1e15)log(PI) -> (x/1e15)log(2)]",
+      9: "raise rank 8 effect softcap to 10%.",
       11: "Lessen rank 14's softcap.",
       12: "Tier 4's reward is twice as effective and the softcap is removed.",
-      13: "rank 5 effect is overpowered [x*1e4 -> x*1e8]",
+      13: "rank 5 effect is overpowered [x*1e4 -> x*1e8].",
       30: "stronger effect's softcap is 10% weaker.",
-      40: "raise rank 8 effect softcap to 30%",
+      40: "raise rank 8 effect softcap to 30%.",
       50: "quarks gain is boosted by the amount of elements bought.",
       55: "make rank 380's effect stronger based on tier.",
       60: "colapsed stars boost atom gain.",
@@ -240,9 +242,13 @@ const RANKS = {
         let ret = player.ranks.rank.add(1).pow(1.5);
         return ret;
       },
+      65() {
+        let ret = player.mass.gt(0) ? player.mass.log(1e20).softcap(10, 0.5, 0) : E(1);
+        return ret;
+      },
       80() {
-        let ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(10, 0.1, 0) : E(0);
-        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(500, 0.1, 0) : E(0);
+        let ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(10, 0.1, 0) : E(1);
+        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(500, 0.1, 0) : E(1);
         return ret;
       },
       100() {
@@ -254,7 +260,7 @@ const RANKS = {
         return ret;
       },
       128() {
-        let ret = player.rp.points.div(1e100).softcap(1e100, 0.01, 0);
+        let ret = player.rp.points.div(1e100).softcap(1e60, 0.01, 0);
         return ret;
       },
       300() {
@@ -426,6 +432,9 @@ const RANKS = {
       45(x) {
         return format(x) + "x";
       },
+      65(x) {
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
       80(x) {
         return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
       },
@@ -436,7 +445,7 @@ const RANKS = {
         return format(x) + "% weaker" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       128(x) {
-        return format(x) + "x" + (x.gte("1e100") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x) + "x" + (x.gte("1e60") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       300(x) {
         return format(x) + "x";

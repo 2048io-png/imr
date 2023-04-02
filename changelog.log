@@ -1,3 +1,18 @@
+0.0.15-A 4/2/2023 IMR: Extended update
+https://officialzygorg.github.io/incremental-mass-rewritten/
+-Added:
+More ranks because why not?
+debug.js is back untill its out of alpha (Wasnt the cause of the bug in 0.0.14-A)
+-Modified:
+Rage Power gain start is at 1e20 g of mass instead of 1e20 g
+Atom gain start is at 1e175 g of Black Hole mass instead of 1e156 g
+Challenge 8 starting goal to 1.989e35 from 1.989e38
+Challenge 7 increase cost per completion is halved
+-Removed:
+Some ranks and tiers that literally did nothing because they affected previous removed ranks
+
+Any inflations, bugs or NaNs, pin me on discord or open an issue in https://github.com/OfficialZygorg/incremental-mass-rewritten/issues
+
 0.0.142-A Fix 4/1/2023 IMR: Extended update (Not April fools)
 Removed rank 125 because it used rank 14 and rank 14 was removed
 

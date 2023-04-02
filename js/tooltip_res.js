@@ -59,7 +59,7 @@ const TOOLTIP_RES = {
     full: "Atom",
     desc() {
       let h = `<i>
-            Require over <b>${formatMass(uni(1e100))}</b> of black hole to reset all previous features for gain Atoms & Quarks.
+            Require over <b>${formatMass(uni(1e119))}</b> of black hole to reset all previous features for gain Atoms & Quarks.
             </i>`;
 
       return h;
