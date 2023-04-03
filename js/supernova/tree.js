@@ -124,14 +124,14 @@ const TREE_UPGS = {
         return player.mass.gte("1e3500000");
       },
       reqDesc: `1e3,500,000 g Mass`,
-      desc: `Neutron star boosts quark gain (Softcaps at 1e20)`,
-      cost: E(1e3),
+      desc: `Neutron star boosts quark gain.`,
+      cost: E(5e4),
       effect() {
         let x = player.supernova.stars.gt(0) ? player.supernova.stars.softcap(1e20, 0.5, 0) : E(1);
         return x;
       },
       effDesc(x) {
-        return format(E(1) + x) + "x" + (x.gte("1e20") ? " <span class='soft'>(softcapped)</span>" : "");
+        return format(x) + "x" + (x.gte("1e20") ? " <span class='soft'>(softcapped)</span>" : "");
       },
     },
     qa2: {
@@ -140,8 +140,8 @@ const TREE_UPGS = {
         return player.rp.points.gte("1e2500000");
       },
       reqDesc: `1e2,500,000 Rage Points`,
-      desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate (Softcaps at 5)`,
-      cost: E(1e4),
+      desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate.`,
+      cost: E(1e5),
       effect() {
         let x = player.md.particles.gt(0) ? player.md.particles.log(3.14).softcap(5, 0.1, 0) : E(1);
         return x;
@@ -157,7 +157,7 @@ const TREE_UPGS = {
       },
       reqDesc: `1e9,000,000 g Mass`,
       desc: `Supernovas massively boost quark gain.`,
-      cost: E(1e12),
+      cost: E(1e15),
       effect() {
         let x = player.supernova.times.gt(0) ? player.supernova.times.pow(5e3) : E(1);
         return x;
@@ -175,13 +175,13 @@ const TREE_UPGS = {
       desc: `Supernovas boost mass gain at a logarithmical rate.`,
       cost: E(1e18),
       effect() {
-        let x = player.supernova.times.gt(0) ? player.supernova.times.log(2).softcap(1.5, 0.1, 0) : E(1);
+        let x = player.supernova.times.gt(0) ? E(1).add(player.supernova.times.log(1e2).softcap(1.25, 0.001, 0)) : E(1);
         if (x.gt(2)) x = E(2);
         return x;
       },
       effDesc(x) {
-        if (x.gte(2)) return "^" + format(x) + (x.gte("2") ? " <span class='hard'>(hardcapped)</span>" : "");
-        return "^" + format(x) + (x.gte("1.5") ? " <span class='soft'>(softcapped)</span>" : "");
+        if (x.gte(2)) return "^" + format(x) + (x.gte("1.25") ? " <span class='hard'>(hardcapped)</span>" : "");
+        return "^" + format(x) + (x.gte("1.1") ? " <span class='soft'>(softcapped)</span>" : "");
       },
     },
     sn1: {

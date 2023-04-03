@@ -63,6 +63,8 @@ const SUPERNOVA = {
     if (hasTree("bs3")) x = x.mul(tmp.supernova.tree_eff.bs3);
     if (hasTree("sn5")) x = x.mul(tmp.supernova.tree_eff.sn5);
 
+    if (player.ranks.tier.gte(75)) x = x.mul(RANKS.effect.tier[75]());
+
     let qs = Decimal.pow(1.2, player.qu.times.softcap(1e17, 0.1, 0));
     if (!hasElement(140) || tmp.c16active) qs = qs.min(1e10);
 

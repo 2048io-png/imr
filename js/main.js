@@ -41,6 +41,8 @@ const FORMS = {
       if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
       if (player.ranks.rank.gte(22)) a = player.ranks.rank.mul(100);
       if (player.ranks.tier.gte(5)) a = player.ranks.rank.mul(1e4);
+      if (player.ranks.tier.gte(13)) a = player.ranks.rank.mul(1e8);
+      if (player.ranks.rank.gte(1450)) a = player.ranks.rank.mul(1e16);
       x = x.add(a);
     }
     if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
@@ -150,7 +152,7 @@ const FORMS = {
     let s = E("1.5e1000056");
     if (hasTree("m2")) s = s.pow(1.5);
     if (hasTree("m2")) s = s.pow(tmp.supernova.tree_eff.m3);
-    if (player.ranks.tetr.gte(8)) s = s.pow(1.5);
+    if (player.ranks.tetr.gte(8)) s = s.pow(!player.ranks.tetr.gte(60) ? 1.5 : 2);
 
     s = s.pow(tmp.bosons.effect.neg_w[0]);
     if (hasPrestige(0, 1)) s = s.pow(10);
@@ -258,7 +260,7 @@ const FORMS = {
       t = t.mul(tmp.prim.eff[1][1]);
       t = t.mul(tmp.radiation.bs.eff[1]);
       let bonus = E(0);
-      if (player.ranks.tier.gte(7)) bonus = bonus.add(RANKS.effect.tier[7]());
+      if (player.ranks.tier.gte(7)) bonus = bonus.add(!player.ranks.tier.gte(200) ? RANKS.effect.tier[7]() : E(0));
       if (player.atom.unl) bonus = bonus.add(tmp.atom.atomicEff);
       bonus = bonus.mul(getEnRewardEff(4));
       let step = E(1.5);
@@ -286,6 +288,7 @@ const FORMS = {
       if (hasBeyondRank(2, 4)) step = step.pow(tmp.accelEffect.eff);
 
       let eff = step.pow(t.add(bonus).mul(hasElement(80) ? 25 : 1));
+      if (player.ranks.tier.gte(200)) eff = eff.pow(RANKS.effect.tier[7]());
 
       if (!hasElement(199) || CHALS.inChal(15)) {
         if (hasElement(18)) eff = eff.pow(tmp.elements.effect[18]);

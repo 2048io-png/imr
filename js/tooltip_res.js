@@ -118,7 +118,7 @@ const TOOLTIP_RES = {
     full: "Quantum Foam",
     desc() {
       let h = `<i>
-            ${"Require over <b>" + formatMass(mlt(1e4)) + "</b> of normal mass to " + (QCs.active() ? "complete Quantum Challenge" : "go Quantum")}.
+            ${"Require over <b>" + formatMass(mlt(4e5)) + "</b> of normal mass to " + (QCs.active() ? "complete Quantum Challenge" : "go Quantum")}.
             </i>`;
 
       return h;

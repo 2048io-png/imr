@@ -1,3 +1,20 @@
+0.0.16-A 4/3/2023 Extended update
+https://officialzygorg.github.io/incremental-mass-rewritten/
+-Fixed:
+Rank 80 effect
+-Added:
+More ranks, tiers, tetrs
+-Modified:
+qa1 cost to 50k neutron stars
+qa2 cost to 100k neutron stars
+qa3 cost to 1e15 neutron stars
+qa4 cost to 1e18 neutron stars
+Quantum Foam gain start to e4e14 g of mass from e1e13 g of mass
+
+-Mod engame: Tetr 60 (About 1 Quantum foam or the start of quantum)
+
+Any inflations, bugs or NaNs, pin me on discord or open an issue in https://github.com/OfficialZygorg/incremental-mass-rewritten/issues
+
 0.0.15-A 4/2/2023 IMR: Extended update
 https://officialzygorg.github.io/incremental-mass-rewritten/
 -Added:

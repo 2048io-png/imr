@@ -123,14 +123,16 @@ const RANKS = {
       800: "make mass gain softcap 0.25% weaker based on rank.",
       900: "mass is multiplied by the amount of elements bought.",
       1000: "make tier 50 reward ^2.",
-      1100: "raise rank 8 softcap to 25%.",
+      1100: "raise rank 8 softcap to 30%.",
       1200: "gain 1 free blackhole condenser per 100 of muscler, booster, stronger and tickspeed.",
       1250: "tier 70 effect affects collapsed stars.",
       1300: "Relativistic Particles affects mass gain.",
       1400: "Neutron Star boosts relativistic particles gain.",
+      1450: "rank 5 effect is more effective [x*1e8 -> x*1e16]",
+      1475: "rank 8 effect hardcap is now 60%",
       1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
       1900: "Black Hole mass is raised to ^1.1",
-      2000: "Tier 2 effect is better. ^1.15 => ^1.2",
+      2000: "Tier 2 effect is better. ^1.15 -> ^1.2",
     },
     tier: {
       1: "reduce rank reqirements by 20%.",
@@ -151,10 +153,11 @@ const RANKS = {
       55: "make rank 380's effect stronger based on tier.",
       60: "colapsed stars boost atom gain.",
       70: "mass affects slighly mass dilation gain.",
-      80: "Rank requirements are 30% weaker",
+      75: "tiers boost neutron star gain in a logarithmic way.",
+      80: "Rank requirements are 30% weaker.",
       100: "Super Tetr scale 5 later.",
       150: "Dilated Mass scales Super later at logarithimical rate.",
-      // 200: "Instead of adding Tickspeed, Tier 7 now affects tickspeed effect based on supernova amount.",
+      200: "Instead of adding Tickspeed, Tier 7 now raises tickspeed effect based on supernova amount in a logarithmic way.",
       // 300: "Disable Rank 50 and 60 effects, but Mass Softcap^2 starts ^2 later.",
     },
     tetr: {
@@ -167,7 +170,8 @@ const RANKS = {
       7: "tier 70 effect hardcap is 10x less effective.",
       8: "Mass gain softcap^2 starts ^1.5 later.",
       9: "Tier requirements are 30% weaker.",
-      // 10: "Rank 1100 effect is better. 25% => 35%"
+      10: "Rank 25 softcap effect is 100x weaker",
+      60: "Tetr 8 effect is now ^2",
     },
     pent: {
       1: "reduce tetr requirements by 15%, and Meta-Rank starts 1.1x later.",
@@ -224,12 +228,14 @@ const RANKS = {
         if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(0.15, 0.1, 0);
         if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(0.2, 0.1, 0);
         if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(0.25, 0.1, 0);
-        if (player.ranks.rank.gte(1050)) ret = player.ranks.rank.div(10).softcap(0.3, 0.1, 0);
-        if (ret.gt(0.5)) ret = E(0.5);
+        if (player.ranks.rank.gte(1100)) ret = player.ranks.rank.div(10).softcap(0.3, 0.1, 0);
+        if (player.ranks.rank.gte(1450)) ret = player.ranks.rank.div(10).softcap(0.4, 0.1, 0);
+        if (ret.gt(0.6)) ret = E(0.6);
         return ret;
       },
       25() {
         let ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.log(3.14)).softcap(100, 0.5, 0) : E(1);
+        if (player.ranks.tetr.gte(10)) ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.log(3.14)).softcap(1e4, 0.5, 0) : E(1);
         return ret;
       },
       40() {
@@ -247,8 +253,8 @@ const RANKS = {
         return ret;
       },
       80() {
-        let ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(10, 0.1, 0) : E(1);
-        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? player.bh.dm.log(3.14).softcap(500, 0.1, 0) : E(1);
+        let ret = player.bh.dm.gt(0) ? E(1).add(player.bh.dm.log(3.14).softcap(10, 0.1, 0)) : E(1);
+        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? E(1).add(player.bh.dm.log(3.14).softcap(500, 0.1, 0)) : E(1);
         return ret;
       },
       100() {
@@ -260,7 +266,7 @@ const RANKS = {
         return ret;
       },
       128() {
-        let ret = player.rp.points.div(1e100).softcap(1e60, 0.01, 0);
+        let ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.div(1e100).floor().softcap(1e60, 0.01, 0)) : E(1);
         return ret;
       },
       300() {
@@ -324,6 +330,7 @@ const RANKS = {
           .div(100)
           .floor();
         let ret = a.add(b).add(c);
+        if (player.ranks.tier.gte(200)) ret = E(1).add(player.supernova.times.log(3.14).div(10));
         return ret;
       },
       8() {
@@ -345,6 +352,10 @@ const RANKS = {
       },
       70() {
         let ret = player.mass.log(1e308).softcap(player.ranks.tetr.gte(7) ? 1e4 : 1000, 0, 0);
+        return ret;
+      },
+      75() {
+        let ret = player.ranks.tier.log(3.14).softcap(10, 0.5, 0);
         return ret;
       },
       150() {
@@ -414,12 +425,14 @@ const RANKS = {
         if (player.ranks.rank.gte(22)) a = player.ranks.rank.mul(100);
         if (player.ranks.tier.gte(5)) a = player.ranks.rank.mul(1e4);
         if (player.ranks.tier.gte(13)) a = player.ranks.rank.mul(1e8);
+        if (player.ranks.rank.gte(1450)) a = player.ranks.rank.mul(1e16);
         return "+" + format(x) + ", +" + format(a);
       },
       6(x) {
         return format(x) + "x";
       },
       8(x) {
+        if (player.ranks.rank.gte(1475)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.6") ? "<span class='hard'> (hardcapped)</span>" : "");
         if (player.ranks.rank.gte(1050)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.5") ? "<span class='hard'> (hardcapped)</span>" : "");
         else return format(x.mul(100)) + "% cheaper" + (x.gte("0.05") ? "<span class='soft'> (softcapped)</span>" : "");
       },
@@ -477,7 +490,8 @@ const RANKS = {
         return format(x) + "x";
       },
       7(x) {
-        return "+" + format(x);
+        if (player.ranks.tier.gte(200)) return "^" + format(x);
+        else return "+" + format(x);
       },
       8(x) {
         return "^" + format(x);
@@ -494,6 +508,9 @@ const RANKS = {
       70(x) {
         if (player.ranks.tetr.gte(7)) return format(x) + "x" + (x.gte("1e4") ? "<span class='hard'> (hardcapped)</span>" : "");
         if (player.ranks.tier.gte(70)) return format(x) + "x" + (x.gte("1000") ? "<span class='hard'> (hardcapped)</span>" : "");
+      },
+      75(x) {
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       150(x) {
         return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
