@@ -9,6 +9,7 @@ const QUANTUM = {
     if (hasTree("qf1")) x = x.mul(treeEff("qf1"));
     if (hasTree("qf2")) x = x.mul(treeEff("qf2"));
     if (hasTree("qf3")) x = x.mul(treeEff("qf3"));
+    if (player.ranks.tetr.gte(75)) x = x.mul(RANKS.effect.tetr[75]());
     if (hasPrestige(0, 2)) x = x.mul(4);
     return x.floor();
   },
@@ -115,6 +116,7 @@ const QUANTUM = {
       pow = pow.mul(tmp.dark.abEff.csp || 1);
 
       let x = pow.pow(player.qu.cosmic_str);
+      if (tmp.en.rewards[8].gte(1)) x = x.mul(tmp.en.rewards_eff[8]);
       return { pow: pow, eff: x };
     },
   },

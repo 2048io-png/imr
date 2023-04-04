@@ -48,8 +48,8 @@ const FORMS = {
     if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
     if (player.ranks.rank.gte(13)) x = x.mul(3);
     if (player.ranks.rank.gte(25)) x = x.mul(RANKS.effect.rank[25]());
-    if (player.ranks.rank.gte(50)) x = x.mul(10);
-    if (player.ranks.rank.gte(60)) x = x.mul(25);
+    if (player.ranks.rank.gte(50)) x = x.mul(!player.ranks.tier.gte(300) ? 10 : 1);
+    if (player.ranks.rank.gte(60)) x = x.mul(!player.ranks.tier.gte(300) ? 25 : 1);
     if (player.ranks.rank.gte(115)) x = x.mul(50);
     if (player.mainUpg.bh.includes(10)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][10].effect : E(1));
     if (player.ranks.rank.gte(380)) x = x.mul(RANKS.effect.rank[380]());
@@ -153,6 +153,7 @@ const FORMS = {
     if (hasTree("m2")) s = s.pow(1.5);
     if (hasTree("m2")) s = s.pow(tmp.supernova.tree_eff.m3);
     if (player.ranks.tetr.gte(8)) s = s.pow(!player.ranks.tetr.gte(60) ? 1.5 : 2);
+    if (player.ranks.tier.gte(300)) s = s.pow(2);
 
     s = s.pow(tmp.bosons.effect.neg_w[0]);
     if (hasPrestige(0, 1)) s = s.pow(10);
@@ -169,6 +170,7 @@ const FORMS = {
     let s = player.qu.rip.active || tmp.c16active || player.dark.run.active ? uni("ee7") : uni("ee8");
     if (hasTree("m3")) s = s.pow(tmp.supernova.tree_eff.m3);
     s = s.pow(tmp.radiation.bs.eff[2]);
+    if (player.ranks.pent.gte(16)) s = s.pow(RANKS.effect.pent[16]());
     if (hasPrestige(0, 1)) s = s.pow(10);
     return s.max(1);
   },

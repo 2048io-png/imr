@@ -1,3 +1,20 @@
+0.0.17-A 4/3/2023 Extended update
+https://officialzygorg.github.io/incremental-mass-rewritten/
+-Added:
+More tiers,tetrs,pents
+1 Entropy upgrade
+-Removed:
+Some ranks
+-Fixed:
+NaNed when you respec primordium theorems
+In entropy, if you have any enthalpy and 0 hawking radiation, then entropy gain would NaN permanently (now fixed)
+-Modified:
+Updated README.md
+
+-Mod endgame: Tetr 75, Pent 16, start of Quantum Challenges
+
+Any inflations, bugs or NaNs, pin me on discord or open an issue in https://github.com/OfficialZygorg/incremental-mass-rewritten/issues
+
 0.0.16-A 4/3/2023 Extended update
 https://officialzygorg.github.io/incremental-mass-rewritten/
 -Fixed:
