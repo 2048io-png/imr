@@ -299,6 +299,7 @@ const UPGS = {
         cost: E(1),
         effect() {
           let ret = E(player.massUpg[2] || 0);
+          if (player.ranks.tier.gte(250)) ret = E(player.massUpg[2] || 0).mul(2);
           return ret;
         },
         effDesc(x = this.effect()) {
@@ -310,6 +311,7 @@ const UPGS = {
         cost: E(10),
         effect() {
           let ret = E(player.massUpg[3] || 0);
+          if (player.ranks.pent.gte(6)) ret = E(player.massUpg[3] || 0).mul(2);
           return ret;
         },
         effDesc(x = this.effect()) {
@@ -409,6 +411,7 @@ const UPGS = {
         cost: E(1e180),
         effect() {
           let ret = E(3).pow(player.ranks.rank);
+          if (player.ranks.pent.gte(3)) ret = E(3).pow(player.ranks.rank).pow(2);
           return ret;
         },
         effDesc(x = this.effect()) {

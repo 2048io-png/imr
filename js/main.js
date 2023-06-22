@@ -48,8 +48,8 @@ const FORMS = {
   massGain() {
     let x = E(1);
     x = x.add(tmp.upgs.mass[1] ? tmp.upgs.mass[1].eff.eff : 1);
-    if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
     if (player.ranks.rank.gte(7)) x = x.add(RANKS.effect.rank[7]());
+    if (player.ranks.rank.gte(6)) x = x.mul(RANKS.effect.rank[6]());
     if (player.ranks.rank.gte(13)) x = x.mul(3);
     if (player.mainUpg.bh.includes(10)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[2][10].effect : E(1));
     if (player.ranks.rank.gte(380)) x = x.mul(RANKS.effect.rank[380]());
@@ -173,6 +173,7 @@ const FORMS = {
     if (CHALS.inChal(7) || CHALS.inChal(10)) p = p.mul(6);
     if (player.mainUpg.bh.includes(11)) p = p.mul(0.9);
     if (player.ranks.rank.gte(800)) p = p.mul(RANKS.effect.rank[800]());
+    if (player.ranks.rank.gte(6000)) p = p.mul(RANKS.effect.rank[6000]());
     return E(1).div(p.add(1));
   },
   massSoftGain2() {
@@ -197,13 +198,13 @@ const FORMS = {
     let s = player.qu.rip.active || tmp.c16active || inDarkRun() ? uni("ee7") : uni("ee8");
     if (hasTree("m3")) s = s.pow(tmp.supernova.tree_eff.m3);
     s = s.pow(tmp.radiation.bs.eff[2]);
-    if (player.ranks.pent.gte(16)) s = s.pow(RANKS.effect.pent[16]());
     if (hasPrestige(0, 1)) s = s.pow(10);
     return s.max(1);
   },
   massSoftPower3() {
     let p = E(player.qu.rip.active || tmp.c16active || inDarkRun() ? 0.1 : 0.2);
     if (hasElement(77)) p = p.pow(player.qu.rip.active || tmp.c16active || inDarkRun() ? 0.95 : 0.825);
+    if (player.ranks.pent.gte(16)) p = p.pow(RANKS.effect.pent[16]());
     return p;
   },
   massSoftGain4() {
@@ -292,6 +293,7 @@ const FORMS = {
         eff_bottom = E(1);
 
       if (player.ranks.rank.gte(25)) bonus = bonus.add(RANKS.effect.rank[25]());
+      if (player.ranks.tier.gte(7)) bonus = !player.ranks.tier.gte(200) ? bonus.add(RANKS.effect.tier[7]()) : bonus.add(0);
 
       if (CHALS.inChal(17)) return { step, eff, bonus, ss, eff_bottom };
 
@@ -300,14 +302,13 @@ const FORMS = {
       t = t.mul(tmp.radiation.bs.eff[1]);
       if (player.atom.unl) bonus = bonus.add(tmp.atom.atomicEff);
       bonus = bonus.mul(getEnRewardEff(4));
-      if (player.ranks.tier.gte(7)) bonus = !player.ranks.tier.gte(200) ? bonus.add(RANKS.effect.tier[7]()) : E(0);
 
       step = E(1.5);
       step = step.add(tmp.chal.eff[6]);
       step = step.add(tmp.chal.eff[2]);
       step = step.add(tmp.atom.particles[0].powerEffect.eff2);
       if (player.ranks.rank.gte(40)) step = step.add(RANKS.effect.rank[40]());
-      if (player.ranks.tier.gte(200)) step = step.pow(RANKS.effect.tier[200]());
+      if (player.ranks.tier.gte(200)) step = step.pow(RANKS.effect.tier[7]());
       step = step.mul(tmp.bosons.effect.z_boson[0]);
       step = tmp.md.bd3 ? step.pow(tmp.md.mass_eff) : step.mul(tmp.md.mass_eff);
       if (hasElement(191)) step = step.pow(elemEffect(191));

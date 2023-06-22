@@ -123,12 +123,15 @@ const RANKS = {
       800: "make mass gain softcap 0.25% weaker based on rank, hardcaps at 25%.",
       1000: "mass gain is raised by ^1.1",
       1250: "mass gain is multiplied by the amount of elements bought.",
-      1300: "last star is multiplied by (x)log(3.14), where x is the amount of elements bought (Hardcaps at 1.25x).",
+      1300: "last star is multiplied by the amount of elements bought.",
       1500: "Add (x)log(3.14) to Quark gain, where x is ranks.",
       1750: "rank 8 hardcap is now 30%",
       2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",
       2500: "rank 8 hardcap is doubled to 60%",
       3000: "last star is multiplied by Mass Dilation 4th upgrade.",
+      6000: "mass softcap 1 is x later, where x is ranks.",
+      12000: "Strontium-38 is 2x more powerfull.",
+      24000: "Samarium-62 scaling starts 6 later every supernova",
     },
     tier: {
       1: "reduce rank requirements by 20%.",
@@ -152,6 +155,9 @@ const RANKS = {
       100: "Super Tetr scales 5 later.",
       150: "dilated mass scales Super later at a logarithmical rate.",
       200: "Instead of adding Tickspeed, Tier 7 now raises tickspeed effect based on supernova amount in a logarithmic way.",
+      250: "rage power 1st upgrade is 2x more powerfull.",
+      500: "Aluminium-13 is 2x more powerfull.",
+      1000: "Tantalum-73 is 2x more powefull.",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -164,14 +170,17 @@ const RANKS = {
       8: "Mass gain softcap^2 starts ^1.5 later.",
       9: "Tier requierements are 30% weaker.",
       10: "rank 25 effect softcap is now 2000.",
+      15: "rank 25 multiplies itself and the softcap is removed.",
       60: "Tetr 8 effect is now ^2",
       75: "Supernovas boost Quantum Foam gain in a logarithmic way.",
     },
     pent: {
       1: "reduce tetr requirements by 15%, and Meta-Rank starts 1.1x later.",
       2: "tetr boosts all radiations gain.",
+      3: "rage power 13th upgrade is ^2",
       4: "Meta-Tickspeeds start later based on Supernovas.",
       5: "Meta-Ranks start later based on Pent.",
+      6: "rage power 2nd upgrade is 2x more powerfull.",
       8: "Mass gain softcap^4 starts later based on Pent.",
       15: "remove 3rd softcap of Stronger's effect.",
       16: "Mass gain softcap^3 starts ^(x)log(3.14) later, where x is Quantum Foam.",
@@ -351,7 +360,22 @@ const RANKS = {
                     .floor()
                 )
             )
-            .softcap(200, 0.1, 0);
+            .softcap(2000, 0.1, 0);
+        if (player.ranks.tetr.gte(15))
+          ret = E(player.massUpg[1] || 0)
+            .div(100)
+            .floor()
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(100)
+                .floor()
+                .add(
+                  E(player.massUpg[3] || 0)
+                    .div(100)
+                    .floor()
+                )
+            )
+            .pow(2);
         return ret;
       },
       32() {
@@ -415,11 +439,11 @@ const RANKS = {
         return ret;
       },
       1250() {
-        let ret = E(player.atom.elements.length + 1);
+        let ret = player.atom.elements.length > 0 ? E(player.atom.elements.length) : E(1);
         return ret;
       },
       1300() {
-        let ret = player.atom.elements.length > 0 ? E(1).add(E(player.atom.elements.length).log(1e100).softcap(1.05, 0, 0)) : E(1);
+        let ret = player.atom.elements.length > 0 ? E(player.atom.elements.length) : E(1);
         return ret;
       },
       1500() {
@@ -441,6 +465,10 @@ const RANKS = {
           )
           .softcap(200, 0.1, 0)
           .floor();
+        return ret;
+      },
+      6000() {
+        let ret = player.ranks.rank;
         return ret;
       },
     },
@@ -617,13 +645,16 @@ const RANKS = {
         return format(x, 0) + "x";
       },
       1300(x) {
-        return format(x) + "x" + (x.gte("1.05") ? "<span class='hard'> (hardcapped)</span>" : "");
+        return format(x, 0) + "x";
       },
       1500(x) {
         return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       2000(x) {
         return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      6000(x) {
+        return format(x, 0) + "x";
       },
     },
     tier: {
@@ -634,7 +665,7 @@ const RANKS = {
         return format(x) + "x";
       },
       7(x) {
-        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+        return !player.ranks.tier.gte(200) ? "+" + format(x, 0) : "^" + format(x) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       8(x) {
         return "^" + format(x);
@@ -650,9 +681,6 @@ const RANKS = {
       },
       150(x) {
         return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      200(x) {
-        return format(x) + "x";
       },
     },
     tetr: {
