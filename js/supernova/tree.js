@@ -172,9 +172,9 @@ const TREE_UPGS = {
     qa4: {
       branch: ["qa3"],
       req() {
-        return player.bh.dm.gte("1e2500000");
+        return player.bh.mass.gte("1e2500000");
       },
-      reqDesc: `1e2,500,000 g Dark Matter`,
+      reqDesc: `1e2,500,000 g Black Hole`,
       desc: `Supernovas boost mass gain at a logarithmical rate.`,
       cost: E(1e60),
       effect() {
