@@ -393,7 +393,7 @@ const RANKS = {
         return ret;
       },
       125() {
-        let ret = E(player.rp.points.log(1e20) || 1).softcap(10, 0.1, 0);
+        let ret = player.rp.points.gt(0) ? player.rp.points.log(1e20).softcap(10, 0.1, 0) : E(1);
         return ret;
       },
       300() {
