@@ -127,10 +127,10 @@ const TREE_UPGS = {
         return player.mass.gte("1e3500000");
       },
       reqDesc: `1e3,500,000 g Mass`,
-      desc: `Neutron star boosts quark gain.`,
+      desc: `Neutron star boosts quark gain in a logarithmic way.`,
       cost: E(5e4),
       effect() {
-        let x = player.supernova.stars.gt(0) ? player.supernova.stars.softcap(1e20, 0.5, 0) : E(1);
+        let x = player.supernova.stars.gt(0) ? E(1).add(player.supernova.stars.softcap(10000, 0.5, 0)) : E(1);
         return x;
       },
       effDesc(x) {
@@ -146,7 +146,7 @@ const TREE_UPGS = {
       desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate.`,
       cost: E(1e5),
       effect() {
-        let x = player.md.particles.gt(0) ? player.md.particles.log(3.14).softcap(5, 0.1, 0) : E(1);
+        let x = player.md.particles.gt(0) ? player.md.particles.log(1e307).softcap(5, 0.1, 0) : E(1);
         return x;
       },
       effDesc(x) {
@@ -159,10 +159,10 @@ const TREE_UPGS = {
         return player.mass.gte("1e9000000");
       },
       reqDesc: `1e9,000,000 g Mass`,
-      desc: `Supernovas massively boost quark gain.`,
+      desc: `Supernovas boost quark gain.`,
       cost: E(1e15),
       effect() {
-        let x = player.supernova.times.gt(0) ? player.supernova.times.pow(5e3) : E(1);
+        let x = player.supernova.times.gt(0) ? player.supernova.times.pow(1.1) : E(1);
         return x;
       },
       effDesc(x) {
