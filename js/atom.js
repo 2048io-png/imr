@@ -1,7 +1,7 @@
 const ATOM = {
   gain() {
     if (CHALS.inChal(12)) return E(0);
-    let x = player.bh.mass.div(player.mainUpg.br.includes(1) ? 1.5e175 ** 0.5 : 1.5e175);
+    let x = player.bh.mass.div(player.mainUpg.br.includes(1) ? 1.5e160 ** 0.5 : 1.5e160);
     if (player.ranks.rank.gte(150)) x = x.mul(2);
     if (player.ranks.rank.gte(1500)) x = x.mul(RANKS.effect.rank[1500]());
     if (x.lt(1)) return E(0);

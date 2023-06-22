@@ -63,7 +63,7 @@ const TOOLTIP_RES = {
     full: "Atom",
     desc() {
       let h = `<i>
-            Reach over <b>${formatMass(uni(1e119))}</b> of black hole to reset all previous features for gain Atoms & Quarks.
+            Reach over <b>${formatMass(uni(1e104))}</b> of black hole to reset all previous features for gain Atoms & Quarks.
             </i>`;
 
       return h;
@@ -131,7 +131,7 @@ const TOOLTIP_RES = {
     full: "Quantum Foam",
     desc() {
       let h = `<i>
-            ${"Reach over <b>" + formatMass(mlt(4e5)) + "</b> of normal mass to " + (QCs.active() ? "complete Quantum Challenge" : "go Quantum")}.
+            ${"Reach over <b>" + formatMass(mlt(1e3)) + "</b> of normal mass to " + (QCs.active() ? "complete Quantum Challenge" : "go Quantum")}.
             </i>`;
 
       return h;

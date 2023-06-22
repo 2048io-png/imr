@@ -132,6 +132,7 @@ const RANKS = {
       6000: "mass softcap 1 is x later, where x is ranks.",
       12000: "Strontium-38 is 2x more powerfull.",
       24000: "Samarium-62 scaling starts 6 later every supernova",
+      36000: "Beryllium-4 effect is ^2.",
     },
     tier: {
       1: "reduce rank requirements by 20%.",
@@ -158,6 +159,7 @@ const RANKS = {
       250: "rage power 1st upgrade is 2x more powerfull.",
       500: "Aluminium-13 is 2x more powerfull.",
       1000: "Tantalum-73 is 2x more powefull.",
+      2000: "mass softcap^3 is x later, where x is tiers.",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -508,7 +510,7 @@ const RANKS = {
                 .floor()
             )
             .softcap(2000, 0.1, 0);
-        if (player.ranks.tier.gte(200)) ret = E(1).add(player.supernova.times.log(1e307));
+        if (player.ranks.tier.gte(200)) ret = E(1).add(player.supernova.times.log(1e10));
         return ret;
       },
       8() {
@@ -529,6 +531,10 @@ const RANKS = {
       },
       150() {
         let ret = player.md.particles.gt(0) ? player.md.particles.log("1e1000").softcap(5, 0.01, 0) : E(1);
+        return ret;
+      },
+      2000() {
+        let ret = player.ranks.tier;
         return ret;
       },
     },
@@ -681,6 +687,9 @@ const RANKS = {
       },
       150(x) {
         return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      2000(x) {
+        return "^" + format(x, 0) + " later";
       },
     },
     tetr: {

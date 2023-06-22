@@ -309,6 +309,7 @@ const ELEMENTS = {
       cost: E(2.5e16),
       effect() {
         let x = player.atom ? player.atom.powers[0].max(1).log10().pow(0.8).div(50).add(1) : E(1);
+        if (player.ranks.rank.gte(36000)) x = x.pow(2);
         return overflow(x.softcap(1e45, 0.1, 0), "e60000", 0.5).min("ee6");
       },
       effDesc(x) {

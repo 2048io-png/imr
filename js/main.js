@@ -199,6 +199,7 @@ const FORMS = {
     if (hasTree("m3")) s = s.pow(tmp.supernova.tree_eff.m3);
     s = s.pow(tmp.radiation.bs.eff[2]);
     if (hasPrestige(0, 1)) s = s.pow(10);
+    if (player.ranks.tier.gte(2000)) s = s.pow(RANKS.effect.tier[2000]());
     return s.max(1);
   },
   massSoftPower3() {
@@ -308,7 +309,6 @@ const FORMS = {
       step = step.add(tmp.chal.eff[2]);
       step = step.add(tmp.atom.particles[0].powerEffect.eff2);
       if (player.ranks.rank.gte(40)) step = step.add(RANKS.effect.rank[40]());
-      if (player.ranks.tier.gte(200)) step = step.pow(RANKS.effect.tier[7]());
       step = step.mul(tmp.bosons.effect.z_boson[0]);
       step = tmp.md.bd3 ? step.pow(tmp.md.mass_eff) : step.mul(tmp.md.mass_eff);
       if (hasElement(191)) step = step.pow(elemEffect(191));
@@ -328,6 +328,8 @@ const FORMS = {
       if (hasBeyondRank(2, 4)) step = step.pow(tmp.accelEffect.eff);
 
       if (hasBeyondRank(3, 32)) step = step.pow(tmp.elements.effect[18]);
+
+      if (player.ranks.tier.gte(200)) step = step.pow(RANKS.effect.tier[7]());
 
       eff = step.pow((hasAscension(0, 1) ? t.add(1).mul(bonus.add(1)) : t.add(bonus)).mul(hasElement(80) ? 25 : 1));
 
