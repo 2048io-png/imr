@@ -419,7 +419,7 @@ const RANKS = {
         return ret;
       },
       1300() {
-        let ret = player.atom.elements > 0 ? E(1).add(E(player.atom.elements.length).log(3.14).softcap(5, 0.1, 0)) : E(1);
+        let ret = player.atom.elements.length > 0 ? E(1).add(E(player.atom.elements.length).log(3.14).softcap(2, 0.1, 0)) : E(1);
         return ret;
       },
       1500() {
@@ -617,7 +617,7 @@ const RANKS = {
         return format(x, 0) + "x";
       },
       1300(x) {
-        return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x) + "x" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       1500(x) {
         return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
