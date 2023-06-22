@@ -123,7 +123,7 @@ const RANKS = {
       800: "make mass gain softcap 0.25% weaker based on rank, hardcaps at 25%.",
       1000: "mass gain is raised by ^1.1",
       1250: "mass gain is multiplied by the amount of elements bought.",
-      1300: "last star is multiplied by (x)log(3.14), where x is the amount of elements bought (Hardcaps at 2x).",
+      1300: "last star is multiplied by (x)log(3.14), where x is the amount of elements bought (Hardcaps at 1.25x).",
       1500: "Add (x)log(3.14) to Quark gain, where x is ranks.",
       1750: "rank 8 hardcap is now 30%",
       2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",
@@ -419,7 +419,7 @@ const RANKS = {
         return ret;
       },
       1300() {
-        let ret = player.atom.elements.length > 0 ? E(1).add(E(player.atom.elements.length).log(1000).softcap(2, 0, 0)) : E(1);
+        let ret = player.atom.elements.length > 0 ? E(1).add(E(player.atom.elements.length).log(1e100).softcap(1.05, 0, 0)) : E(1);
         return ret;
       },
       1500() {
@@ -617,7 +617,7 @@ const RANKS = {
         return format(x, 0) + "x";
       },
       1300(x) {
-        return format(x) + "x" + (x.gte("2") ? "<span class='hard'> (hardcapped)</span>" : "");
+        return format(x) + "x" + (x.gte("1.05") ? "<span class='hard'> (hardcapped)</span>" : "");
       },
       1500(x) {
         return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
