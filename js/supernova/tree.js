@@ -140,13 +140,13 @@ const TREE_UPGS = {
     qa2: {
       branch: ["qa1"],
       req() {
-        return player.rp.points.gte("1e2500000");
+        return player.rp.points.gte("1e5000000");
       },
-      reqDesc: `1e2,500,000 Rage Points`,
+      reqDesc: `1e5,000,000 Rage Points`,
       desc: `Relativistic particles boost Neutron Star gain at a logarithimical rate.`,
-      cost: E(1e5),
+      cost: E(1e7),
       effect() {
-        let x = player.md.particles.gt(0) ? player.md.particles.log(1e307).softcap(5, 0.1, 0) : E(1);
+        let x = player.md.particles.gt(0) ? player.md.particles.softcap(5, 0.0001, 0) : E(1);
         return x;
       },
       effDesc(x) {
@@ -160,7 +160,7 @@ const TREE_UPGS = {
       },
       reqDesc: `1e9,000,000 g Mass`,
       desc: `Supernovas boost quark gain.`,
-      cost: E(1e15),
+      cost: E(1e30),
       effect() {
         let x = player.supernova.times.gt(0) ? player.supernova.times.pow(1.1) : E(1);
         return x;
@@ -172,11 +172,11 @@ const TREE_UPGS = {
     qa4: {
       branch: ["qa3"],
       req() {
-        return player.bh.dm.gte("1e5000000");
+        return player.bh.dm.gte("1e25000000");
       },
-      reqDesc: `1e5,000,000 g Dark Matter`,
+      reqDesc: `1e25,000,000 g Dark Matter`,
       desc: `Supernovas boost mass gain at a logarithmical rate.`,
-      cost: E(1e18),
+      cost: E(1e60),
       effect() {
         let x = player.supernova.times.gt(0) ? E(1).add(player.supernova.times.log(1e2).softcap(1.25, 0.001, 0)) : E(1);
         if (x.gt(2)) x = E(2);
