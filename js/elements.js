@@ -1,41 +1,38 @@
 function setupHTML() {
-  let sn_stabs = new Element("sn_stabs");
   let tabs = new Element("tabs");
   let stabs = new Element("stabs");
   let table = "";
   let table2 = "";
-  let table3 = "";
   for (let x = 0; x < TABS[1].length; x++) {
-    table += `<div style="width: 145px">
-			<button onclick="TABS.choose(${x})" class="btn_tab" id="tab${x}">${TABS[1][x].id}</button>
+    table += `<div>
+			<button onclick="TABS.choose(${x})" class="btn_tab" id="tab${x}">${
+      TABS[1][x].icon ? `<iconify-icon icon="${TABS[1][x].icon}" width="72" style="color: ${TABS[1][x].color || "white"}"></iconify-icon>` : ""
+    }<div>${TABS[1][x].id}</div></button>
 		</div>`;
     if (TABS[2][x]) {
       let a = `<div id="stabs${x}" class="table_center">`;
       for (let y = 0; y < TABS[2][x].length; y++) {
-        a += `<div style="width: 145px">
+        a += `<div style="width: 160px">
 					<button onclick="TABS.choose(${y}, true)" class="btn_tab" id="stab${x}_${y}">${TABS[2][x][y].id}</button>
 				</div>`;
       }
       a += `</div>`;
-      if (x == 5) table3 += a;
-      else table2 += a;
+      table2 += a;
     }
   }
   tabs.setHTML(table);
   stabs.setHTML(table2);
-  sn_stabs.setHTML(table3);
 
   let ranks_table = new Element("ranks_table");
   table = "";
   for (let x = 0; x < RANKS.names.length; x++) {
     let rn = RANKS.names[x];
-    table += `<div id="ranks_div_${x}">
+    table += `<div style="width: 300px" id="ranks_div_${x}">
 			<button id="ranks_auto_${x}" class="btn" style="width: 80px;" onclick="RANKS.autoSwitch('${rn}')">OFF</button>
-			<span id="ranks_scale_${x}""></span>${RANKS.fullNames[x]} [<span style="font-size: 13.5px;"id="ranks_amt_${x}">X</span>]<br><br>
+			<span id="ranks_scale_${x}""></span>${RANKS.fullNames[x]} <span id="ranks_amt_${x}">X</span><br><br>
 			<button onclick="RANKS.reset('${rn}')" class="btn reset" id="ranks_${x}">
-				<span style="font-size: 14px"><b>Reset your ${x > 0 ? RANKS.fullNames[x - 1] + "s" : "mass and upgrades"}, but ${
-      RANKS.fullNames[x]
-    } up.</b></span><br><span style='margin-top: 5px'>Requires <span id="ranks_req_${x}">X</span></span><br><hr></hr><i><span id="ranks_desc_${x}"></span></i>
+				Reset your ${x > 0 ? RANKS.fullNames[x - 1] + "s" : "mass and upgrades"}, but ${RANKS.fullNames[x]} up.<span id="ranks_desc_${x}"></span><br>
+				Req: <span id="ranks_req_${x}">X</span>
 			</button>
 		</div>`;
   }
@@ -44,24 +41,25 @@ function setupHTML() {
   let pres_table = new Element("pres_table");
   table = "";
   for (let x = 0; x < PRES_LEN; x++) {
-    table += `<div id="pres_div_${x}">
+    table += `<div style="width: 300px" id="pres_div_${x}">
 			<button id="pres_auto_${x}" class="btn" style="width: 80px;" onclick="PRESTIGES.autoSwitch(${x})">OFF</button>
-			<span id="pres_scale_${x}""></span>${PRESTIGES.fullNames[x]} <span style="font-size: 13.5px;" id="pres_amt_${x}">X</span><br><br>
+			<span id="pres_scale_${x}""></span>${PRESTIGES.fullNames[x]} <span id="pres_amt_${x}">X</span><br><br>
 			<button onclick="PRESTIGES.reset(${x})" class="btn reset" id="pres_${x}">
-			<span style="font-size: 14px"><b>${x > 0 ? "Reset your " + PRESTIGES.fullNames[x - 1] + "s" : "Force a Quantum reset"}, but ${
-      PRESTIGES.fullNames[x]
-    } up.</b></span><br><span style='margin-top: 5px'>Requires <span id="pres_req_${x}">X</span></span><hr></hr><i><span id="pres_desc_${x}"></span></i>
+				${x > 0 ? "Reset your " + PRESTIGES.fullNames[x - 1] + "s" : "Force a Quantum reset"}, but ${PRESTIGES.fullNames[x]} up.<span id="pres_desc_${x}"></span><br>
+				Req: <span id="pres_req_${x}">X</span>
 			</button>
 		</div>`;
   }
   pres_table.setHTML(table);
 
+  setupAscensionsHTML();
+
   let mass_upgs_table = new Element("mass_upgs_table");
   table = "";
   for (let x = 1; x <= UPGS.mass.cols; x++) {
     let upg = UPGS.mass[x];
-    table += `<div style="width: 100%; margin-bottom: 5px;" class="table_center" id="massUpg_div_${x}">
-			<div style="width: 400px">
+    table += `<div style="width: 100%; margin-bottom: 5px;" class="table_center upgrade" id="massUpg_div_${x}">
+			<div style="width: 300px">
 				<div class="resources">
 					<img src="images/mass_upg${x}.png">
 					<span style="margin-left: 5px; text-align: left;"><span id="massUpg_scale_${x}"></span>${upg.title} [<span id="massUpg_lvl_${x}">X</span>]</span>
@@ -148,6 +146,8 @@ function setupHTML() {
   }
   scaling_table.setHTML(table);
 
+  setupStatsHTML();
+  setupResourcesHTML();
   setupChalHTML();
   setupAtomHTML();
   setupElementsHTML();
@@ -159,6 +159,7 @@ function setupHTML() {
   setupRadiationHTML();
   setupQuantumHTML();
   setupDarkHTML();
+  setupInfHTML();
 
   /*
 	function setupTestHTML() {
@@ -191,11 +192,15 @@ function setupHTML() {
 }
 
 function updateTabsHTML() {
+  let s = !player.options.nav_hide[0];
+  tmp.el.stabs_div.setDisplay(TABS[2][tmp.tab]);
+
   for (let x = 0; x < TABS[1].length; x++) {
-    if (x != 5 && tmp.tab == 5) continue;
     let tab = TABS[1][x];
-    tmp.el["tab" + x].setDisplay(tab.unl ? tab.unl() : true);
-    tmp.el["tab" + x].setClasses({ btn_tab: true, [tab.style ? tab.style : "normal"]: true, choosed: x == tmp.tab });
+    if (s) {
+      tmp.el["tab" + x].setDisplay(tab.unl ? tab.unl() : true);
+      tmp.el["tab" + x].setClasses({ btn_tab: true, [tab.style ? tab.style : "normal"]: true, choosed: x == tmp.tab });
+    }
 
     if (tmp.el["tab_frame" + x]) tmp.el["tab_frame" + x].setDisplay(x == tmp.tab);
     if (TABS[2][x]) {
@@ -212,38 +217,9 @@ function updateTabsHTML() {
 }
 
 function updateUpperHTML() {
-  let gs = tmp.preQUGlobalSpeed;
-
-  //tmp.el.reset_desc.setHTML(player.reset_msg)
-
-  let unl = true;
-  tmp.el.mass_div.setDisplay(unl);
-  if (unl) tmp.el.mass.setHTML(formatMass(player.mass) + "<br>" + formatGain(player.mass, tmp.massGain.mul(gs), true));
-
-  unl = !quUnl();
-  tmp.el.rp_div.setDisplay(unl);
-  if (unl)
-    tmp.el.rpAmt.setHTML(
-      format(player.rp.points, 0) +
-        "<br>" +
-        (player.mainUpg.bh.includes(6) || player.mainUpg.atom.includes(6) ? formatGain(player.rp.points, tmp.rp.gain.mul(gs)) : "(+" + format(tmp.rp.gain, 0) + ")")
-    );
-
-  unl = FORMS.bh.see() && !quUnl();
-  tmp.el.dm_div.setDisplay(unl);
-  if (unl) tmp.el.dmAmt.setHTML(format(player.bh.dm, 0) + "<br>" + (player.mainUpg.atom.includes(6) ? formatGain(player.bh.dm, tmp.bh.dm_gain.mul(gs)) : "(+" + format(tmp.bh.dm_gain, 0) + ")"));
-
-  unl = player.bh.unl;
-  tmp.el.bh_div.setDisplay(unl);
-  tmp.el.atom_div.setDisplay(unl && !quUnl());
-  if (unl) {
-    tmp.el.bhMass.setHTML(formatMass(player.bh.mass) + "<br>" + formatGain(player.bh.mass, tmp.bh.mass_gain.mul(gs), true));
-    tmp.el.atomAmt.setHTML(format(player.atom.points, 0) + "<br>" + (hasElement(24) ? formatGain(player.atom.points, tmp.atom.gain.mul(gs)) : "(+" + format(tmp.atom.gain, 0) + ")"));
-  }
-
-  unl = player.chal.active > 0;
-  tmp.el.chal_upper.setVisible(unl);
-  if (unl) {
+  let chal_unl = player.chal.active > 0;
+  tmp.el.chal_upper.setVisible(chal_unl);
+  if (chal_unl) {
     let data = CHALS.getChalData(player.chal.active, tmp.chal.bulk[player.chal.active].max(player.chal.comps[player.chal.active]));
     tmp.el.chal_upper.setHTML(`You are now in [${CHALS[player.chal.active].title}] Challenge! Go over ${
       tmp.chal.format(tmp.chal.goal[player.chal.active]) + CHALS.getResName(player.chal.active)
@@ -251,44 +227,57 @@ function updateUpperHTML() {
 		<br>+${tmp.chal.gain} Completions (+1 at ${tmp.chal.format(data.goal) + CHALS.getResName(player.chal.active)})`);
   }
 
-  unl = player.atom.unl;
-  tmp.el.quark_div.setDisplay(unl);
-  if (unl)
-    tmp.el.quarkAmt.setHTML(
-      format(player.atom.quarks, 0) +
-        "<br>" +
-        (hasElement(14) ? formatGain(player.atom.quarks, tmp.atom ? tmp.atom.quarkGain.mul(tmp.atom.quarkGainSec).mul(gs) : 0) : "(+" + format(tmp.atom.quarkGain, 0) + ")")
-    );
+  /*
+	let gs = tmp.preQUGlobalSpeed
 
-  unl = MASS_DILATION.unlocked();
-  tmp.el.md_div.setDisplay(unl);
-  if (unl)
-    tmp.el.md_massAmt.setHTML(
-      format(player.md.particles, 0) +
-        "<br>" +
-        (player.md.active ? "(+" + format(tmp.md.rp_gain, 0) + ")" : hasTree("qol3") ? formatGain(player.md.particles, tmp.md.passive_rp_gain.mul(gs)) : "(inactive)")
-    );
+	//tmp.el.reset_desc.setHTML(player.reset_msg)
 
-  unl = player.supernova.post_10;
-  tmp.el.sn_div.setDisplay(unl);
-  if (unl) tmp.el.supernovaAmt.setHTML(format(player.supernova.times, 0) + "<br>(+" + format(tmp.supernova.bulk.sub(player.supernova.times).max(0), 0) + ")");
+	let unl = true
+	tmp.el.mass_div.setDisplay(unl)
+	if (unl) tmp.el.mass.setHTML(formatMass(player.mass)+"<br>"+formatGain(player.mass, tmp.massGain.mul(gs), true))
+	
+	unl = !quUnl()
+	tmp.el.rp_div.setDisplay(unl)
+	if (unl) tmp.el.rpAmt.setHTML(format(player.rp.points,0)+"<br>"+(player.mainUpg.bh.includes(6)||player.mainUpg.atom.includes(6)?formatGain(player.rp.points, tmp.rp.gain.mul(gs)):"(+"+format(tmp.rp.gain,0)+")"))
+	
+	unl = FORMS.bh.see() && !quUnl()
+	tmp.el.dm_div.setDisplay(unl)
+	if (unl) tmp.el.dmAmt.setHTML(format(player.bh.dm,0)+"<br>"+(player.mainUpg.atom.includes(6)?formatGain(player.bh.dm, tmp.bh.dm_gain.mul(gs)):"(+"+format(tmp.bh.dm_gain,0)+")"))
+	
+	unl = player.bh.unl
+	tmp.el.bh_div.setDisplay(unl)
+	tmp.el.atom_div.setDisplay(unl && !quUnl())
+	if (unl) {
+		tmp.el.bhMass.setHTML(formatMass(player.bh.mass)+"<br>"+formatGain(player.bh.mass, tmp.bh.mass_gain.mul(gs), true))
+		tmp.el.atomAmt.setHTML(format(player.atom.points,0)+"<br>"+(hasElement(24)?formatGain(player.atom.points,tmp.atom.gain.mul(gs)):"(+"+format(tmp.atom.gain,0)+")"))
+	}
+	
+	unl = player.atom.unl
+	tmp.el.quark_div.setDisplay(unl)
+	if (unl) tmp.el.quarkAmt.setHTML(format(player.atom.quarks,0)+"<br>"+(hasElement(14)?formatGain(player.atom.quarks,tmp.atom?tmp.atom.quarkGain.mul(tmp.atom.quarkGainSec).mul(gs):0):"(+"+format(tmp.atom.quarkGain,0)+")"))
+	
+	unl = MASS_DILATION.unlocked()
+	tmp.el.md_div.setDisplay(unl)
+	if (unl) tmp.el.md_massAmt.setHTML(format(player.md.particles,0)+"<br>"+(player.md.active?"(+"+format(tmp.md.rp_gain,0)+")":(hasTree("qol3")?formatGain(player.md.particles,tmp.md.passive_rp_gain.mul(gs)):"(inactive)")))
+	
+	unl = player.supernova.post_10
+	tmp.el.sn_div.setDisplay(unl)
+	if (unl) tmp.el.supernovaAmt.setHTML(format(player.supernova.times,0)+"<br>(+"+format(tmp.supernova.bulk.sub(player.supernova.times).max(0),0)+")")
 
-  let gain2 = hasUpgrade("br", 8);
+	let gain2 = hasUpgrade('br',8)
 
-  unl = quUnl() || player.chal.comps[12].gte(1);
-  tmp.el.qu_div.setDisplay(unl);
-  if (unl) tmp.el.quAmt.setHTML(format(player.qu.points, 0) + "<br>" + (gain2 ? player.qu.points.formatGain(tmp.qu.gain.div(10)) : "(+" + format(tmp.qu.gain, 0) + ")"));
+    unl = (quUnl() || player.chal.comps[12].gte(1))
+    tmp.el.qu_div.setDisplay(unl)
+    if (unl) tmp.el.quAmt.setHTML(format(player.qu.points,0)+"<br>"+(gain2?player.qu.points.formatGain(tmp.qu.gain.div(10)):"(+"+format(tmp.qu.gain,0)+")"))
 
-  unl = quUnl();
-  tmp.el.gs1_div.setDisplay(unl);
-  if (unl) tmp.el.preQGSpeed.setHTML(formatMult(tmp.preQUGlobalSpeed));
+    unl = (quUnl())
+    tmp.el.gs1_div.setDisplay(unl)
+    if (unl) tmp.el.preQGSpeed.setHTML(formatMult(tmp.preQUGlobalSpeed))
 
-  unl = hasTree("unl4");
-  tmp.el.br_div.setDisplay(unl);
-  if (unl)
-    tmp.el.brAmt.setHTML(
-      player.qu.rip.amt.format(0) + "<br>" + (player.qu.rip.active || hasElement(147) ? (gain2 ? player.qu.rip.amt.formatGain(tmp.rip.gain.div(10)) : `(+${tmp.rip.gain.format(0)})`) : "(inactive)")
-    );
+    unl = hasTree("unl4")
+    tmp.el.br_div.setDisplay(unl)
+    if (unl) tmp.el.brAmt.setHTML(player.qu.rip.amt.format(0)+"<br>"+(player.qu.rip.active||hasElement(147)?gain2?player.qu.rip.amt.formatGain(tmp.rip.gain.div(10)):`(+${tmp.rip.gain.format(0)})`:"(inactive)"))
+	*/
 }
 
 function updateMassUpgradesHTML() {
@@ -297,7 +286,7 @@ function updateMassUpgradesHTML() {
     tmp.el["massUpg_div_" + x].setDisplay(upg.unl());
     if (upg.unl()) {
       tmp.el["massUpg_scale_" + x].setTxt(x == 4 ? getScalingName("massUpg4") : getScalingName("massUpg", x));
-      tmp.el["massUpg_lvl_" + x].setTxt(format(player.massUpg[x] || 0, 0) + (tmp.upgs.mass[x].bonus.gt(0) ? " + " + format(tmp.upgs.mass[x].bonus, 0) : ""));
+      tmp.el["massUpg_lvl_" + x].setTxt(format(player.massUpg[x] || 0, 0) + (tmp.upgs.mass[x].bonus.gt(0) ? (hasAscension(0, 1) && x <= 3 ? " × " : " + ") + format(tmp.upgs.mass[x].bonus, 0) : ""));
       tmp.el["massUpg_btn_" + x].setClasses({ btn: true, locked: player.mass.lt(tmp.upgs.mass[x].cost) });
       tmp.el["massUpg_cost_" + x].setTxt(formatMass(tmp.upgs.mass[x].cost));
       tmp.el["massUpg_step_" + x].setTxt(tmp.upgs.mass[x].effDesc.step);
@@ -314,7 +303,7 @@ function updateTickspeedHTML() {
   if (unl) {
     let teff = tmp.tickspeedEffect;
     tmp.el.tickspeed_scale.setTxt(getScalingName("tickspeed"));
-    tmp.el.tickspeed_lvl.setTxt(format(player.tickspeed, 0) + (teff.bonus.gte(1) ? " + " + format(teff.bonus, 0) : ""));
+    tmp.el.tickspeed_lvl.setTxt(format(player.tickspeed, 0) + (teff.bonus.gte(1) ? (hasAscension(0, 1) ? " × " : " + ") + format(teff.bonus, 0) : ""));
     tmp.el.tickspeed_btn.setClasses({ btn: true, locked: !FORMS.tickspeed.can() });
     tmp.el.tickspeed_cost.setTxt(format(tmp.tickspeedCost, 0));
     tmp.el.tickspeed_step.setHTML(
@@ -342,7 +331,7 @@ function updateTickspeedHTML() {
 }
 
 function updateRanksRewardHTML() {
-  tmp.el["ranks_reward_name"].setHTML(RANKS.fullNames[player.ranks_reward]);
+  // tmp.el["ranks_reward_name"].setTxt(RANKS.fullNames[player.ranks_reward])
   for (let x = 0; x < RANKS.names.length; x++) {
     let rn = RANKS.names[x];
     tmp.el["ranks_reward_div_" + x].setDisplay(player.ranks_reward == x);
@@ -359,7 +348,7 @@ function updateRanksRewardHTML() {
 
 function updatePrestigesRewardHTML() {
   let c16 = tmp.c16active;
-  tmp.el["pres_reward_name"].setTxt(PRESTIGES.fullNames[player.pres_reward]);
+  // tmp.el["pres_reward_name"].setTxt(PRESTIGES.fullNames[player.pres_reward])
   for (let x = 0; x < PRES_LEN; x++) {
     tmp.el["pres_reward_div_" + x].setDisplay(player.pres_reward == x);
     if (player.pres_reward == x) {
@@ -451,9 +440,11 @@ function updateBlackHoleHTML() {
   tmp.el.bhCondenser_auto.setDisplay(FORMS.bh.condenser.autoUnl());
   tmp.el.bhCondenser_auto.setTxt(player.bh.autoCondenser ? "ON" : "OFF");
 
-  tmp.el.bhOverflow.setDisplay(player.bh.mass.gte(tmp.overflow_start.bh));
-  tmp.el.bhOverflow.setHTML(`Because of black hole mass overflow at <b>${formatMass(tmp.overflow_start.bh)}</b>, your mass of black hole is ${overflowFormat(tmp.overflow.bh || 1)}!`);
+  tmp.el.bhOverflow.setDisplay(player.bh.mass.gte(tmp.overflow_start.bh[0]));
+  tmp.el.bhOverflow.setHTML(`Because of black hole mass overflow at <b>${formatMass(tmp.overflow_start.bh[0])}</b>, your mass of black hole gain is ${overflowFormat(tmp.overflow.bh || 1)}!`);
 
+  tmp.el.bhOverflow2.setDisplay(player.bh.mass.gte(tmp.overflow_start.bh[1]));
+  tmp.el.bhOverflow2.setHTML(`Because of black hole mass overflow^2 at <b>${formatMass(tmp.overflow_start.bh[1])}</b>, your black hole mass overflow is even stronger!`);
   // Unstable
 
   let unl = hasCharger(1);
@@ -474,19 +465,32 @@ function updateBlackHoleHTML() {
 }
 
 function updateOptionsHTML() {
-  for (let x = 0; x < CONFIRMS.length; x++) {
-    let unl = CONFIRMS[x] == "sn" ? player.supernova.times.gte(1) || quUnl() : CONFIRMS[x] == "qu" ? quUnl() : CONFIRMS[x] == "br" ? player.qu.rip.first : player[CONFIRMS[x]].unl;
+  if (tmp.stab[9] == 0) {
+    for (let x = 0; x < CONFIRMS.length; x++) {
+      let unl =
+        CONFIRMS[x] == "sn"
+          ? player.supernova.times.gte(1) || quUnl()
+          : CONFIRMS[x] == "qu"
+          ? quUnl()
+          : CONFIRMS[x] == "br"
+          ? player.qu.rip.first
+          : CONFIRMS[x] == "inf"
+          ? tmp.inf_unl
+          : player[CONFIRMS[x]].unl;
 
-    tmp.el["confirm_div_" + x].setDisplay(unl);
-    tmp.el["confirm_btn_" + x].setTxt(player.confirms[CONFIRMS[x]] ? "ON" : "OFF");
+      tmp.el["confirm_div_" + x].setDisplay(unl);
+      tmp.el["confirm_btn_" + x].setTxt(player.confirms[CONFIRMS[x]] ? "ON" : "OFF");
+    }
+    tmp.el.total_time.setTxt(formatTime(player.time));
+    tmp.el.offline_active.setTxt(player.offline.active ? "ON" : "OFF");
+    tmp.el.tree_anim_btn.setDisplay(player.supernova.times.gte(1) || quUnl());
+    tmp.el.tree_anim.setTxt(TREE_ANIM[player.options.tree_animation]);
+    tmp.el.mass_dis.setTxt(["Default", "Always show g", "Always show mlt", "Important units only"][player.options.massDis]);
+
+    tmp.el.omega_badge.setDisplay(localStorage.getItem("imr_secret_badge1") == "1");
+  } else if (tmp.stab[9] == 1) {
+    updateResourcesHiderHTML();
   }
-  tmp.el.total_time.setTxt(formatTime(player.time));
-  tmp.el.offline_active.setTxt(player.offline.active ? "ON" : "OFF");
-  tmp.el.tree_anim_btn.setDisplay(player.supernova.times.gte(1) || quUnl());
-  tmp.el.tree_anim.setTxt(TREE_ANIM[player.options.tree_animation]);
-  tmp.el.mass_dis.setTxt(["Default", "Always show g", "Always show mlt", "Important units only"][player.options.massDis]);
-
-  tmp.el.omega_badge.setDisplay(localStorage.getItem("imr_secret_badge1") == "1");
 }
 
 function updateHTML() {
@@ -494,18 +498,21 @@ function updateHTML() {
   document.documentElement.style.setProperty("--cx", tmp.cx);
   document.documentElement.style.setProperty("--cy", tmp.cy);
 
-  let displayMainTab = tmp.tab != 5;
+  tmp.mobile = window.innerWidth < 1200;
 
-  tmp.el.offlineSpeed.setTxt(format(tmp.offlineMult));
-  tmp.el.loading.setDisplay(tmp.offlineActive);
-  tmp.el.app.setDisplay(tmp.offlineActive ? false : (player.supernova.times.lte(0) && !player.supernova.post_10 ? !tmp.supernova.reached : true) && displayMainTab);
+  let displayMainTab = true;
+
+  tmp.el.loading.setDisplay(!tmp.start);
+  tmp.el.app.setDisplay(tmp.inf_time != 2 && tmp.inf_time != 3 && tmp.start && (player.supernova.times.lte(0) && !player.supernova.post_10 ? !tmp.supernova.reached : true) && displayMainTab);
   updateSupernovaEndingHTML();
   updateTabsHTML();
+  if (!player.options.nav_hide[1]) updateResourcesHTML();
   if (hover_tooltip) updateTooltipResHTML();
   updateUpperHTML();
-  if ((!tmp.supernova.reached || player.supernova.post_10) && displayMainTab) {
+  if (tmp.start && (!tmp.supernova.reached || player.supernova.post_10) && displayMainTab) {
     updateQuantumHTML();
     updateDarkHTML();
+    updateInfHTML();
     if (tmp.tab == 0) {
       if (tmp.stab[0] == 0) {
         updateRanksHTML();
@@ -529,41 +536,45 @@ function updateHTML() {
         tmp.el.massSoft9.setDisplay(tmp.massGain.gte(tmp.massSoftGain8));
         tmp.el.massSoftStart9.setTxt(formatMass(tmp.massSoftGain8));
 
-        tmp.el.massOverflow.setDisplay(player.mass.gte(tmp.overflow_start.mass));
-        tmp.el.massOverflow.setHTML(`Because of mass overflow at <b>${formatMass(tmp.overflow_start.mass)}</b>, your mass is ${overflowFormat(tmp.overflow.mass || 1)}!`);
+        tmp.el.massOverflow.setDisplay(player.mass.gte(tmp.overflow_start.mass[0]));
+        tmp.el.massOverflow.setHTML(`Because of mass overflow at <b>${formatMass(tmp.overflow_start.mass[0])}</b>, your mass gain is ${overflowFormat(tmp.overflow.mass || 1)}!`);
 
-        tmp.el.strongerOverflow.setDisplay(tmp.upgs.mass[3].eff.eff.gte(tmp.overflow_start.stronger));
-        tmp.el.strongerOverflow.setHTML(`Because of stronger overflow at <b>${format(tmp.overflow_start.stronger)}</b>, your stronger effect is ${overflowFormat(tmp.overflow.stronger || 1)}!`);
-      }
-      if (tmp.stab[0] == 1) {
+        tmp.el.massOverflow2.setDisplay(player.mass.gte(tmp.overflow_start.mass[1]));
+        tmp.el.massOverflow2.setHTML(`Because of mass overflow^2 at <b>${formatMass(tmp.overflow_start.mass[1])}</b>, your mass overflow is even stronger!`);
+
+        tmp.el.strongerOverflow.setDisplay(tmp.upgs.mass[3].eff.eff.gte(tmp.overflow_start.stronger[0]));
+        tmp.el.strongerOverflow.setHTML(`Because of stronger overflow at <b>${format(tmp.overflow_start.stronger[0])}</b>, your stronger effect is ${overflowFormat(tmp.overflow.stronger || 1)}!`);
+
+        tmp.el.strongerOverflow2.setDisplay(tmp.upgs.mass[3].eff.eff.gte(tmp.overflow_start.stronger[1]));
+        tmp.el.strongerOverflow2.setHTML(`Because of stronger overflow^2 at <b>${format(tmp.overflow_start.stronger[1])}</b>, your stronger overflow is even stronger!`);
+      } else if (tmp.stab[0] == 1) {
         updateBlackHoleHTML();
-      }
-      if (tmp.stab[0] == 2) {
+      } else if (tmp.stab[0] == 2) {
         updateAtomicHTML();
-      }
-      if (tmp.stab[0] == 3) {
+      } else if (tmp.stab[0] == 3) {
         updateStarsHTML();
       }
-    }
-    if (tmp.tab == 1) {
+    } else if (tmp.tab == 1) {
+      updateStatsHTML();
+
       if (tmp.stab[1] == 0) updateRanksRewardHTML();
-      if (tmp.stab[1] == 1) updateScalingHTML();
-      if (tmp.stab[1] == 2) updatePrestigesRewardHTML();
-      if (tmp.stab[1] == 3) updateBeyondRanksRewardHTML();
-    }
-    if (tmp.tab == 2) {
+      else if (tmp.stab[1] == 1) updateScalingHTML();
+      else if (tmp.stab[1] == 2) updatePrestigesRewardHTML();
+      else if (tmp.stab[1] == 3) updateBeyondRanksRewardHTML();
+      else if (tmp.stab[1] == 4) updateAscensionsRewardHTML();
+    } else if (tmp.tab == 2) {
       updateMainUpgradesHTML();
-    }
-    if (tmp.tab == 3) {
+    } else if (tmp.tab == 3) {
       updateChalHTML();
-    }
-    if (tmp.tab == 4) {
+    } else if (tmp.tab == 4) {
       if (tmp.stab[4] == 0) updateAtomHTML();
-      if (tmp.stab[4] == 1) updateElementsHTML();
-      if (tmp.stab[4] == 2) updateMDHTML();
-      if (tmp.stab[4] == 3) updateBDHTML();
-    }
-    if (tmp.tab == 8) {
+      else if (tmp.stab[4] == 1) updateElementsHTML();
+      else if (tmp.stab[4] == 2) updateMDHTML();
+      else if (tmp.stab[4] == 3) updateBDHTML();
+      else if (tmp.stab[4] == 4) {
+        updateExoticAtomsHTML();
+      }
+    } else if (tmp.tab == 9) {
       updateOptionsHTML();
     }
   }

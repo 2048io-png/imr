@@ -11,7 +11,7 @@ const FERMIONS = {
         for (let j = 0; j < FERMIONS.types[i].length; j++) x = x.mul(base.pow(player.supernova.fermions.tiers[i][j]))
         if (hasTree("fn1") && tmp.supernova) x = x.mul(tmp.supernova.tree_eff.fn1)
 
-        if (tmp.c16active || player.dark.run.active) x = expMult(x,mgEff(4)[0])
+        if (tmp.c16active || inDarkRun()) x = expMult(x,mgEff(4)[0])
 
         return x
     },
@@ -129,7 +129,7 @@ const FERMIONS = {
                     return `Z<sup>0</sup> Boson's first effect is ${format(x.sub(1).mul(100))}% stronger`+(x.gte(5)?" <span class='soft'>(softcapped)</span>":"")
                 },
                 inc: "Mass",
-                cons: "You are trapped in Mass Dilation, but they are twice as effective",
+                cons: "You are trapped in Mass Dilation, and it is twice as strong",
                 isMass: true,
             },{
                 maxTier() {
@@ -150,7 +150,8 @@ const FERMIONS = {
                     return FERMIONS.getTierScaling(x, true)
                 },
                 eff(i, t) {
-                    let x = i.max(1).log10().add(1).mul(t).pow(0.9).div(100).add(1).softcap(1.5,0.5,0).softcap(5,1/3,0).min(6.5)
+                    let x = i.max(1).log10().add(1).mul(t).pow(0.9).div(100).add(1).softcap(1.5,0.5,0).softcap(5,1/3,0)
+                    if (!hasElement(23,1)) x = x.min(6.5)
                     return x
                 },
                 desc(x) {
@@ -228,7 +229,7 @@ const FERMIONS = {
                 },
                 eff(i, t) {
                     let x = i.add(1).log10().add(1).log10().div(200).mul(t.softcap(8,0.5,0)).add(1)
-                    return x
+                    return x.softcap(15,hasPrestige(1,300)?0.55:0.5,0)
                 },
                 desc(x) {
                     return `Dark ray's effect is ^${x.format()} stronger`.corrupt(tmp.c16active)
@@ -261,7 +262,7 @@ const FERMIONS = {
                     return x//.softcap(1e18,0.1,0)
                 },
                 desc(x) {
-                    return `Collapse Stars gain softcap starts ^${format(x)} later`+(x.gte(1.5)?" <span class='soft'>(softcapped)</span>":"")
+                    return `Collapsed Stars gain softcap starts ^${format(x)} later`+(x.gte(1.5)?" <span class='soft'>(softcapped)</span>":"")
                 },
                 inc: "Quark",
                 cons: "^0.625 to the exponent of Atoms gain",
@@ -278,6 +279,7 @@ const FERMIONS = {
                 },
                 eff(i, t) {
                     let x = t.pow(1.5).add(1).pow(i.add(1).log10().softcap(10,0.75,0)).softcap(1e6,0.75,0)
+                    if (tmp.c16active) x = overflow(x,1e100,0.5)
                     return x
                 },
                 desc(x) {
@@ -298,7 +300,8 @@ const FERMIONS = {
                     return FERMIONS.getTierScaling(x, true)
                 },
                 eff(i, t) {
-                    let x = t.pow(0.8).mul(0.025).add(1).pow(i.add(1).log10())
+                    let x = hasElement(17,1) ? t.pow(2).mul(i.add(1).log10().add(1)).add(1) : t.pow(0.8).mul(0.025).add(1).pow(i.add(1).log10())
+                    if (hasBeyondRank(4,40)) x = x.pow(3)
                     return x
                 },
                 desc(x) {
@@ -375,7 +378,9 @@ const FERMIONS = {
                     return FERMIONS.getTierScaling(x, true)
                 },
                 eff(i, t) {
-                    let x = i.add(1).log10().pow(0.75).div(100).add(1).pow(t.pow(0.75))
+                    let c = hasCharger(7)
+                    let x = c ? t.add(1).pow(i.add(1).log10().add(1).log10()) : i.add(1).log10().pow(0.75).div(100).add(1).pow(t.pow(0.75))
+                    if (!c && tmp.c16active) x = overflow(x,150,0.05)
                     return x
                 },
                 desc(x) {
@@ -397,7 +402,7 @@ const FERMIONS = {
                 eff(i, t) {
                     let x = i.add(1).log10().add(1).log10().div(2000).mul(t.softcap(8,0.5,0))
                     if (hasBeyondRank(2,2)) x = x.mul(8)
-                    return x.toNumber()
+                    return x.softcap(20,hasPrestige(1,300)?0.55:0.5,0).toNumber()
                 },
                 desc(x) {
                     return `Increase prestige base's exponent by ${format(x)}`

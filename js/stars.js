@@ -41,7 +41,7 @@ const STARS = {
       }
 
       if (hasPrestige(0, 382)) {
-        x = Decimal.pow(1.1, pp.log10().add(1).mul(player.stars.points.add(1).log10().add(1).log10().add(1)).root(2).sub(1));
+        x = Decimal.pow(1.1 + exoticAEff(0, 5, 0), pp.log10().add(1).mul(player.stars.points.add(1).log10().add(1).log10().add(1)).root(2).sub(1));
       } else {
         x = pp.log10().mul(player.stars.points.add(1).log10().add(1).log10().add(1)).add(1);
 
@@ -52,7 +52,7 @@ const STARS = {
     } else {
       let [p, pp] = [E(1), E(1)];
       if (hasElement(48)) p = p.mul(1.1);
-      if (hasElement(76)) [p, pp] = player.qu.rip.active || tmp.c16active || player.dark.run.active ? [p.mul(1.1), pp.mul(1.1)] : [p.mul(1.25), pp.mul(1.25)];
+      if (hasElement(76)) [p, pp] = player.qu.rip.active || tmp.c16active || inDarkRun() ? [p.mul(1.1), pp.mul(1.1)] : [p.mul(1.25), pp.mul(1.25)];
       let [s, r, t1, t2, t3] = [
         player.stars.points.mul(p),
         player.ranks.rank.softcap(2.5e6, 0.25, 0).mul(p),
@@ -81,11 +81,11 @@ const STARS = {
             )
         );
       x = x.softcap("ee15", 0.95, 2).softcap("e5e22", 0.95, 2).softcap("e1e24", 0.91, 2);
-      if (player.qu.rip.active || tmp.c16active || player.dark.run.active) x = x.softcap("ee33", 0.9, 2);
+      if (player.qu.rip.active || tmp.c16active || inDarkRun()) x = x.softcap("ee33", 0.9, 2);
       x = x.softcap("ee70", 0.91, 2); //.min('ee70')
     }
 
-    if (tmp.c16active) x = overflow(x, 10, 0.5);
+    if (tmp.c16active) x = overflow(x, 10, 0.5).min("ee70");
 
     return x;
   },
@@ -111,9 +111,10 @@ const STARS = {
         .add(player.stars.generators[i + 1] || 0)
         .pow(pow);
 
-      if (player.ranks.rank.gte(1250)) x = x.times(RANKS.effect.tier[70]());
+      if (player.ranks.rank.gte(1300)) player.stars.generators[4] = player.stars.generators[4].mul(RANKS.effect.rank[1300]());
+      if (player.ranks.rank.gte(3000)) player.stars.generators[4] = player.stars.generators[4].mul(MASS_DILATION.upgs.ids[3].effect());
+
       if (hasElement(49) && i == 4) x = x.mul(tmp.elements.effect[49]);
-      if (player.ranks.rank.gte(1600) && i == 4) x = x.mul(RANKS.effect.rank[1600]());
       if (hasTree("s1") && i == 4) x = x.mul(tmp.supernova.tree_eff.s1);
       if (player.md.upgs[8].gte(1)) x = x.mul(tmp.md.upgs[8].eff);
       if (hasElement(54)) x = x.mul(tmp.elements.effect[54]);
@@ -153,6 +154,8 @@ function updateStarsTemp() {
   if (hasElement(57)) tmp.stars.generator_boost_base = tmp.stars.generator_boost_base.mul(tmp.elements.effect[57]);
   if (hasUpgrade("br", 5)) tmp.stars.generator_boost_base = tmp.stars.generator_boost_base.mul(upgEffect(4, 5));
   tmp.stars.generator_boost_base = tmp.stars.generator_boost_base.softcap(1e13, 0.5, 0); //.softcap(3e15,0.1,0)
+
+  if (CHALS.inChal(17)) tmp.stars.generator_boost_base = E(1);
 
   tmp.stars.generator_boost_eff = tmp.stars.generator_boost_base.pow(player.stars.boost.mul(tmp.chal ? tmp.chal.eff[11] : 1)).softcap("e3e18", 0.95, 2);
   for (let x = 0; x < 5; x++) tmp.stars.generators_gain[x] = STARS.generators.gain(x);

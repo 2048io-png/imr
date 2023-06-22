@@ -25,9 +25,13 @@ const MATTERS = {
         if (!c16) {
             x = x.pow(tmp.dark.abEff.mexp||1)
             x = x.pow(glyphUpgEff(14,1))
-            x = x.pow(tmp.matters.FSS_eff[0])
             if (hasBeyondRank(1,7)) x = x.pow(beyondRankEffect(1,7))
         }
+
+        if (hasElement(11,1) || !c16) x = x.pow(tmp.matters.FSS_eff[0])
+
+        if (hasElement(4,1)) x = c16 ? x.pow(1.1) : expMult(x,1.05)
+        if (hasElement(227)) x = c16 ? x.pow(elemEffect(227)) : expMult(x,elemEffect(227))
 
         return x
     },
@@ -45,7 +49,9 @@ const MATTERS = {
 
         if (hasTree('ct4')) base += treeEff('ct4')
 
-        let eff = c16?Decimal.pow(base,lvl):i==0?lvl.mul(tmp.matters.str).add(1):Decimal.pow(base,lvl.mul(tmp.matters.str))
+        if (!c16) lvl = lvl.mul(tmp.matters.str)
+
+        let eff = c16?Decimal.pow(base,lvl):i==0?hasElement(21,1)?Decimal.pow(base,lvl.root(5)):lvl.add(1):Decimal.pow(base,lvl)
 
         return {cost: cost, bulk: bulk, eff: eff}
     },
@@ -57,24 +63,37 @@ const MATTERS = {
 
             if (hasPrestige(1,91)) x = x.pow(1.05)
 
+            x = x.pow(exoticAEff(1,2))
+
             return x.sub(1)
         },
         req() {
             let f = player.dark.matters.final
 
-            if (hasTree('ct10')) f *= treeEff('ct10')
+            f = f.scaleEvery('FSS',false,[1,hasTree('ct10')?treeEff('ct10').pow(-1):1])
 
-            if (f>5) f = (f/5)**2*5
-
-            if (hasElement(217)) f *= .8
+            if (hasElement(217)) f = f.mul(.8)
 
             let x = Decimal.pow(100,Decimal.pow(f,1.5)).mul(1e43)
             return x
         },
+        bulk() {
+            let f = tmp.matters.FSS_base
+
+            if (f.lt(1e43)) return E(0)
+
+            let x = f.div(1e43).max(1).log(100).root(1.5)
+
+            if (hasElement(217)) x = x.div(.8)
+
+            x = x.scaleEvery('FSS',true,[1,hasTree('ct10')?treeEff('ct10').pow(-1):1])
+
+            return x.add(1).floor()
+        },
 
         reset(force = false) {
             if (force || tmp.matters.FSS_base.gte(tmp.matters.FSS_req)) {
-                if (!force) player.dark.matters.final++
+                if (!force) player.dark.matters.final = player.dark.matters.final.add(1)
 
                 resetMatters()
                 player.dark.shadow = E(0)
@@ -84,13 +103,20 @@ const MATTERS = {
         },
 
         effect() {
+            let c16 = tmp.c16active
+
             let fss = player.dark.matters.final
 
-            fss *= tmp.dark.abEff.fss||1
+            fss = fss.mul(tmp.dark.abEff.fss||1)
 
-            let x = Decimal.pow(2,fss**1.25)
+            let x = Decimal.pow(2,fss.pow(1.25))
 
-            let y = fss*.15+1
+            if (c16) {
+                x = x.log10().div(10).add(1)
+                if (hasElement(247)) x = x.pow(1.5)
+            }
+
+            let y = fss.mul(.15).add(1)
 
             return [x,y]
         },
@@ -106,6 +132,10 @@ function getMatterUpgrade(i) {
     if (amt.gte(tu.cost) && player.dark.matters.upg[i].lt(tu.bulk)) player.dark.matters.upg[i] = tu.bulk
 }
 
+function buyMaxMatters() {
+    for (let i = 0; i < player.dark.matters.unls-1; i++) getMatterUpgrade(i)
+}
+
 function resetMatters() {
     for (let i = 0; i < 13; i++) {
         player.dark.matters.amt[i] = E(0)
@@ -115,6 +145,7 @@ function resetMatters() {
 
 function updateMattersHTML() {
     let c16 = tmp.c16active
+    let inf_gs = tmp.preInfGlobalSpeed
 
     tmp.el.matter_exponent.setTxt(format(tmp.matters.exponent))
     tmp.el.matter_req_div.setDisplay(player.dark.matters.unls<14)
@@ -128,7 +159,7 @@ function updateMattersHTML() {
             let amt = i == 0 ? player.bh.dm : player.dark.matters.amt[i-1]
 
             tmp.el['matter_amt'+i].setTxt(format(amt,0))
-            tmp.el['matter_gain'+i].setTxt(i == 0 ? amt.formatGain(tmp.bh.dm_gain.mul(tmp.preQUGlobalSpeed)) : amt.formatGain(tmp.matters.gain[i-1]))
+            tmp.el['matter_gain'+i].setTxt(i == 0 ? amt.formatGain(tmp.bh.dm_gain.mul(tmp.preQUGlobalSpeed)) : amt.formatGain(tmp.matters.gain[i-1].mul(inf_gs)))
 
             if (i > 0) {
                 let tu = tmp.matters.upg[i-1]
@@ -147,14 +178,17 @@ function updateMattersHTML() {
 
     if (unl) {
         tmp.el.FSS1.setTxt(format(player.dark.matters.final,0))
+
+        tmp.el.FSS_scale.setTxt(getScalingName("FSS"))
+
         tmp.el.final_star_base.setHTML(`You have ${tmp.matters.FSS_base.format(0)} FSS base (based on previous matters)`)
         tmp.el.FSS_req.setTxt(tmp.matters.FSS_req.format(0))
         tmp.el.FSS_btn.setClasses({btn: true, full: true, locked: tmp.matters.FSS_base.lt(tmp.matters.FSS_req)})
     }
 
     tmp.el.FSS_eff1.setHTML(
-        player.dark.matters.final > 0
-        ? `Thanks to FSS, boosts Matters gain by ^${tmp.matters.FSS_eff[0].format(1)}`.corrupt(c16)
+        player.dark.matters.final.gt(0)
+        ? `Thanks to FSS, your Matters gain is boosted by ^${tmp.matters.FSS_eff[0].format(1)}`.corrupt(c16 && !hasElement(11,1))
         : ''
     )
 }
@@ -167,12 +201,15 @@ function updateMattersTemp() {
     tmp.matters.str = 1
     if (hasBeyondRank(1,2)) tmp.matters.str *= beyondRankEffect(1,2)
 
-    tmp.matters.exponent = 2 + glyphUpgEff(11,0)
+    if (hasElement(29,1)) tmp.matters.str *= Math.max(1,tmp.exotic_atom.strength**0.5)
+
+    tmp.matters.exponent = 2 + glyphUpgEff(11,0) + exoticAEff(1,5,0)
     if (hasPrestige(0,382)) tmp.matters.exponent += prestigeEff(0,382,0)
     if (player.ranks.hex.gte(91)) tmp.matters.exponent += .15
     if (hasElement(206)) tmp.matters.exponent += elemEffect(206,0)
     if (hasBeyondRank(1,1)) tmp.matters.exponent += .5
     if (hasPrestige(0,1337)) tmp.matters.exponent += prestigeEff(0,1337,0)
+    if (hasElement(14,1)) tmp.matters.exponent += muElemEff(14,0)
     
     tmp.matters.req_unl = Decimal.pow(1e100,Decimal.pow(1.2,Math.max(0,player.dark.matters.unls-4)**1.5))
 
@@ -213,7 +250,7 @@ function setupMattersHTML() {
             html +=
             `
             <div class="matter_div final" id="final_star_shard_div">
-                You have <h3 id="FSS1">0</h3> Final Star Shard (FSS)<br>
+                You have <h3 id="FSS1">0</h3> <span id="FSS_scale"></span> Final Star Shard (FSS)<br>
                 <span id="final_star_base">You have ??? Final Star Shard base (based on previous matters)</span>
                 <br><br>
                 <button class="btn full" id="FSS_btn" onclick="MATTERS.final_star_shard.reset()">

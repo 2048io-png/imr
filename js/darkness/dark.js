@@ -2,7 +2,7 @@ const DARK = {
     nextEffectAt: [
         [0,1e12,1e22,1e130],
         [1e6,1e11,1e25,1e130],
-        [1e120,1e180,'e345','e800','e2500','e56000','e125500'],
+        [1e120,1e180,'e345','e800','e2500','e56000','e125500','ee7'],
     ],
     gain() {
         let x = E(1)
@@ -31,7 +31,7 @@ const DARK = {
 
         if (a.gte(1e12)) x.passive = a.div(1e12).max(1).log10().add(1).pow(2).div(1e3)
         if (a.gte(1e22)) x.glyph = a.div(1e22).max(1).log10().add(1).root(2).sub(1).div(10).add(1).toNumber()
-        if (a.gte(1e130)) x.dChal = a.div(1e130).max(1).log10().mul(20).softcap(100,0.5,0).floor()
+        if (a.gte(1e130)) x.dChal = a.div(1e130).max(1).log10().mul(20).softcap(100,0.5,0,hasBeyondRank(3,12)).floor()
 
         return x
     },
@@ -65,7 +65,7 @@ const DARK = {
 
         let k = []
 
-        if (hasElement(127)) k.push(8,9,11)
+        if (hasElement(127) || hasInfUpgrade(11)) k.push(8,9,11)
         else bmd.active = false
         bmd.energy = E(0)
         bmd.mass = E(0)
@@ -110,6 +110,8 @@ const DARK = {
 
         if (hasPrestige(1,22)) x = x.pow(1.1)
 
+        if (tmp.inf_unl) x = x.pow(theoremEff('time',2))
+
         return x
     },
     shadowEff() {
@@ -119,8 +121,8 @@ const DARK = {
         x.ray = hasElement(143) ? a.add(1).log2().add(1).pow(1.5) : a.add(1).log10().add(1)
         x.mass = hasCharger(4) ? overflow(a.add(1),10,0.25) : a.add(1).log10().add(1).root(2)
 
-        if (a.gte(1e6)) x.bp = a.div(1e6).pow(10)
-        if (a.gte(1e11)) x.sn = a.div(1e11).add(1).log10().div(10).add(1).softcap(7.5,0.25,0)
+        if (a.gte(1e6)) x.bp = a.div(1e6).pow(10).overflow('e1e8',0.5,0)
+        if (a.gte(1e11)) x.sn = a.div(1e11).add(1).log10().div(10).add(1).softcap(7.5,0.25,0,hasElement(9,1))
         if (a.gte(1e25)) x.en = a.div(1e25).pow(3)
         if (tmp.chal14comp) x.ab = a.add(1).pow(2)
         if (!tmp.c16active && a.gte(1e130)) x.bhp = a.div(1e130).log10().div(5)
@@ -134,6 +136,8 @@ const DARK = {
         if (hasElement(189)) x = x.mul(elemEffect(189))
         if (hasElement(153)) x = x.pow(elemEffect(153))
 
+        if (tmp.inf_unl) x = x.pow(theoremEff('time',2))
+
         return x
     },
     abEff() {
@@ -143,18 +147,28 @@ const DARK = {
         x.shadow = a.add(1).log10().add(1).pow(2)
         x.msoftcap = a.add(1).log10().root(2).div(2).add(1)
         if (a.gte(1e120)) x.hr = a.div(1e120).log10().add(1).pow(2)
-        if (a.gte(1e180)) x.pb = a.div(1e180).log10().add(1).pow(hasPrestige(1,167)?(player.dark.matters.final+1)**.5:1)
+        if (a.gte(1e180)) {
+            x.pb = a.div(1e180).log10().add(1).pow(hasPrestige(1,167)?player.dark.matters.final.add(1).root(2):1)
+            // x.pb = overflow(x.pb,1e20,0.5)
+        }
         if (a.gte('e345')) x.csp = a.div('e345').log10().add(1).pow(2)
         if (a.gte('e800') && tmp.matterUnl) x.mexp = a.div('e800').log10().div(10).add(1).root(2.5)
-        if (a.gte('e2500') && hasElement(199)) x.accelPow = a.div('e2500').log10().add(1).log10().add(1).pow(1.5).softcap(5,0.2,0)
-        if (a.gte('e56000') && !tmp.c16active) x.ApQ_Overflow = Decimal.pow(10,a.div('e56000').log10().add(1).log10())
+        if (a.gte('e2500') && hasElement(199)) x.accelPow = a.div('e2500').log10().add(1).log10().add(1).pow(1.5).softcap(5,0.2,0,hasElement(234))
+        if (a.gte('e56000') && !tmp.c16active) {
+            let e = a.div('e56000').log10().add(1).log10()
+            if (hasElement(238)) e = e.pow(2)
+            x.ApQ_Overflow = Decimal.pow(10,e)
+        }
         if (a.gte('e125500')) x.fss = a.div('e56000').log10().add(1).log10().div(10).add(1).toNumber()
+        if (a.gte('ee7')) {
+            x.ea = a.div('ee7').log10().div(1e6).add(1).root(2).softcap(1.75,hasElement(249)?0.4:0.25,0).softcap(8,0.1,0)
+        }
 
         return x
     },
 }
 
-function calcDark(dt, dt_offline) {
+function calcDark(dt) {
     if (player.dark.unl) {
         player.dark.shadow = player.dark.shadow.add(tmp.dark.shadowGain.mul(dt))
 
@@ -170,6 +184,8 @@ function calcDark(dt, dt_offline) {
                 if (hasElement(195)) getMatterUpgrade(x)
             }
             if (player.dark.matters.unls<MATTERS_LEN+1 && player.dark.matters.amt[mu-2].gte(tmp.matters.req_unl)) player.dark.matters.unls++
+
+            if (hasInfUpgrade(10)) player.dark.matters.final = player.dark.matters.final.max(MATTERS.final_star_shard.bulk())
         }
     }
 
@@ -178,11 +194,24 @@ function calcDark(dt, dt_offline) {
     if (hasCharger(1)) {
         player.bh.unstable = UNSTABLE_BH.getProduction(player.bh.unstable,tmp.unstable_bh.gain.mul(dt))
     }
+
+    if (tmp.eaUnl) {
+        if (hasInfUpgrade(14)) {
+            for (let i = 1; i <= tmp.elements.unl_length[1]; i++) buyElement(i,1)
+
+            EXOTIC_ATOM.tier()
+        }
+
+        if (player.dark.exotic_atom.tier>0) {
+            for (let i = 0; i < 2; i++) player.dark.exotic_atom.amount[i] = player.dark.exotic_atom.amount[i].add(tmp.exotic_atom.gain[i].mul(dt))
+        }
+    }
 }
 
 function updateDarkTemp() {
     let dtmp = tmp.dark
 
+    updateExoticAtomsTemp()
     updateMattersTemp()
     updateDarkRunTemp()
 
@@ -202,14 +231,19 @@ function setupDarkHTML() {
 }
 
 function updateDarkHTML() {
-    let og = hasElement(118)
-    let unl = og || player.dark.unl
     let dtmp = tmp.dark
-	tmp.el.dark_div.setDisplay(unl)
-	if (unl) tmp.el.darkAmt.setHTML(player.dark.rays.format(0)+"<br>"+(og?dtmp.rayEff.passive?player.dark.rays.formatGain(dtmp.gain.mul(dtmp.rayEff.passive)):"(+"+dtmp.gain.format(0)+")":"(require Og-118)"))
     let c16 = tmp.c16active
 
-    unl = player.dark.matters.final>0
+    let inf_gs = tmp.preInfGlobalSpeed
+
+    /*
+    let og = hasElement(118)
+    let unl = og || player.dark.unl
+
+	tmp.el.dark_div.setDisplay(unl)
+	if (unl) tmp.el.darkAmt.setHTML(player.dark.rays.format(0)+"<br>"+(og?dtmp.rayEff.passive?player.dark.rays.formatGain(dtmp.gain.mul(dtmp.rayEff.passive)):"(+"+dtmp.gain.format(0)+")":"(require Og-118)"))
+
+    unl = player.dark.matters.final.gt(0)
 	tmp.el.fss_div.setDisplay(unl)
 	if (unl) tmp.el.FSS2.setHTML(format(player.dark.matters.final,0)+"<br>(+"+(tmp.matters.FSS_base.gte(tmp.matters.FSS_req)?1:0)+")")
 
@@ -217,10 +251,14 @@ function updateDarkHTML() {
 	tmp.el.corrupt_div.setDisplay(unl)
 	if (unl) tmp.el.corruptShard1.setHTML(format(player.dark.c16.shard,0)+"<br>(+"+tmp.c16.shardGain.format(0)+")")
 
+    unl = player.chal.comps[16].gte(1)
+	tmp.el.idk_div.setDisplay(unl)
+    */
+
     if (tmp.tab == 7) {
         if (tmp.stab[7] == 0) {
             tmp.el.darkRay.setHTML(player.dark.rays.format(0))
-            tmp.el.darkShadow.setHTML(player.dark.shadow.format(0)+" "+player.dark.shadow.formatGain(tmp.dark.shadowGain))
+            tmp.el.darkShadow.setHTML(player.dark.shadow.format(0)+" "+player.dark.shadow.formatGain(tmp.dark.shadowGain.mul(inf_gs)))
 
             let eff = dtmp.shadowEff
 
@@ -230,7 +268,7 @@ function updateDarkHTML() {
             `
 
             if (eff.bp) e += `<br>Boosts blueprint particles gain by <b>x${eff.bp.format(3)}</b>`
-            if (eff.sn) e += `<br>Makes you becoming <b>x${eff.sn.format(3)}</b> more supernovas`+eff.sn.softcapHTML(7.5)
+            if (eff.sn) e += `<br>Makes you becoming <b>x${eff.sn.format(3)}</b> more supernovas`+eff.sn.softcapHTML(7.5,hasElement(9,1))
             if (eff.en) e += `<br>Boosts entropy earned by <b>x${eff.en.format(3)}</b>`
             if (eff.ab) e += `<br>Boosts abyssal blots earned by <b>x${eff.ab.format(3)}</b>`
             if (eff.bhp) e += `<br>Boosts exponent from the mass of BH formula by <b>+${eff.bhp.format(3)}</b><br>Uncaps BH-Exponent Boost's effect`.corrupt(c16)
@@ -239,7 +277,7 @@ function updateDarkHTML() {
 
             tmp.el.ab_div.setDisplay(tmp.chal14comp)
             if (tmp.chal14comp) {
-                tmp.el.abyssalBlot.setHTML(player.dark.abyssalBlot.format(0)+" "+player.dark.abyssalBlot.formatGain(tmp.dark.abGain))
+                tmp.el.abyssalBlot.setHTML(player.dark.abyssalBlot.format(0)+" "+player.dark.abyssalBlot.formatGain(tmp.dark.abGain.mul(inf_gs)))
 
                 eff = dtmp.abEff
 
@@ -252,9 +290,10 @@ function updateDarkHTML() {
                 if (eff.pb) e += `<br>Boosts prestige base's multiplier by <b>x${eff.pb.format(3)}</b>`
                 if (eff.csp) e += `<br>Boosts cosmic string's power by <b>x${eff.csp.format(3)}</b>`
                 if (eff.mexp) e += `<br>`+`Boosts all matters gain by <b>^${eff.mexp.format(3)}</b>`.corrupt(c16)
-                if (eff.accelPow) e += `<br>Boosts accelerator power by <b>x${eff.accelPow.format(3)}</b>`+eff.accelPow.softcapHTML(5)
+                if (eff.accelPow) e += `<br>Boosts accelerator power by <b>x${eff.accelPow.format(3)}</b>`+eff.accelPow.softcapHTML(5,hasElement(234))
                 if (eff.ApQ_Overflow) e += `<br>Atomic power & quark overflows start <b>^${eff.ApQ_Overflow.format(3)}</b> later`.corrupt(c16)
                 if (eff.fss) e += `<br>Final Star Shards are <b>${formatPercent(eff.fss-1)}</b> stronger`
+                if (eff.ea) e += `<br>Raises Exotic Atom's formula by <b>${format(eff.ea)}</b>`+eff.ea.softcapHTML(1.75)
 
                 tmp.el.abEff.setHTML(e)
             }
@@ -267,7 +306,7 @@ function updateDarkHTML() {
 
             if (eff.passive) e += `<br>Passively gains <b>${formatPercent(eff.passive)}</b> of dark rays gained on reset per second`
             if (eff.glyph) e += `<br>Earns <b>x${format(eff.glyph,3)}</b> more glyphic mass`
-            if (eff.dChal) e += `<br>Adds <b>${format(eff.dChal,0)}</b> more C13-15 maximum completions`+eff.dChal.softcapHTML(100)
+            if (eff.dChal) e += `<br>Adds <b>${format(eff.dChal,0)}</b> more C13-15 maximum completions`+eff.dChal.softcapHTML(100,hasBeyondRank(3,12))
 
             tmp.el.drEff.setHTML(e)
         } else if (tmp.stab[7] == 1) {
@@ -309,7 +348,7 @@ function getDarkSave() {
             amt: [],
             upg: [],
             unls: 3,
-            final: 0,
+            final: E(0),
         },
 
         c16: {
@@ -319,6 +358,11 @@ function getDarkSave() {
             bestBH: E(0),
             charger: [],
             tree: [],
+        },
+
+        exotic_atom: {
+            tier: 0,
+            amount: [E(0),E(0)],
         },
     }
     for (let x = 0; x < MATTERS_LEN; x++) {

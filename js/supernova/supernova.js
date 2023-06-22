@@ -6,7 +6,7 @@ const SUPERNOVA = {
     } else CONFIRMS_FUNCTION.sn(force, chal, post, fermion);
   },
   doReset() {
-    let br = player.qu.rip.active || tmp.c16active || player.dark.run.active;
+    let br = player.qu.rip.active || tmp.c16active || inDarkRun();
     tmp.supernova.time = 0;
 
     player.atom.points = E(0);
@@ -56,14 +56,12 @@ const SUPERNOVA = {
   },
   starGain() {
     let x = E(hasTree("c") ? 0.1 : 0);
-    if (hasTree("qa2")) x = x.mul(tmp.supernova.tree_eff.qa2);
+    if (hasTree("qa2")) x = x.mul(TREE_UPGS.ids.qa1.effect());
     if (hasTree("sn1")) x = x.mul(tmp.supernova.tree_eff.sn1);
     if (hasTree("sn2")) x = x.mul(tmp.supernova.tree_eff.sn2);
     if (hasTree("sn3")) x = x.mul(tmp.supernova.tree_eff.sn3);
     if (hasTree("bs3")) x = x.mul(tmp.supernova.tree_eff.bs3);
     if (hasTree("sn5")) x = x.mul(tmp.supernova.tree_eff.sn5);
-
-    if (player.ranks.tier.gte(75)) x = x.mul(RANKS.effect.tier[75]());
 
     let qs = Decimal.pow(1.2, player.qu.times.softcap(1e17, 0.1, 0));
     if (!hasElement(140) || tmp.c16active) qs = qs.min(1e10);
@@ -74,7 +72,7 @@ const SUPERNOVA = {
   },
   req(x = player.supernova.times) {
     ff = tmp.dark.shadowEff.sn || 1;
-    if (tmp.c16active || player.dark.run.active) ff /= mgEff(4)[1];
+    if (tmp.c16active || inDarkRun()) ff /= mgEff(4)[1];
 
     ml_fp = E(1).mul(tmp.bosons.upgs.gluon[3].effect);
     maxlimit = E(1e20)
@@ -86,21 +84,21 @@ const SUPERNOVA = {
   },
 };
 
-function calcSupernova(dt, dt_offline) {
+function calcSupernova(dt) {
   let du_gs = tmp.preQUGlobalSpeed.mul(dt);
   let su = player.supernova;
 
   if (player.tickspeed.gte(1)) su.chal.noTick = false;
   if (player.bh.condenser.gte(1)) su.chal.noBHC = false;
 
-  if (tmp.supernova.reached && (!tmp.offlineActive || su.times.gte(1)) && !su.post_10) {
+  if (tmp.supernova.reached && (tmp.start || su.times.gte(1)) && !su.post_10) {
     if (su.times.lte(0)) tmp.supernova.time += dt;
     else {
       addNotify("You become Supernova!");
       SUPERNOVA.reset();
     }
   }
-  if (su.times.gte(1) || quUnl()) su.stars = su.stars.add(tmp.supernova.star_gain.mul(dt_offline).mul(tmp.preQUGlobalSpeed));
+  if (su.times.gte(1) || quUnl()) su.stars = su.stars.add(tmp.supernova.star_gain.mul(dt).mul(tmp.preQUGlobalSpeed));
 
   if (!su.post_10 && su.times.gte(10)) {
     su.post_10 = true;
@@ -114,13 +112,15 @@ function calcSupernova(dt, dt_offline) {
     }
 
   if (su.fermions.unl) {
+    let w = hasElement(3, 1) ? 7 : 6;
+
     if (tmp.fermions.ch[0] >= 0) {
       su.fermions.tiers[tmp.fermions.ch[0]][tmp.fermions.ch[1]] = su.fermions.tiers[tmp.fermions.ch[0]][tmp.fermions.ch[1]].max(tmp.fermions.tiers[tmp.fermions.ch[0]][tmp.fermions.ch[1]]);
     }
     if (tmp.fermions.ch[0] != 0 || tmp.fermions.ch[1] >= 6)
       if (hasTree("qu_qol8") && !(!hasTree("qu_qol8a") && QCs.active()))
         for (let i = 0; i < 2; i++)
-          for (let j = 0; j < 6; j++)
+          for (let j = 0; j < w; j++)
             if (j < FERMIONS.getUnlLength()) {
               su.fermions.tiers[i][j] = su.fermions.tiers[i][j].max(tmp.fermions.tiers[i][j]);
             }
@@ -141,6 +141,8 @@ function updateSupernovaTemp() {
 
   tmp.supernova.reached = tmp.stars ? player.stars.points.gte(tmp.supernova.maxlimit) : false;
 
+  let no_req1 = hasInfUpgrade(0);
+
   for (let i = 0; i < TREE_TAB.length; i++) {
     tmp.supernova.tree_afford2[i] = [];
     for (let j = 0; j < tmp.supernova.tree_had2[i].length; j++) {
@@ -148,10 +150,11 @@ function updateSupernovaTemp() {
       let t = TREE_UPGS.ids[id];
 
       let branch = t.branch || "";
-      let unl = t.unl ? t.unl() : true;
-      let req = t.req ? t.req() : true;
+      let unl = !t.unl || t.unl();
+      let req = !t.req || t.req();
       let bought = player.supernova.tree.includes(id) || player.dark.c16.tree.includes(id);
       if (tmp.qu.mil_reached[1] && NO_REQ_QU.includes(id)) req = true;
+      if (no_req1 && !CS_TREE.includes(id)) req = true;
       let can = (t.qf ? player.qu.points : t.cs ? player.dark.c16.shard : player.supernova.stars).gte(t.cost) && !bought && req;
       if (branch != "")
         for (let x = 0; x < branch.length; x++)
@@ -173,7 +176,7 @@ function updateSupernovaTemp() {
 }
 
 function updateSupernovaEndingHTML() {
-  if (tmp.supernova.reached && !tmp.offlineActive && player.supernova.times.lte(0) && !player.supernova.post_10) {
+  if (tmp.supernova.reached && tmp.start && player.supernova.times.lte(0) && !player.supernova.post_10) {
     tmp.tab = 5;
     document.body.style.backgroundColor = `hsl(0, 0%, ${7 - Math.min(tmp.supernova.time / 4, 1) * 7}%)`;
     tmp.el.supernova_scene.setDisplay(tmp.supernova.time > 4);
@@ -184,14 +187,11 @@ function updateSupernovaEndingHTML() {
     tmp.el.sns5.setVisible(tmp.supernova.time > 17);
     tmp.el.sns5.setOpacity(Math.max(Math.min(tmp.supernova.time - 17, 1), 0));
   }
-  if ((player.supernova.times.lte(0) ? !tmp.supernova.reached : true) || quUnl()) document.body.style.backgroundColor = tmp.tab == 5 ? "#000" : "#111";
+  // if ((player.supernova.times.lte(0)?!tmp.supernova.reached:true) || quUnl()) document.body.style.backgroundColor = tmp.tab == 5 ? "#000" : "#111"
 
-  tmp.el.app_supernova.setDisplay((player.supernova.times.lte(0) ? !tmp.supernova.reached || quUnl() : true) && tmp.tab == 5);
+  // tmp.el.app_supernova.setDisplay((player.supernova.times.lte(0) ? !tmp.supernova.reached || quUnl() : true) && tmp.tab == 5)
 
   if (tmp.tab == 5) {
-    tmp.el.supernova_scale.setTxt(getScalingName("supernova"));
-    tmp.el.supernova_rank.setTxt(format(player.supernova.times, 0));
-    tmp.el.supernova_next.setTxt(format(tmp.supernova.maxlimit, 2));
     if (tmp.stab[5] == 0) {
       tmp.el.neutronStar.setTxt(format(player.supernova.stars, 2) + " " + formatGain(player.supernova.stars, tmp.supernova.star_gain.mul(tmp.preQUGlobalSpeed)));
       updateTreeHTML();

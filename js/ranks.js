@@ -5,20 +5,22 @@ const RANKS = {
     if (tmp.ranks[type].can) {
       player.ranks[type] = player.ranks[type].add(1);
       let reset = true;
-      if (tmp.chal14comp) reset = false;
+      if (tmp.chal14comp || tmp.inf_unl) reset = false;
       else if (type == "rank" && player.mainUpg.rp.includes(4)) reset = false;
       else if (type == "tier" && player.mainUpg.bh.includes(4)) reset = false;
       else if (type == "tetr" && hasTree("qol5")) reset = false;
       else if (type == "pent" && hasTree("qol8")) reset = false;
       if (reset) this.doReset[type]();
       updateRanksTemp();
+
+      addQuote(1);
     }
   },
   bulk(type) {
     if (tmp.ranks[type].can) {
       player.ranks[type] = player.ranks[type].max(tmp.ranks[type].bulk.max(player.ranks[type].add(1)));
       let reset = true;
-      if (tmp.chal14comp) reset = false;
+      if (tmp.chal14comp || tmp.inf_unl) reset = false;
       if (type == "rank" && player.mainUpg.rp.includes(4)) reset = false;
       else if (type == "tier" && player.mainUpg.bh.includes(4)) reset = false;
       else if (type == "tetr" && hasTree("qol5")) reset = false;
@@ -29,16 +31,16 @@ const RANKS = {
   },
   unl: {
     tier() {
-      return player.ranks.rank.gte(3) || player.ranks.tier.gte(1) || player.mainUpg.atom.includes(3) || tmp.radiation.unl;
+      return player.ranks.rank.gte(3) || player.ranks.tier.gte(1) || player.mainUpg.atom.includes(3) || tmp.radiation.unl || tmp.inf_unl;
     },
     tetr() {
-      return player.mainUpg.atom.includes(3) || tmp.radiation.unl;
+      return player.mainUpg.atom.includes(3) || tmp.radiation.unl || tmp.inf_unl;
     },
     pent() {
-      return tmp.radiation.unl;
+      return tmp.radiation.unl || tmp.inf_unl;
     },
     hex() {
-      return tmp.chal13comp;
+      return tmp.chal13comp || tmp.inf_unl;
     },
   },
   doReset: {
@@ -68,16 +70,16 @@ const RANKS = {
   },
   autoUnl: {
     rank() {
-      return player.mainUpg.rp.includes(5);
+      return player.mainUpg.rp.includes(5) || tmp.inf_unl;
     },
     tier() {
-      return player.mainUpg.rp.includes(6);
+      return player.mainUpg.rp.includes(6) || tmp.inf_unl;
     },
     tetr() {
-      return player.mainUpg.atom.includes(5);
+      return player.mainUpg.atom.includes(5) || tmp.inf_unl;
     },
     pent() {
-      return hasTree("qol8");
+      return hasTree("qol8") || tmp.inf_unl;
     },
     hex() {
       return true;
@@ -85,79 +87,71 @@ const RANKS = {
   },
   desc: {
     rank: {
-      1: "unlock mass upgrade 1, you get 1 free mass upgrade 1 per 10 bought.",
-      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20% and you get 1 free mass upgrade 2 per 10 bought.",
-      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, mass upgrade 1 boosts itself, and you get 1 free mass upgrade 3 per 10 bought of mass upgrade 1 & 2.",
+      1: "unlock mass upgrade 1, and you get 1 free mass upgrade 1 per 10 bought.",
+      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20%, and you get 1 free mass upgrade 2 per 10 bought.",
+      3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, and mass upgrade 1 boosts itself.",
       4: "reduce mass upgrade 3 scaling by 20%.",
-      5: "mass upgrade 2 boosts itself and add x/10 to mass gain, where x is rank.",
-      6: "make mass gain is boosted by (x+1)^2, where x is rank.",
-      8: "mass upgrade 1 is (x/10)% cheaper, where x is rank (Softcapt is 5%).",
+      5: "mass upgrade 2 boosts itself.",
+      6: "boost mass gain by (x+1)^2, where x is rank.",
+      7: "add x/10 to base mass gain where x is rank.",
+      8: "mass upgrade 1 is x/10 percent cheaper, where x is rank (Hardcaps at 5%).",
+      9: "get 1 free mass upgrade 3 per 10 of mass upgrade 1 & 2 combined.",
+      10: "add (x/5)log(1e15) to mass upgrade 3 base power, where x is ranks.",
       13: "triple mass gain.",
-      15: "Rank 5 reward effect if better. [x/10 -> x*10].",
-      17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3].",
-      22: "Rank 5 reward effect is even better [x*10 -> x*100].",
-      25: "rage powers boost mass gain logarithmically.",
-      30: "double rage points gain.",
+      14: "rank 1 effect is now ((x/10)*(y/1e15))log(3.14), where x is the amount of mass upgrade 1 bought, and y is mass.",
+      17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
+      20: "double rage powers gain.",
+      25: "you get 1 free tickspeed per 100 bought of mass upgrade 1,2 & 3 combined.",
+      30: "rank 8 hardcap is now 15%",
+      32: "you gain x/10 more rage power where x is rank.",
       34: "mass upgrade 3 softcaps 1.2x later.",
+      35: "rank 2 effect is now the same as rank 14.",
       40: "adds tickspeed power based on ranks.",
-      45: "ranks boosts Rage Powers gain.",
-      50: "10x mass gain.",
-      55: "2x Dark Matter gain.",
-      60: "25x mass gain.",
-      65: "mass boosts Dark Matter gain in a logarithmic way.",
-      70: "10x Rage Power gain.",
-      80: "Dark Matter boost Rage Power gain in a logarithmic way.",
+      42: "rank 9 effect is now the same as rank 14.",
+      45: "rank boosts Rage Powers gain.",
+      65: "double Dark Matters gain.",
+      72: "Dark Matter amount boosts logarithmically black hole gain.",
       90: "rank 40 reward is stronger.",
-      100: "tickspeeds boost Dark Matter gain x/1000, where x is tickspeeds.",
-      105: "raise rank 8 effect softcap to 15%.",
-      115: "50x mass gain.",
-      128: "Black Hole mass is boosted by Rage Power.",
-      150: "double Atom gain.",
+      100: "Dark Matters gain is multiplied by x, where x is each mass upgrade and tickspeed upgrade divided by 100 and added.",
+      125: "black hole mass is logarithmically multiplied by rage powers.",
+      150: "Atom gain is doubled.",
       180: "mass gain is raised by 1.025.",
       220: "rank 40 reward is overpowered.",
       300: "rank multiplies quark gain.",
       380: "rank multiplies mass gain.",
-      400: "raise rank 8 softcap to 20%",
-      600: "mass gain is raised by ^1.1",
-      800: "make mass gain softcap 0.25% weaker based on rank.",
-      900: "mass is multiplied by the amount of elements bought.",
-      1000: "make tier 50 reward ^2.",
-      1100: "raise rank 8 softcap to 30%.",
-      1200: "gain 1 free blackhole condenser per 100 of muscler, booster, stronger and tickspeed.",
-      1250: "tier 70 effect affects collapsed stars.",
-      1300: "Relativistic Particles affects mass gain.",
-      1400: "Neutron Star boosts relativistic particles gain.",
-      1450: "rank 5 effect is more effective [x*1e8 -> x*1e16]",
-      1475: "rank 8 effect hardcap is now 60%",
-      1600: "Last Star is boosted by MD 1 upgrade effect at reduced rate.",
-      1900: "Black Hole mass is raised to ^1.1",
-      2000: "Tier 2 effect is better. ^1.15 -> ^1.2",
+      400: "raise rank 8 hardcap to 25%",
+      800: "make mass gain softcap 0.25% weaker based on rank, hardcaps at 25%.",
+      1000: "mass gain is raised by ^1.1",
+      1250: "mass gain is multiplied by the amount of elements bought.",
+      1300: "last star is multiplied by (x)log(3.14), where x is the amount of elements bought.",
+      1500: "Add (x)log(3.14) to Quark gain, where x is ranks.",
+      1750: "rank 8 hardcap is now 30%",
+      2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",
+      2500: "rank 8 hardcap is doubled to 60%",
+      3000: "last star is multiplied by Mass Dilation 4th upgrade.",
     },
     tier: {
-      1: "reduce rank reqirements by 20%.",
-      2: "raise mass gain by 1.15.",
+      1: "reduce rank requirements by 20%.",
+      2: "raise mass gain by 1.15",
       3: "reduce all mass upgrade scalings by 20%.",
-      4: "adds +5% tickspeed power for every tier you have, softcaps at +40%.",
-      5: "Rank 5 reward effect is better [x*100 -> x*1e4].",
-      6: "make rage powers boosted by tiers.",
+      4: "rank 8 hardcap is now 10%",
+      5: "rank reward 7 is 2x better",
+      6: "boost rage powers based on tiers.",
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
-      9: "raise rank 8 effect softcap to 10%.",
-      11: "Lessen rank 14's softcap.",
-      12: "Tier 4's reward is twice as effective and the softcap is removed.",
-      13: "rank 5 effect is overpowered [x*1e4 -> x*1e8].",
+      9: "rank 8 hardcap is now 20%",
+      10: "rank 1 effect softcap is now 2000.",
+      11: "rank 2 effect softcap is now 2000.",
+      12: "rank 9 effect softcap is now 2000.",
       30: "stronger effect's softcap is 10% weaker.",
-      40: "raise rank 8 effect softcap to 30%.",
-      50: "quarks gain is boosted by the amount of elements bought.",
+      40: "rank 8 hardcap is now 30%",
+      45: "rank 7 is now ovepowered.",
       55: "make rank 380's effect stronger based on tier.",
-      60: "colapsed stars boost atom gain.",
-      70: "mass affects slighly mass dilation gain.",
-      75: "tiers boost neutron star gain in a logarithmic way.",
-      80: "Rank requirements are 30% weaker.",
-      100: "Super Tetr scale 5 later.",
-      150: "Dilated Mass scales Super later at logarithimical rate.",
+      75: "Quark gain is multiplied by amount of elements bought.",
+      80: "multiply dilated mass by (x)log(1e1000000), where x is mass.",
+      100: "Super Tetr scales 5 later.",
+      150: "dilated mass scales Super later at a logarithmical rate.",
       200: "Instead of adding Tickspeed, Tier 7 now raises tickspeed effect based on supernova amount in a logarithmic way.",
-      300: "Disable Rank 50 and 60 effects, but Mass Softcap^2 starts ^2 later.",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -165,26 +159,26 @@ const RANKS = {
       3: "raise tickspeed effect by 1.05.",
       4: "Super rank scaling is weaker based on tier, and super tier scales 20% weaker.",
       5: "Hyper/Ultra Tickspeed starts later based on tetr.",
-      6: "rank 80 effect softcap is 50x weaker.",
-      7: "tier 70 effect hardcap is 10x less effective.",
+      6: "tier 7 effect softcap is now 2000, and every 100 is now every 75.",
+      7: "rank 10 is overpowered.",
       8: "Mass gain softcap^2 starts ^1.5 later.",
-      9: "Tier requirements are 30% weaker.",
-      10: "Rank 25 softcap effect is 100x weaker",
+      9: "Tier requierements are 30% weaker.",
+      10: "rank 25 effect softcap is now 2000.",
       60: "Tetr 8 effect is now ^2",
       75: "Supernovas boost Quantum Foam gain in a logarithmic way.",
     },
     pent: {
       1: "reduce tetr requirements by 15%, and Meta-Rank starts 1.1x later.",
-      2: "tetr boost all radiations gain.",
+      2: "tetr boosts all radiations gain.",
       4: "Meta-Tickspeeds start later based on Supernovas.",
       5: "Meta-Ranks start later based on Pent.",
       8: "Mass gain softcap^4 starts later based on Pent.",
       15: "remove 3rd softcap of Stronger's effect.",
-      16: "Mass gain softcap^3 starts ^x(log(PI)) later, where x is Quantum Foam.",
+      16: "Mass gain softcap^3 starts ^(x)log(3.14) later, where x is Quantum Foam.",
     },
     hex: {
       1: "reduce pent reqirements by 20%.",
-      4: "increase dark ray earned by +20% per hex.",
+      4: "increase dark ray gain by +20% per hex.",
       6: "remove first softcap of normal mass gain.",
       10: "remove second softcap of normal mass gain.",
       13: "remove third softcap of normal mass gain.",
@@ -193,7 +187,7 @@ const RANKS = {
       43: "hex 4's effect is overpowered.",
       48: "remove sixth softcap of normal mass gain.",
       62: "remove seventh softcap of normal mass gain.",
-      91: "+0.15 to matter exponent.",
+      91: "+0.15 to matter exponents.",
       157: "remove eighth softcap of normal mass gain.",
     },
   },
@@ -203,12 +197,37 @@ const RANKS = {
         let ret = E(player.massUpg[1] || 0)
           .div(10)
           .floor();
+        if (player.ranks.rank.gte(14))
+          ret = E(player.massUpg[1] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .softcap(200, 0.1, 0);
+        if (player.ranks.tier.gte(10))
+          ret = E(player.massUpg[1] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .softcap(2000, 0.1, 0);
         return ret;
       },
       2() {
         let ret = E(player.massUpg[2] || 0)
           .div(10)
-          .floor();
+          .floor()
+          .softcap(200, 0.1, 0);
+        if (player.ranks.rank.gte(35))
+          ret = E(player.massUpg[2] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .softcap(200, 0.1, 0);
+        if (player.ranks.tier.gte(11))
+          ret = E(player.massUpg[2] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .softcap(2000, 0.1, 0);
         return ret;
       },
       3() {
@@ -223,20 +242,122 @@ const RANKS = {
         let ret = player.ranks.rank.add(1).pow(player.ranks.rank.gte(17) ? player.ranks.rank.add(1).root(3) : 2);
         return ret;
       },
+      7() {
+        let ret = player.ranks.rank.div(10);
+        if (player.ranks.tier.gte(5)) ret = player.ranks.rank.div(5);
+        if (player.ranks.tier.gte(45)) ret = player.ranks.rank.pow(100);
+        return ret;
+      },
       8() {
-        let ret = player.ranks.rank.div(10).softcap(0.05, 0.1, 0);
-        if (player.ranks.tier.gte(9)) ret = player.ranks.rank.div(10).softcap(0.1, 0.1, 0);
-        if (player.ranks.rank.gte(105)) ret = player.ranks.rank.div(10).softcap(0.15, 0.1, 0);
-        if (player.ranks.rank.gte(400)) ret = player.ranks.rank.div(10).softcap(0.2, 0.1, 0);
-        if (player.ranks.tier.gte(40)) ret = player.ranks.rank.div(10).softcap(0.25, 0.1, 0);
-        if (player.ranks.rank.gte(1100)) ret = player.ranks.rank.div(10).softcap(0.3, 0.1, 0);
-        if (player.ranks.rank.gte(1450)) ret = player.ranks.rank.div(10).softcap(0.4, 0.1, 0);
-        if (ret.gt(0.6)) ret = E(0.6);
+        let ret = E(player.ranks.rank || 0)
+          .div(10)
+          .softcap(0.05, 0, 0);
+        if (player.ranks.tier.gte(4))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.1, 0, 0);
+        if (player.ranks.rank.gte(30))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.15, 0, 0);
+        if (player.ranks.tier.gte(9))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.2, 0, 0);
+        if (player.ranks.rank.gte(400))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.25, 0, 0);
+        if (player.ranks.tier.gte(45))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.25, 0, 0);
+        if (player.ranks.rank.gte(1750))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.35, 0, 0);
+        if (player.ranks.rank.gte(2500))
+          ret = E(player.ranks.rank || 0)
+            .div(10)
+            .softcap(0.6, 0, 0);
+        return ret;
+      },
+      9() {
+        let ret = E(player.massUpg[1] || 0)
+          .div(10)
+          .floor()
+          .add(
+            E(player.massUpg[2] || 0)
+              .div(10)
+              .floor()
+          );
+        if (player.ranks.rank.gte(42))
+          ret = E(player.massUpg[1] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(10)
+                .floor()
+                .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            )
+            .softcap(200, 0.1, 0);
+        if (player.ranks.tier.gte(12))
+          ret = E(player.massUpg[1] || 0)
+            .div(10)
+            .floor()
+            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(10)
+                .floor()
+                .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+            )
+            .softcap(2000, 0.1, 0);
+        return ret;
+      },
+      10() {
+        let ret = player.ranks.rank.div(5).log(1e15);
+        if (player.ranks.tetr.gte(7)) ret = player.ranks.rank.div(5);
         return ret;
       },
       25() {
-        let ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.log(3.14)).softcap(100, 0.5, 0) : E(1);
-        if (player.ranks.tetr.gte(10)) ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.log(3.14)).softcap(1e4, 0.5, 0) : E(1);
+        let ret = E(player.massUpg[1] || 0)
+          .div(100)
+          .floor()
+          .add(
+            E(player.massUpg[2] || 0)
+              .div(100)
+              .floor()
+              .add(
+                E(player.massUpg[3] || 0)
+                  .div(100)
+                  .floor()
+              )
+          )
+          .softcap(200, 0.1, 0);
+        if (player.ranks.tetr.gte(10))
+          ret = E(player.massUpg[1] || 0)
+            .div(100)
+            .floor()
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(100)
+                .floor()
+                .add(
+                  E(player.massUpg[3] || 0)
+                    .div(100)
+                    .floor()
+                )
+            )
+            .softcap(200, 0.1, 0);
+        return ret;
+      },
+      32() {
+        let ret = E(player.ranks.rank || 0)
+          .div(10)
+          .softcap(10, 0.1, 0);
         return ret;
       },
       40() {
@@ -249,21 +370,30 @@ const RANKS = {
         let ret = player.ranks.rank.add(1).pow(1.5);
         return ret;
       },
-      65() {
-        let ret = player.mass.gt(0) ? player.mass.log(1e20).softcap(10, 0.5, 0) : E(1);
-        return ret;
-      },
-      80() {
-        let ret = player.bh.dm.gt(0) ? E(1).add(player.bh.dm.log(3.14).softcap(10, 0.1, 0)) : E(1);
-        if (player.ranks.tetr.gte(6)) ret = player.bh.dm.gt(0) ? E(1).add(player.bh.dm.log(3.14).softcap(500, 0.1, 0)) : E(1);
+      72() {
+        let ret = E(1)
+          .add(E(player.bh.dm || 1).log(1e20))
+          .softcap(2, 0.1, 0);
         return ret;
       },
       100() {
-        let ret = player.tickspeed.gt(0) ? E(1).add(player.tickspeed.div(1000).softcap(2, 0.5, 0)) : E(1);
+        let ret = E(player.massUpg[1] || 0)
+          .div(100)
+          .add(
+            E(player.massUpg[2] || 0)
+              .div(100)
+              .add(
+                E(player.massUpg[3] || 0)
+                  .div(100)
+                  .floor()
+                  .add(E(player.tickspeed || 0).div(100))
+              )
+          )
+          .softcap(100, 0.1, 0);
         return ret;
       },
-      128() {
-        let ret = player.rp.points.gt(0) ? E(1).add(player.rp.points.div(1e100).floor().softcap(1e60, 0.01, 0)) : E(1);
+      125() {
+        let ret = E(player.rp.points.log(1e20) || 1).softcap(10, 0.1, 0);
         return ret;
       },
       300() {
@@ -284,75 +414,89 @@ const RANKS = {
         let ret = E(1).sub(player.ranks.rank.sub(799).mul(0.0025).add(1).softcap(1.25, 0.5, 0).sub(1)).max(0.75);
         return ret;
       },
-      900() {
+      1250() {
         let ret = E(player.atom.elements.length + 1);
         return ret;
       },
-      1200() {
-        let ret = (player.massUpg[1].gt(0) ? player.massUpg[1].div(100).floor() : E(0))
-          .add(player.massUpg[2].gt(0) ? player.massUpg[2].div(100).floor() : E(0))
-          .add(player.massUpg[3].gt(0) ? player.massUpg[3].div(100).floor() : E(0))
-          .add(player.tickspeed.gt(0) ? player.tickspeed.div(100).floor() : 0);
+      1300() {
+        let ret = E(player.atom.elements.length + 1).log(3.14);
         return ret;
       },
-      1400() {
-        let ret = player.supernova.stars.gt(0) ? player.supernova.stars.floor().softcap(1e20, 0.5, 0) : E(1);
+      1500() {
+        let ret = player.ranks.rank.log(3.14).softcap(100, 0.1, 0);
         return ret;
       },
-      1600() {
-        let ret = player.md.upgs[1].gt(0) ? player.md.upgs[1].log(3.14) : E(1);
+      2000() {
+        let ret = E(player.massUpg[1] || 0)
+          .div(200)
+          .add(
+            E(player.massUpg[2] || 0)
+              .div(200)
+              .add(
+                E(player.massUpg[3] || 0)
+                  .div(200)
+                  .floor()
+                  .add(E(player.tickspeed || 0).div(200))
+              )
+          )
+          .softcap(200, 0.1, 0)
+          .floor();
         return ret;
       },
     },
     tier: {
-      4() {
-        let ret = E(0);
-        if (player.ranks.tier.gte(12)) ret = player.ranks.tier.mul(0.1);
-        else ret = player.ranks.tier.mul(0.05).add(1).softcap(1.4, 0.75, 0).sub(1);
-        return ret;
-      },
       6() {
         let ret = E(2).pow(player.ranks.tier);
         if (player.ranks.tier.gte(8)) ret = ret.pow(RANKS.effect.tier[8]());
         return overflow(ret, "ee100", 0.5);
       },
       7() {
-        let a = E(player.massUpg[1] || 0)
+        let ret = E(player.massUpg[1] || 0)
           .div(100)
-          .floor();
-        let b = E(player.massUpg[2] || 0)
-          .div(100)
-          .floor();
-        let c = E(player.massUpg[3] || 0)
-          .div(100)
-          .floor();
-        let ret = a.add(b).add(c);
-        if (player.ranks.tier.gte(200)) ret = player.supernova.times.gt(0) ? E(1).add(player.supernova.times.log(3.14).div(10)) : E(1);
+          .floor()
+          .add(
+            E(player.massUpg[2] || 0)
+              .div(100)
+              .floor()
+          )
+          .add(
+            E(player.massUpg[3] || 0)
+              .div(100)
+              .floor()
+          )
+          .softcap(200, 0.1, 0);
+        if (player.ranks.tetr.gte(6))
+          ret = E(player.massUpg[1] || 0)
+            .div(75)
+            .floor()
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(75)
+                .floor()
+            )
+            .add(
+              E(player.massUpg[3] || 0)
+                .div(75)
+                .floor()
+            )
+            .softcap(2000, 0.1, 0);
+        if (player.ranks.tier.gte(200)) ret = E(1).add(player.supernova.times.log(1e307));
         return ret;
       },
       8() {
-        let ret = player.bh.dm.gt(0) ? player.bh.dm.max(1).log10().add(1).root(2) : E(1);
-        return ret;
-      },
-      50() {
-        let ret = E(player.atom.elements.length + 1);
-        if (player.ranks.rank.gte(100)) ret = E(player.atom.elements.length + 1).pow(2);
+        let ret = player.bh.dm.max(1).log10().add(1).root(2);
         return ret;
       },
       55() {
         let ret = player.ranks.tier.max(1).log10().add(1).root(4);
         return ret;
       },
-      60() {
-        let ret = player.stars.points.gt(0) ? player.stars.points.softcap(1e5, 0.5, 0) : E(1);
-        return ret;
-      },
-      70() {
-        let ret = player.mass.log(1e308).softcap(player.ranks.tetr.gte(7) ? 1e4 : 1000, 0, 0);
-        return ret;
-      },
       75() {
-        let ret = player.ranks.tier.log(3.14).softcap(10, 0.5, 0);
+        let ret = E(player.atom.elements.length + 1);
+        return ret;
+      },
+      80() {
+        let ret = player.mass.log("1e1000000");
         return ret;
       },
       150() {
@@ -413,36 +557,37 @@ const RANKS = {
   effDesc: {
     rank: {
       1(x) {
-        return "+" + format(x, 0);
+        return "+" + format(x, 0) + (player.ranks.rank.gte(10) && x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       2(x) {
-        return "+" + format(x, 0);
+        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       3(x) {
-        let a = player.massUpg[1].div(10).floor();
-        let b = player.massUpg[2].div(10).floor();
-        let c = a.add(b);
-        return "+" + format(x) + ", +" + format(c, 0);
+        return "+" + format(x);
       },
       5(x) {
-        let a = player.ranks.rank.div(10);
-        if (player.ranks.rank.gte(15)) a = player.ranks.rank.mul(10);
-        if (player.ranks.rank.gte(22)) a = player.ranks.rank.mul(100);
-        if (player.ranks.tier.gte(5)) a = player.ranks.rank.mul(1e4);
-        if (player.ranks.tier.gte(13)) a = player.ranks.rank.mul(1e8);
-        if (player.ranks.rank.gte(1450)) a = player.ranks.rank.mul(1e16);
-        return "+" + format(x) + ", +" + format(a);
+        return "+" + format(x);
       },
       6(x) {
         return format(x) + "x";
       },
+      7(x) {
+        return "+" + format(x);
+      },
       8(x) {
-        if (player.ranks.rank.gte(1475)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.6") ? "<span class='hard'> (hardcapped)</span>" : "");
-        if (player.ranks.rank.gte(1050)) return format(x.mul(100)) + "% cheaper" + (x.gte("0.5") ? "<span class='hard'> (hardcapped)</span>" : "");
-        else return format(x.mul(100)) + "% cheaper" + (x.gte("0.05") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x.mul(100), 0) + "% cheaper" + (x.gte("0.05") ? "<span class='hard'> (hardcapped)</span>" : "");
+      },
+      9(x) {
+        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      10(x) {
+        return "+" + format(x);
       },
       25(x) {
-        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
+        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      32(x) {
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       40(x) {
         return "+" + format(x.mul(100)) + "%";
@@ -450,17 +595,14 @@ const RANKS = {
       45(x) {
         return format(x) + "x";
       },
-      65(x) {
-        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      80(x) {
-        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      100(x) {
+      72(x) {
         return format(x) + "x" + (x.gte("2") ? "<span class='soft'> (softcapped)</span>" : "");
       },
-      128(x) {
-        return format(x) + "x" + (x.gte("1e60") ? "<span class='soft'> (softcapped)</span>" : "");
+      100(x) {
+        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      125(x) {
+        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       300(x) {
         return format(x) + "x";
@@ -471,17 +613,17 @@ const RANKS = {
       800(x) {
         return format(E(1).sub(x).mul(100)) + "% weaker";
       },
-      900(x) {
+      1250(x) {
+        return format(x, 0) + "x";
+      },
+      1300(x) {
         return format(x) + "x";
       },
-      1200(x) {
-        return "+" + format(x);
+      1500(x) {
+        return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
-      1400(x) {
-        return format(x) + "x" + (x.gte("1e20") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      1600(x) {
-        return format(x) + "x";
+      2000(x) {
+        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
     },
     tier: {
@@ -492,30 +634,25 @@ const RANKS = {
         return format(x) + "x";
       },
       7(x) {
-        if (player.ranks.tier.gte(200)) return "^" + format(x);
-        else return "+" + format(x, 0);
+        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       8(x) {
         return "^" + format(x);
       },
-      50(x) {
-        return format(x) + "x";
-      },
       55(x) {
         return "^" + format(x);
       },
-      60(x) {
-        return format(x) + "x" + (x.gte("1e5") ? "<span class='soft'> (softcapped)</span>" : "");
-      },
-      70(x) {
-        if (player.ranks.tetr.gte(7)) return format(x) + "x" + (x.gte("1e4") ? "<span class='hard'> (hardcapped)</span>" : "");
-        if (player.ranks.tier.gte(70)) return format(x) + "x" + (x.gte("1000") ? "<span class='hard'> (hardcapped)</span>" : "");
-      },
       75(x) {
-        return format(x) + "x" + (x.gte("10") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x, 0) + "x";
+      },
+      80(x) {
+        return format(x) + "x";
       },
       150(x) {
         return format(x) + "x" + (x.gte("5") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      200(x) {
+        return format(x) + "x";
       },
     },
     tetr: {
@@ -559,14 +696,13 @@ const RANKS = {
     rank() {
       let f = E(1);
       if (player.ranks.tier.gte(1)) f = f.mul(1 / 0.8);
-      if (player.ranks.tier.gte(80)) f = f.mul(1 / 0.7);
       if (!hasCharger(3)) f = f.mul(tmp.chal.eff[5].pow(-1));
       return f;
     },
     tier() {
       let f = E(1);
       f = f.mul(tmp.fermions.effs[1][3]);
-      if (player.ranks.tetr.gte(1)) f = f.mul(1 / 0.8);
+      if (player.ranks.tetr.gte(1)) f = f.mul(1 / 0.75);
       if (player.mainUpg.atom.includes(10)) f = f.mul(2);
       return f;
     },
@@ -576,6 +712,7 @@ const RANKS = {
 const CORRUPTED_PRES = [[10, 40]];
 
 const PRESTIGES = {
+  names: ["prestige", "honor", "glory", "renown"],
   fullNames: ["Prestige Level", "Honor", "Glory", "Renown"],
   baseExponent() {
     let x = 0;
@@ -583,9 +720,12 @@ const PRESTIGES = {
     if (hasPrestige(0, 32)) x += prestigeEff(0, 32, 0);
     x += tmp.fermions.effs[1][6] || 0;
     x += glyphUpgEff(10, 0);
+    if (tmp.inf_unl) x += theoremEff("mass", 3, 0);
 
     x += 1;
-    if (tmp.c16active || player.dark.run.active) x /= mgEff(5);
+
+    if (hasBeyondRank(4, 2)) x *= beyondRankEffect(4, 2);
+    if (tmp.c16active || inDarkRun()) x /= mgEff(5);
 
     return x;
   },
@@ -619,7 +759,7 @@ const PRESTIGES = {
         x = hasElement(167) ? y.div(fp).scaleEvery("prestige2", false).pow(1.25).mul(3.5).add(5) : y.pow(1.3).mul(4).add(6);
         break;
       case 3:
-        x = y.div(fp).pow(1.25).mul(3).add(9);
+        x = y.div(fp).scaleEvery("prestige3", false).pow(1.25).mul(3).add(9);
         break;
       default:
         x = EINF;
@@ -642,7 +782,7 @@ const PRESTIGES = {
         if (y.gte(6)) x = hasElement(167) ? y.sub(5).div(3.5).max(0).root(1.25).scaleEvery("prestige2", true).mul(fp).add(1) : y.sub(6).div(4).max(0).root(1.3).mul(fp).add(1);
         break;
       case 3:
-        if (y.gte(9)) x = y.sub(9).div(3).max(0).root(1.25).mul(fp).add(1);
+        if (y.gte(9)) x = y.sub(9).div(3).max(0).root(1.25).scaleEvery("prestige3", true).mul(fp).add(1);
         break;
       default:
         x = E(0);
@@ -657,9 +797,9 @@ const PRESTIGES = {
     if (hasUpgrade("br", 19) && i < 3) fp *= upgEffect(4, 19);
     return fp;
   },
-  unl: [() => true, () => true, () => tmp.chal14comp, () => tmp.brUnl],
-  noReset: [() => hasUpgrade("br", 11), () => tmp.chal13comp, () => tmp.chal15comp, () => false],
-  autoUnl: [() => tmp.chal13comp, () => tmp.chal14comp, () => tmp.chal15comp, () => false],
+  unl: [() => true, () => true, () => tmp.chal14comp || tmp.inf_unl, () => tmp.brUnl || tmp.inf_unl],
+  noReset: [() => hasUpgrade("br", 11) || tmp.inf_unl, () => tmp.chal13comp || tmp.inf_unl, () => tmp.chal15comp || tmp.inf_unl, () => tmp.inf_unl],
+  autoUnl: [() => tmp.chal13comp || tmp.inf_unl, () => tmp.chal14comp || tmp.inf_unl, () => tmp.chal15comp || tmp.inf_unl, () => tmp.inf_unl],
   autoSwitch(x) {
     player.auto_pres[x] = !player.auto_pres[x];
   },
@@ -671,10 +811,10 @@ const PRESTIGES = {
       5: `Pre-Quantum Global Speed is raised by ^2 (before division).`,
       6: `Tickspeed Power softcap starts ^100 later.`,
       8: `Mass softcap^5 starts later based on Prestige.`,
-      10: `Gain more Relativistic Energies based on Prestige.`,
+      10: `Gain more Relativistic Energy based on Prestige.`,
       12: `Stronger Effect's softcap^2 is 7.04% weaker.`,
       15: `Tetr 2's reward is overpowered.`,
-      18: `Gain 100% more Ranks to Prestige Base.`,
+      18: `Rank’s effect on Prestige Base is doubled.`,
       24: `Super Cosmic Strings scale 20% weaker.`,
       28: `Remove all softcaps from Gluon Upgrade 4's effect.`,
       32: `Prestige Base’s exponent is increased based on Prestige Level.`,
@@ -685,7 +825,7 @@ const PRESTIGES = {
       218: `Unquadpentium-145 is slightly stronger.`,
       233: `Red Matter boosts Dark Ray.`,
       382: `Matter exponent is increased by prestige level. Collapsed star's effect is overpowered.`,
-      388: `Hybridized Uran-Astatine also applies pre-Meta pre-Glory at a reduced rate.`,
+      388: `Hybridized Uran-Astatine also applies to pre-Meta pre-Glory at a reduced rate.`,
       552: `Exotic supernova starts x1.25 later.`,
       607: `Chromas gain is increased by prestige base.`,
       651: `Hyper Hex starts x1.33 later.`,
@@ -693,36 +833,47 @@ const PRESTIGES = {
       1337: `Pre-Quantum Global Speed boosts matter exponent at a reduced rate. Prestige Level 382 is stronger.`,
     },
     {
-      1: `All star resources are squared.`,
+      1: `All-star resources are squared.`,
       2: `Meta-Supernova starts 100 later.`,
       3: `Bosonic resources are boosted based on Prestige Base.`,
       4: `Gain 5 free levels of each Primordium Particle.`,
       5: `Pent 5's reward is stronger based on Prestige Base.`,
       7: `Quarks are boosted based on Honor.`,
-      15: `Super & Hyper cosmic strings scale weaker based on Honors.`,
-      22: `Raise dark shadow gain by 10%.`,
+      15: `Super & Hyper cosmic strings scale weaker based on Honor.`,
+      22: `Raise dark shadow gain by 1.1.`,
       33: `Hybridized Uran-Astatine applies to pre-Meta Pent requirements at a reduced rate.`,
       46: `Add 500 more C13-15 max completions.`,
       66: `All Fermions' scaling is 20% weaker.`,
       91: `FSS base is raised to the 1.05th power.`,
-      127: `Remove all pre-Exotic scalings from Rank & Tier, but nullify C5's reward.`,
+      127: `Remove all pre-Exotic scalings from Rank & Tier, but nullify C5's reward and Hybridized Uran-Astatine’s first effect for Rank & Tier.`,
       139: `Matters' production is tripled every FSS. FV Manipulator's cost is slightly weaker.`,
       167: `Abyssal Blot's fourth reward is raised by FSS.`,
+      247: `Muon's production is increased by MCF tier.`,
+      300: `Softcaps of Meta-Quark and Meta-Lepton are slightly weaker.`,
+      400: `Each particle power's 1st effect is stronger.`,
+      510: `Raise Kaon & Pion gains to the 1.1th power.`,
     },
     {
       1: `The requirement for prestige levels & honors are 15% lower.`,
       3: `Break dilation upgrade 12 is cheaper.`,
-      4: `Unlock new effect from Hybridized Uran-Astatine.`,
+      4: `Unlock new effect for Hybridized Uran-Astatine.`,
       5: `Glory boosts glyphic mass.`,
       8: `Glory reduces Black Hole Overflow nerf.`,
       22: `Glory boosts all matters gain.`,
       25: `Uncap pre-darkness challenges' completion cap. C7's reward is changed.`,
       28: `FV Manipulator Power is boosted by Honor.`,
+      34: `Pions boost Kaons gain at a reduced rate.`,
+      40: `[ct4]'s effect is better.`,
+      45: `Unstable BH affects mass of black hole overflow^2 starting.`,
+      58: `Exotic Atom's reward strength is increased by +5% per beyond-ranks' maximum tier.`,
+      121: `Oct 1's reward is raised by 4.`,
     },
     {
       1: `The requirements for previous prestiges are 10% lower.`,
       2: `Exotic Supernova starts x1.25 later every Renown.`,
       4: `Corrupted shard gain is increased by +50% per Renown.`,
+      6: `Exotic Atoms boost their other resources.`,
+      10: `Prestige Level 388 also applies to Glory scaling.`,
     },
   ],
   rewardEff: [
@@ -772,7 +923,7 @@ const PRESTIGES = {
       ],
       607: [
         () => {
-          let x = tmp.prestiges.base.max(1).pow(1.5).softcap("e7500", 0.1, 0);
+          let x = tmp.prestiges.base.max(1).pow(1.5).softcap("e7500", 0.1, 0).min("e50000");
           return x;
         },
         (x) => "x" + format(x) + softcapHTML(x, "e7500"),
@@ -836,6 +987,13 @@ const PRESTIGES = {
         },
         (x) => "x" + x.format(0),
       ],
+      247: [
+        () => {
+          let x = Decimal.pow(player.dark.exotic_atom.tier + 1, 1.5);
+          return x;
+        },
+        (x) => "x" + x.format(),
+      ],
     },
     {
       5: [
@@ -866,6 +1024,29 @@ const PRESTIGES = {
         },
         (x) => "x" + format(x),
       ],
+      34: [
+        () => {
+          let x = player.dark.exotic_atom.amount[1].add(1).log10().add(1).pow(1.5);
+          return x;
+        },
+        (x) => "x" + format(x),
+      ],
+      45: [
+        () => {
+          let y = player.bh.unstable; //.overflow(1e24,0.5,0)
+          let x = hasElement(224) ? Decimal.pow(1.1, y.root(4)) : y.add(1);
+          if (tmp.c16active) x = overflow(x.log10().add(1).root(2), 10, 0.5);
+          return overflow(x, 1e100, 0.5).min("e1750");
+        },
+        (x) => "^" + format(x) + " later",
+      ],
+      58: [
+        () => {
+          let x = tmp.beyond_ranks.max_tier * 0.05;
+          return x;
+        },
+        (x) => "+" + formatPercent(x),
+      ],
     },
     {
       2: [
@@ -878,6 +1059,13 @@ const PRESTIGES = {
       4: [
         () => {
           let x = player.prestiges[3].div(2).add(1);
+          return x;
+        },
+        (x) => "x" + x.format(),
+      ],
+      6: [
+        () => {
+          let x = tmp.exotic_atom.amount.add(1).log10().add(1);
           return x;
         },
         (x) => "x" + x.format(),
@@ -916,29 +1104,36 @@ function prestigeEff(x, y, def = E(1)) {
 function updateRanksTemp() {
   if (!tmp.ranks) tmp.ranks = {};
   for (let x = 0; x < RANKS.names.length; x++) if (!tmp.ranks[RANKS.names[x]]) tmp.ranks[RANKS.names[x]] = {};
+  let ifp = E(1);
+  if (tmp.inf_unl) ifp = ifp.mul(theoremEff("mass", 2));
   let fp2 = tmp.qu.chroma_eff[1][0];
+
+  let tetr_fp2 = !hasElement(243) && hasCharger(8) ? 1 : fp2;
+
+  let rt_fp2 = !hasElement(243) && hasPrestige(1, 127) ? (tmp.c16active ? 5e2 : 1) : fp2;
   let ffp = E(1);
   let ffp2 = 1;
-  if (tmp.c16active || player.dark.run.active) ffp2 /= mgEff(5);
+  if (tmp.c16active || inDarkRun()) ffp2 /= mgEff(5);
 
   let fp = RANKS.fp.rank().mul(ffp);
   tmp.ranks.rank.req = E(10)
-    .pow(player.ranks.rank.div(ffp2).scaleEvery("rank", false, [1, 1, 1, 1, fp2]).div(fp).pow(1.15))
+    .pow(player.ranks.rank.div(ifp).div(ffp2).scaleEvery("rank", false, [1, 1, 1, 1, rt_fp2]).div(fp).pow(1.15))
     .mul(10);
   tmp.ranks.rank.bulk = E(0);
-  if (player.mass.gte(10)) tmp.ranks.rank.bulk = player.mass.div(10).max(1).log10().root(1.15).mul(fp).scaleEvery("rank", true, [1, 1, 1, 1, fp2]).mul(ffp2).add(1).floor();
+  if (player.mass.gte(10)) tmp.ranks.rank.bulk = player.mass.div(10).max(1).log10().root(1.15).mul(fp).scaleEvery("rank", true, [1, 1, 1, 1, rt_fp2]).mul(ffp2).mul(ifp).add(1).floor();
   tmp.ranks.rank.can = player.mass.gte(tmp.ranks.rank.req) && !CHALS.inChal(5) && !CHALS.inChal(10) && !FERMIONS.onActive("03");
 
   fp = RANKS.fp.tier().mul(ffp);
   tmp.ranks.tier.req = player.ranks.tier
+    .div(ifp)
     .div(ffp2)
-    .scaleEvery("tier", false, [1, 1, 1, fp2])
+    .scaleEvery("tier", false, [1, 1, 1, rt_fp2])
     .div(fp)
     .add(2)
     .pow(2)
     .floor()
     .mul(player.ranks.tetr.gte(9) ? 0.7 : 1);
-  tmp.ranks.tier.bulk = player.ranks.rank.max(0).root(2).sub(2).mul(fp).scaleEvery("tier", true, [1, 1, 1, fp2]).mul(ffp2).add(1).floor();
+  tmp.ranks.tier.bulk = player.ranks.rank.max(0).root(2).sub(2).mul(fp).scaleEvery("tier", true, [1, 1, 1, rt_fp2]).mul(ffp2).mul(ifp).add(1).floor();
 
   fp = E(1).mul(ffp);
   let pow = 2;
@@ -950,8 +1145,9 @@ function updateRanksTemp() {
   let tps = 0;
 
   tmp.ranks.tetr.req = player.ranks.tetr
+    .div(ifp)
     .div(ffp2)
-    .scaleEvery("tetr", false, [1, 1, 1, fp2])
+    .scaleEvery("tetr", false, [1, 1, 1, tetr_fp2])
     .div(fp)
     .pow(pow)
     .mul(3)
@@ -963,8 +1159,9 @@ function updateRanksTemp() {
     .max(0)
     .root(pow)
     .mul(fp)
-    .scaleEvery("tetr", true, [1, 1, 1, fp2])
+    .scaleEvery("tetr", true, [1, 1, 1, tetr_fp2])
     .mul(ffp2)
+    .mul(ifp)
     .add(1)
     .floor();
 
@@ -973,6 +1170,7 @@ function updateRanksTemp() {
   if (player.ranks.hex.gte(1)) fp = fp.div(0.8);
   pow = 1.5;
   tmp.ranks.pent.req = player.ranks.pent
+    .div(ifp)
     .div(ffp2)
     .scaleEvery("pent", false, fpa)
     .div(fp)
@@ -987,6 +1185,7 @@ function updateRanksTemp() {
         .mul(fp)
         .scaleEvery("pent", true, fpa)
         .mul(ffp2)
+        .mul(ifp)
         .add(1)
         .floor()
     : E(0);
@@ -999,6 +1198,7 @@ function updateRanksTemp() {
     pow *= 0.9;
   }
   tmp.ranks.hex.req = player.ranks.hex
+    .div(ifp)
     .div(ffp2)
     .div(fp)
     .scaleEvery("hex", false)
@@ -1013,6 +1213,7 @@ function updateRanksTemp() {
         .scaleEvery("hex", true)
         .mul(fp)
         .mul(ffp2)
+        .mul(ifp)
         .add(1)
         .floor()
     : E(0);
@@ -1036,7 +1237,18 @@ function updateRanksTemp() {
     }
   }
 
+  // Ascension
+
+  updateAscensionsTemp();
+
   // Beyond
+
+  let p = 1;
+
+  if (hasElement(221)) p /= 0.95;
+  p /= getFragmentEffect("time");
+
+  tmp.beyond_ranks.tier_power = p;
 
   tmp.beyond_ranks.max_tier = BEYOND_RANKS.getTier();
   tmp.beyond_ranks.latestRank = BEYOND_RANKS.getRankFromTier(tmp.beyond_ranks.max_tier);
@@ -1061,16 +1273,16 @@ const BEYOND_RANKS = {
     return x;
   },
   getTier() {
-    let x = player.ranks.beyond.gt(0) ? player.ranks.beyond.log10().max(0).pow(0.8).add(1).floor().toNumber() : 1;
+    let x = player.ranks.beyond.gt(0) ? player.ranks.beyond.log10().max(0).pow(0.8).mul(tmp.beyond_ranks.tier_power).add(1).floor().toNumber() : 1;
     return x;
   },
   getRankFromTier(i) {
-    let hp = Decimal.pow(10, (i - 1) ** (1 / 0.8)).ceil();
+    let hp = Decimal.pow(10, Math.pow((i - 1) / tmp.beyond_ranks.tier_power, 1 / 0.8)).ceil();
 
     return player.ranks.beyond.div(hp).floor();
   },
   getRequirementFromTier(i, t = tmp.beyond_ranks.latestRank, mt = tmp.beyond_ranks.max_tier) {
-    return Decimal.pow(10, mt ** (1 / 0.8) - (mt - i) ** (1 / 0.8))
+    return Decimal.pow(10, Math.pow(mt / tmp.beyond_ranks.tier_power, 1 / 0.8) - Math.pow((mt - i) / tmp.beyond_ranks.tier_power, 1 / 0.8))
       .mul(Decimal.add(t, 1))
       .ceil();
   },
@@ -1079,7 +1291,7 @@ const BEYOND_RANKS = {
     if (player.ranks.hex.gte(tmp.beyond_ranks.req) && (!auto || tmp.beyond_ranks.bulk.gt(player.ranks.beyond))) {
       player.ranks.beyond = auto ? player.ranks.beyond.max(tmp.beyond_ranks.bulk) : player.ranks.beyond.add(1);
 
-      if (hasBeyondRank(2, 2)) return;
+      if (hasBeyondRank(2, 2) || hasInfUpgrade(10)) return;
 
       player.ranks.hex = E(0);
       DARK.doReset();
@@ -1088,7 +1300,7 @@ const BEYOND_RANKS = {
 
   rewards: {
     1: {
-      1: `Add 0.5 to matter exponent.`,
+      1: `Add 0.5 to matter exponents.`,
       2: `All matter upgrades are stronger based on dark ray.`,
       4: `Hybridized Uran-Astatine's second effect is stronger based on FSS.`,
       7: `Matters gain is boosted by Hept.`,
@@ -1105,6 +1317,24 @@ const BEYOND_RANKS = {
     },
     3: {
       1: `Mass & Stronger Overflow is weaker based on archverse tier of normal mass.`,
+      2: `Super FSS starts +1 later.`,
+      4: `Beyond Rank boosts Kaon & Pion gain.`,
+      12: `Remove the softcap of dark ray's fourth reward.`,
+      18: `Super FSS scales +2.5% weaker per beyond-ranks' maximum tier (capped at 50%).`,
+      32: `Argon-18 affects tickspeed's power.`,
+    },
+    4: {
+      1: `Beta Particles affect supercritical supernova starting at a reduced rate.`,
+      2: `Prestige base's exponent is increased by beyond-ranks' maximum tier, starting at Dec.`,
+      40: `[Tau]'s reward is cubed.`,
+    },
+    5: {
+      2: `Super FSS starts +1 later per beyond-ranks' maximum tier, starting at Dec.`,
+      7: `Remove pre-meta scalings from Prestige Level.`,
+    },
+    6: {
+      1: `'Self-Infinity' and 'Exotic Speed' upgrades use a formula with base 3 instead of base 2.`,
+      12: `Bitriunium-231 is cubed.`,
     },
   },
 
@@ -1120,7 +1350,7 @@ const BEYOND_RANKS = {
       ],
       4: [
         () => {
-          let x = player.dark.matters.final ** 0.75 / 10 + 1;
+          let x = player.dark.matters.final.pow(0.75).div(10).add(1);
 
           return x;
         },
@@ -1138,9 +1368,11 @@ const BEYOND_RANKS = {
     2: {
       1: [
         () => {
-          let x = player.ranks.beyond.pow(3).add(1);
+          let x = player.ranks.beyond.pow(3);
 
-          return x;
+          if (hasPrestige(2, 121)) x = x.pow(4);
+
+          return x.add(1);
         },
         (x) => "x" + format(x),
       ],
@@ -1172,6 +1404,50 @@ const BEYOND_RANKS = {
         },
         (x) => formatReduction(x) + " weaker",
       ],
+      4: [
+        () => {
+          let x = player.ranks.beyond.add(1).log10().add(1).pow(2);
+
+          return x;
+        },
+        (x) => "x" + format(x),
+      ],
+      18: [
+        () => {
+          let x = 1 - tmp.beyond_ranks.max_tier * 0.025;
+
+          return Math.max(0.5, x);
+        },
+        (x) => formatReduction(x) + " weaker",
+      ],
+    },
+    4: {
+      1: [
+        () => {
+          let x = overflow(tmp.prim.eff[7].div(5), 1e6, 0.5).softcap(1e7, 1 / 3, 0);
+
+          return x;
+        },
+        (x) => "+" + format(x) + " later",
+      ],
+      2: [
+        () => {
+          let x = (tmp.beyond_ranks.max_tier - 3) ** 0.2 * 0.2 + 1;
+
+          return Math.max(1, x);
+        },
+        (x) => "x" + format(x),
+      ],
+    },
+    5: {
+      2: [
+        () => {
+          let x = tmp.beyond_ranks.max_tier - 3;
+
+          return Math.max(1, x);
+        },
+        (x) => "+" + format(x, 0) + " later",
+      ],
     },
   },
 };
@@ -1198,7 +1474,12 @@ function getRankTierName(i) {
       d = Math.floor(i / 10) % 10,
       o = i % 10;
 
-    if (d > 0) m += (d > 2 ? (o == 1 ? "hen" : RTNS2[0][o]) + RTNS2[1][d] + "cont" : (d == 2 && o == 3 ? "tr" : d > 1 && o == 1 ? "hen" : RTNS2[0][o]) + RTNS[1][d]) + (h > 0 ? "a" : "");
+    if (d > 1 && o == 1) m += "hen";
+    else if (d == 2 && o == 3) m += "tr";
+    else m += RTNS2[0][o];
+    if (d > 2) m += RTNS2[1][d] + "cont";
+    else m += RTNS[1][d];
+    if (h > 0 && d > 0) m += "a";
     if (h > 0) m += h > 1 ? RTNS2[2][h] + "ct" : "hect";
 
     return capitalFirst(m);
@@ -1218,7 +1499,8 @@ function beyondRankEffect(x, y, def = 1) {
 
 function updateRanksHTML() {
   tmp.el.rank_tabs.setDisplay(hasUpgrade("br", 9));
-  for (let x = 0; x < 2; x++) {
+  tmp.el.asc_btn.setDisplay(tmp.ascensions_unl);
+  for (let x = 0; x < 3; x++) {
     tmp.el["rank_tab" + x].setDisplay(tmp.rank_tab == x);
   }
 
@@ -1232,7 +1514,7 @@ function updateRanksHTML() {
         let desc = "";
         for (let i = 0; i < keys.length; i++) {
           if (player.ranks[rn].lt(keys[i])) {
-            desc = ` At ${RANKS.fullNames[x]} ${format(keys[i], 0)}, ${RANKS.desc[rn][keys[i]]}`;
+            desc = ` At ${RANKS.fullNames[x]} ${format(keys[i], 0)} - ${RANKS.desc[rn][keys[i]]}`;
             break;
           }
         }
@@ -1261,7 +1543,7 @@ function updateRanksHTML() {
 
       // Beyond Rank
 
-      tmp.el.br_auto.setDisplay(hasBeyondRank(2, 1));
+      tmp.el.br_auto.setDisplay(hasBeyondRank(2, 1) || hasInfUpgrade(10));
       tmp.el.br_auto.setTxt(player.auto_ranks.beyond ? "ON" : "OFF");
 
       let t = tmp.beyond_ranks.max_tier;
@@ -1290,7 +1572,7 @@ function updateRanksHTML() {
       }
 
       h = `
-                Reset your hexs (and force darkness reset), but current rank up. ${r}<br>
+                Reset your Hexes (and force a darkness reset) but hept/oct/enne etc. up. ${r}<br>
                 To ${getRankTierName(t + 5)} up, require ${getRankTierName(t + 4)} ${
         t == 1 ? tmp.beyond_ranks.req.format(0) : BEYOND_RANKS.getRequirementFromTier(1, tmp.beyond_ranks.latestRank, t - 1).format(0)
       }.<br>
@@ -1300,8 +1582,7 @@ function updateRanksHTML() {
       tmp.el.br_desc.setHTML(h);
       tmp.el.br_desc.setClasses({ btn: true, reset: true, locked: player.ranks.hex.lt(tmp.beyond_ranks.req) });
     }
-  }
-  if (tmp.rank_tab == 1) {
+  } else if (tmp.rank_tab == 1) {
     tmp.el.pres_base.setHTML(`${tmp.prestiges.baseMul.format(0)}<sup>${format(tmp.prestiges.baseExp)}</sup> = ${tmp.prestiges.base.format(0)}`);
 
     for (let x = 0; x < PRES_LEN; x++) {
@@ -1315,7 +1596,7 @@ function updateRanksHTML() {
         let desc = "";
         for (let i = 0; i < keys.length; i++) {
           if (p.lt(keys[i]) && (tmp.chal13comp || p.lte(PRES_BEFOREC13[x] || Infinity))) {
-            desc = ` At ${PRESTIGES.fullNames[x]} ${format(keys[i], 0)}, ${PRESTIGES.rewards[x][keys[i]]}`;
+            desc = ` At ${PRESTIGES.fullNames[x]} ${format(keys[i], 0)} - ${PRESTIGES.rewards[x][keys[i]]}`;
             break;
           }
         }
@@ -1329,6 +1610,8 @@ function updateRanksHTML() {
         tmp.el["pres_auto_" + x].setTxt(player.auto_pres[x] ? "ON" : "OFF");
       }
     }
+  } else if (tmp.rank_tab == 2) {
+    updateAscensionsHTML();
   }
 }
 

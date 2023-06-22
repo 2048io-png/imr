@@ -9,7 +9,7 @@ const MASS_DILATION = {
     return x;
   },
   onactive() {
-    if (tmp.c16active || player.dark.run.active) return;
+    if (tmp.c16active || inDarkRun()) return;
     if (player.md.active) player.md.particles = player.md.particles.add(tmp.md.rp_gain);
     player.md.active = !player.md.active;
     ATOM.doReset();
@@ -23,7 +23,7 @@ const MASS_DILATION = {
     if (FERMIONS.onActive("01")) x = x.div(10);
     if (QCs.active()) x = x.mul(tmp.qu.qc_eff[4]);
     if (hasElement(24) && hasPrestige(0, 40)) x = x.mul(tmp.elements.effect[24]);
-    if (tmp.c16active || player.dark.run.active) x = x.pow(mgEff(3));
+    if (tmp.c16active || inDarkRun()) x = x.pow(mgEff(3));
     return x;
   },
   RPmultgain() {
@@ -44,9 +44,8 @@ const MASS_DILATION = {
     if (CHALS.inChal(11)) return E(0);
     let pow = E(2).add(tmp.bd.upgs[1].eff);
     let x = player.md.particles.pow(pow);
+    if (player.ranks.tier.gte(80)) x = x.mul(RANKS.effect.tier[80]());
     x = x.mul(tmp.md.upgs[0].eff);
-    if (player.ranks.tier.gte(70)) x = x.mul(RANKS.effect.tier[70]());
-    if (player.ranks.rank.gte(1400)) x = x.mul(RANKS.effect.rank[1400]());
     if (hasElement(22)) x = x.mul(tmp.elements.effect[22]);
     if (hasElement(35)) x = x.mul(tmp.elements.effect[35]);
     if (hasElement(40)) x = x.mul(tmp.elements.effect[40][0]);
@@ -57,7 +56,7 @@ const MASS_DILATION = {
 
     if (hasElement(40)) x = x.pow(tmp.elements.effect[40][1]);
 
-    if (tmp.c16active || player.dark.run.active) x = expMult(x, mgEff(3));
+    if (tmp.c16active || inDarkRun()) x = expMult(x, mgEff(3));
 
     let o = x;
     let os = E("ee30").pow(glyphUpgEff(8));
@@ -130,8 +129,8 @@ const MASS_DILATION = {
           if (tmp.md.bd3)
             return x
               .mul(tmp.md.upgs[11].eff || 1)
-              .root(player.qu.rip.active || tmp.c16active || player.dark.run.active ? 3 : 2)
-              .mul(player.qu.rip.active || tmp.c16active || player.dark.run.active ? 0.05 : 0.1)
+              .root(player.qu.rip.active || tmp.c16active || inDarkRun() ? 3 : 2)
+              .mul(player.qu.rip.active || tmp.c16active || inDarkRun() ? 0.05 : 0.1)
               .add(1);
           if (hasElement(83)) return expMult(x, 2, 1.5).add(1);
           return player.md.upgs[7].gte(1)
@@ -178,7 +177,7 @@ const MASS_DILATION = {
         },
       },
       {
-        desc: `Dilated mass also boost Stronger's power and mass gain.`,
+        desc: `Dilated mass also boost Stronger's power.`,
         maxLvl: 1,
         cost(x) {
           return E(1.619e20).mul(25);
@@ -228,7 +227,7 @@ const MASS_DILATION = {
         },
       },
       {
-        desc: `Dilated mass boost quarks gain.`,
+        desc: `Dilated mass boosts quark gain.`,
         maxLvl: 1,
         cost(x) {
           return E(1.5e191);
@@ -350,7 +349,8 @@ const MASS_DILATION = {
       else bd.active = true;
     },
     energyGain() {
-      if (!hasElement(136)) if (!player.md.break.active || !player.qu.rip.active) return E(0);
+      if (!player.md.break.active) return E(0);
+      if (!hasElement(136)) if (!player.qu.rip.active) return E(0);
 
       let x = player.md.mass.add(1).log10().sub(400).div(2).max(0);
       let p = x.add(1).log10();
@@ -425,7 +425,7 @@ const MASS_DILATION = {
           },
         },
         {
-          desc: `Multiplier from DM effect is transformed to Exponent (at a reduced rate, is weaker while Big Ripped), but second MD upgrade's cost is exponentally increased. Purchasing this upgrade will reset it.`,
+          desc: `Multiplier from the DM effect is transformed to an exponent (at a reduced rate, is weaker while Big Ripped), but second MD upgrade's cost is exponentally increased. Purchasing this upgrade will reset it.`,
           maxLvl: 1,
           cost(x) {
             return E(1.619e23);
@@ -435,7 +435,7 @@ const MASS_DILATION = {
           },
         },
         {
-          desc: `11th MD Upgrade is 50% stronger, its effected level softcaps at 1e18.`,
+          desc: `11th MD upgrade is 50% stronger, its effective level softcaps at 1e18.`,
           maxLvl: 1,
           cost(x) {
             return E(1.989e33);
@@ -462,7 +462,7 @@ const MASS_DILATION = {
           },
         },
         {
-          desc: `Triple Relativistic Energies gain.`,
+          desc: `Triple Relativistic Energy gain.`,
           cost(x) {
             return E(10).pow(x.pow(1.5)).mul(2.9835e48);
           },
@@ -479,7 +479,7 @@ const MASS_DILATION = {
           },
         },
         {
-          desc: `Death Shard & Entropy boosts each other.`,
+          desc: `Death Shard & Entropy boost each other.`,
           maxLvl: 1,
           cost(x) {
             return uni(1e35);
@@ -488,7 +488,9 @@ const MASS_DILATION = {
             return player.md.break.mass.gte(uni(1e35)) ? E(1) : E(0);
           },
           effect(y) {
-            let x = [player.qu.rip.amt.add(1).log10().add(1).pow(2), player.qu.en.amt.add(1).log10().add(1).pow(1.5)];
+            let x = hasElement(220)
+              ? [expMult(player.qu.rip.amt, 0.5), expMult(player.qu.en.amt, 1 / 3)]
+              : [player.qu.rip.amt.add(1).log10().add(1).pow(2), player.qu.en.amt.add(1).log10().add(1).pow(1.5)];
 
             return x;
           },
@@ -707,13 +709,14 @@ function updateMDHTML() {
 }
 
 function updateBDHTML() {
+  let inf_gs = tmp.preInfGlobalSpeed;
   let bd = player.md.break;
   let c16 = tmp.c16active;
 
   tmp.el.bd_btn.setTxt(bd.active ? "Fix Dilation" : "Break Dilation");
 
-  tmp.el.bd_energy.setTxt(bd.energy.format(1) + " " + bd.energy.formatGain(tmp.bd.energyGain));
-  tmp.el.bd_mass.setTxt(formatMass(bd.mass) + " " + bd.mass.formatGain(tmp.bd.massGain, true));
+  tmp.el.bd_energy.setTxt(bd.energy.format(1) + " " + bd.energy.formatGain(tmp.bd.energyGain.mul(inf_gs)));
+  tmp.el.bd_mass.setTxt(formatMass(bd.mass) + " " + bd.mass.formatGain(tmp.bd.massGain.mul(inf_gs), true));
 
   for (let x = 0; x < MASS_DILATION.break.upgs.ids.length; x++) {
     let upg = MASS_DILATION.break.upgs.ids[x];
