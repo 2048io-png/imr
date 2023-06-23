@@ -87,8 +87,8 @@ const RANKS = {
   },
   desc: {
     rank: {
-      1: "unlock mass upgrade 1, and you get 1 free mass upgrade 1 per 10 bought.",
-      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20%, and you get 1 free mass upgrade 2 per 10 bought.",
+      1: "unlock mass upgrade 1, and 2x muscler power per 10 bought.",
+      2: "unlock mass upgrade 2, reduce mass upgrade 1 scaling by 20%, and 2x booster power per 10 bought.",
       3: "unlock mass upgrade 3, reduce mass upgrade 2 scaling by 20%, and mass upgrade 1 boosts itself.",
       4: "reduce mass upgrade 3 scaling by 20%.",
       5: "mass upgrade 2 boosts itself.",
@@ -98,14 +98,14 @@ const RANKS = {
       9: "get 1 free mass upgrade 3 per 10 of mass upgrade 1 & 2 combined.",
       10: "add (x/5)log(1e15) to mass upgrade 3 base power, where x is ranks.",
       13: "triple mass gain.",
-      14: "rank 1 effect is now ((x/10)*(y/1e15))log(3.14), where x is the amount of mass upgrade 1 bought, and y is mass.",
+      14: "rank 1 effect is now 2x every 5 instead of every 10.",
       17: "Rank 6 reward effect is better. [(x+1)^2 -> (x+1)^x^1/3]",
       20: "double rage powers gain.",
       25: "you get 1 free tickspeed per 100 bought of mass upgrade 1,2 & 3 combined.",
       30: "rank 8 hardcap is now 15%",
       32: "you gain x/10 more rage power where x is rank.",
       34: "mass upgrade 3 softcaps 1.2x later.",
-      35: "rank 2 effect is now the same as rank 14.",
+      35: "rank 2 effect is now 2x every 5 instead of every 10.",
       40: "adds tickspeed power based on ranks.",
       42: "rank 9 effect is now the same as rank 14.",
       45: "rank boosts Rage Powers gain.",
@@ -144,8 +144,8 @@ const RANKS = {
       7: "every 100 musclers, boosters and strongers, you get 1 free tickspeed.",
       8: "Tier 6's reward is boosted based on dark matters.",
       9: "rank 8 hardcap is now 20%",
-      10: "rank 1 effect softcap is now 2000.",
-      11: "rank 2 effect softcap is now 2000.",
+      10: "rank 1 2x every 5 is now every 3.",
+      11: "rank 2 2x every 5 is now every 3.",
       12: "rank 9 effect softcap is now 2000.",
       30: "stronger effect's softcap is 10% weaker.",
       40: "rank 8 hardcap is now 30%",
@@ -185,6 +185,7 @@ const RANKS = {
       5: "Meta-Ranks start later based on Pent.",
       6: "rage power 2nd upgrade is 2x more powerfull.",
       8: "Mass gain softcap^4 starts later based on Pent.",
+      10: "rage power 7th upgrade is 10x more powerfull",
       15: "remove 3rd softcap of Stronger's effect.",
       16: "Mass gain softcap^3 starts ^(x)log(3.14) later, where x is Quantum Foam.",
     },
@@ -211,35 +212,42 @@ const RANKS = {
           .floor();
         if (player.ranks.rank.gte(14))
           ret = E(player.massUpg[1] || 0)
-            .div(10)
-            .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            .softcap(200, 0.1, 0);
+            .div(5)
+            .floor();
         if (player.ranks.tier.gte(10))
           ret = E(player.massUpg[1] || 0)
-            .div(10)
-            .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            .softcap(2000, 0.1, 0);
+            .div(3)
+            .floor();
         return ret;
       },
       2() {
+        // let ret = E(player.massUpg[2] || 0)
+        //   .div(10)
+        //   .floor()
+        //   .softcap(200, 0.1, 0);
+        // if (player.ranks.rank.gte(35))
+        //   ret = E(player.massUpg[2] || 0)
+        //     .div(10)
+        //     .floor()
+        //     .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+        //     .softcap(200, 0.1, 0);
+        // if (player.ranks.tier.gte(11))
+        //   ret = E(player.massUpg[2] || 0)
+        //     .div(10)
+        //     .floor()
+        //     .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
+        //     .softcap(2000, 0.1, 0);
         let ret = E(player.massUpg[2] || 0)
           .div(10)
-          .floor()
-          .softcap(200, 0.1, 0);
+          .floor();
         if (player.ranks.rank.gte(35))
           ret = E(player.massUpg[2] || 0)
-            .div(10)
-            .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            .softcap(200, 0.1, 0);
+            .div(5)
+            .floor();
         if (player.ranks.tier.gte(11))
           ret = E(player.massUpg[2] || 0)
-            .div(10)
-            .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            .softcap(2000, 0.1, 0);
+            .div(3)
+            .floor();
         return ret;
       },
       3() {
@@ -302,29 +310,16 @@ const RANKS = {
             E(player.massUpg[2] || 0)
               .div(10)
               .floor()
-          );
-        if (player.ranks.rank.gte(42))
-          ret = E(player.massUpg[1] || 0)
-            .div(10)
-            .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            .add(
-              E(player.massUpg[2] || 0)
-                .div(10)
-                .floor()
-                .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-            )
-            .softcap(200, 0.1, 0);
+          )
+          .softcap(200, 0.1, 0);
         if (player.ranks.tier.gte(12))
           ret = E(player.massUpg[1] || 0)
             .div(10)
             .floor()
-            .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
             .add(
               E(player.massUpg[2] || 0)
                 .div(10)
                 .floor()
-                .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
             )
             .softcap(2000, 0.1, 0);
         return ret;
@@ -593,10 +588,10 @@ const RANKS = {
   effDesc: {
     rank: {
       1(x) {
-        return "+" + format(x, 0) + (player.ranks.rank.gte(10) && x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x, 0) + "x";
       },
       2(x) {
-        return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+        return format(x, 0) + "x";
       },
       3(x) {
         return "+" + format(x);

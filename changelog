@@ -1,3 +1,12 @@
+0.1.5 6/23/2023 IMR:Extended update
+https://officialzygorg.github.io/imr-z/
+Added:
+-More pents.
+Modified:
+-Rank 1 and 2 effects now affect their correspondent upgrade effect instead of adding more free mass upgrades. (Also, due to this, rank 9 is nerfed.)
+Removed: some ranks due to the change of rank 1 and 2 being modified.
+Any inflations, bugs or NaNs, pin me on discord or open an issue in the github.
+
 0.1.4-F1 6/23/2023 IMR:Extended fix
 https://officialzygorg.github.io/imr-z/
 Fixed:

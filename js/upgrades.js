@@ -77,6 +77,7 @@ const UPGS = {
       effect(x) {
         let step = E(1);
         if (player.ranks.rank.gte(3)) step = step.add(RANKS.effect.rank[3]());
+        if (player.ranks.rank.gte(1)) step = step.mul(RANKS.effect.rank[1]());
         step = step.mul(tmp.upgs.mass[2] ? tmp.upgs.mass[2].eff.eff : 1);
         let ret = step.mul(hasAscension(0, 1) ? x.add(1).mul(tmp.upgs.mass[1].bonus.add(1)) : x.add(tmp.upgs.mass[1].bonus));
         if (hasElement(209)) ret = ret.pow(elemEffect(209));
@@ -90,7 +91,6 @@ const UPGS = {
       },
       bonus() {
         let x = E(0);
-        if (player.ranks.rank.gte(1)) x = x.add(RANKS.effect.rank[1]());
         if (player.mainUpg.rp.includes(1)) x = x.add(tmp.upgs.main ? tmp.upgs.main[1][1].effect : E(0));
         if (player.mainUpg.rp.includes(2)) x = hasAscension(0, 1) ? x.mul(tmp.upgs.mass[2].bonus.add(1)) : x.add(tmp.upgs.mass[2].bonus);
         x = x.mul(getEnRewardEff(4));
@@ -107,6 +107,7 @@ const UPGS = {
       effect(x) {
         let step = E(2);
         if (player.ranks.rank.gte(5)) step = step.add(RANKS.effect.rank[5]());
+        if (player.ranks.rank.gte(2)) step = step.mul(RANKS.effect.rank[2]());
         step = step.pow(tmp.upgs.mass[3] ? tmp.upgs.mass[3].eff.eff : 1);
         let ret = step.mul(hasAscension(0, 1) ? x.add(1).mul(tmp.upgs.mass[2].bonus.add(1)) : x.add(tmp.upgs.mass[2].bonus)).add(1); //.softcap("ee14",0.95,2)
         if (hasElement(203)) ret = ret.pow(elemEffect(203));
@@ -120,7 +121,6 @@ const UPGS = {
       },
       bonus() {
         let x = E(0);
-        if (player.ranks.rank.gte(2)) x = x.add(RANKS.effect.rank[2]());
         if (player.mainUpg.rp.includes(2)) x = x.add(tmp.upgs.main ? tmp.upgs.main[1][2].effect : E(0));
         if (player.mainUpg.rp.includes(7)) x = hasAscension(0, 1) ? x.mul(tmp.upgs.mass[3].bonus.add(1)) : x.add(tmp.upgs.mass[3].bonus);
         x = x.mul(getEnRewardEff(4));
@@ -344,6 +344,7 @@ const UPGS = {
                 .add(1)
                 .mul(hasElement(38) ? tmp.elements.effect[38].add(1) : 1)
             : player.tickspeed.div(3).add(hasElement(38) ? tmp.elements.effect[38] : 0);
+          if (player.ranks.pent.gte(10)) ret = ret.mul(10);
           return ret.floor();
         },
         effDesc(x = this.effect()) {
