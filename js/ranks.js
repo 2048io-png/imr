@@ -123,7 +123,7 @@ const RANKS = {
       800: "make mass gain softcap 0.25% weaker based on rank, hardcaps at 25%.",
       1000: "mass gain is raised by ^1.1",
       1250: "mass gain is multiplied by the amount of elements bought.",
-      1300: "last star is multiplied by the amount of elements bought.",
+      1300: "last star is multiplied very slightly by the amount of elements bought.",
       1500: "Add (x)log(3.14) to Quark gain, where x is ranks.",
       1750: "rank 8 hardcap is now 30%",
       2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",

@@ -111,8 +111,8 @@ const STARS = {
         .add(player.stars.generators[i + 1] || 0)
         .pow(pow);
 
-      if (player.ranks.rank.gte(1300)) player.stars.generators[4] = player.stars.generators[4].mul(RANKS.effect.rank[1300]());
-      if (player.ranks.rank.gte(3000)) player.stars.generators[4] = player.stars.generators[4].mul(MASS_DILATION.upgs.ids[3].effect());
+      if (player.ranks.rank.gte(1300) && i == 4) x = x.mul(RANKS.effect.rank[1300]());
+      if (player.ranks.rank.gte(3000) && i == 4) x = x.mul(MASS_DILATION.upgs.ids[3].effect());
 
       if (hasElement(49) && i == 4) x = x.mul(tmp.elements.effect[49]);
       if (hasTree("s1") && i == 4) x = x.mul(tmp.supernova.tree_eff.s1);
