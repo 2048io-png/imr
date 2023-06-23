@@ -1,3 +1,13 @@
+0.1.4 6/23/2023 IMR:Extended update
+https://officialzygorg.github.io/imr-z/
+Modified:
+-Some ranks (balance)
+Fixed?:
+-Game gets NaNed at primordium/1 manual quantize/20 quantizes
+Added:
+-More ranks,tiers
+Any inflations, bugs or NaNs, pin me on discord or open an issue in the github.
+
 0.1.3 6/22/2023 IMR:Extended update
 https://officialzygorg.github.io/imr-z/
 Modified:

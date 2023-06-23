@@ -173,7 +173,6 @@ const FORMS = {
     if (CHALS.inChal(7) || CHALS.inChal(10)) p = p.mul(6);
     if (player.mainUpg.bh.includes(11)) p = p.mul(0.9);
     if (player.ranks.rank.gte(800)) p = p.mul(RANKS.effect.rank[800]());
-    if (player.ranks.rank.gte(6000)) p = p.mul(RANKS.effect.rank[6000]());
     return E(1).div(p.add(1));
   },
   massSoftGain2() {
@@ -199,6 +198,7 @@ const FORMS = {
     if (hasTree("m3")) s = s.pow(tmp.supernova.tree_eff.m3);
     s = s.pow(tmp.radiation.bs.eff[2]);
     if (hasPrestige(0, 1)) s = s.pow(10);
+    if (player.ranks.rank.gte(6000)) s = s.pow(RANKS.effect.rank[6000]());
     if (player.ranks.tier.gte(2000)) s = s.pow(RANKS.effect.tier[2000]());
     return s.max(1);
   },
@@ -215,6 +215,7 @@ const FORMS = {
     if (hasTree("qc1")) s = s.pow(treeEff("qc1"));
     if (hasPrestige(0, 1)) s = s.pow(10);
     s = s.pow(tmp.dark.abEff.msoftcap || 1);
+    if (player.ranks.tier.gte(7500)) s = s.pow(RANKS.effect.rank[6000]());
     return s.max(1);
   },
   massSoftPower4() {

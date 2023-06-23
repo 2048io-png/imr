@@ -129,7 +129,7 @@ const RANKS = {
       2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",
       2500: "rank 8 hardcap is doubled to 60%",
       3000: "last star is multiplied by Mass Dilation 4th upgrade.",
-      6000: "mass softcap 1 is x later, where x is ranks.",
+      6000: "mass gain softcap 3 is ^x later, where x is ranks.",
       12000: "Strontium-38 is 2x more powerfull.",
       24000: "Samarium-62 scaling starts 6 later every supernova",
       36000: "Beryllium-4 effect is ^2.",
@@ -160,6 +160,7 @@ const RANKS = {
       500: "Aluminium-13 is 2x more powerfull.",
       1000: "Tantalum-73 is 2x more powefull.",
       2000: "mass softcap^3 is x later, where x is tiers.",
+      7500: "multiply rank 6000 effect by (x)log(3.14), where x is tiers, and it also affects mass softcap 4.",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -471,6 +472,7 @@ const RANKS = {
       },
       6000() {
         let ret = player.ranks.rank;
+        if (player.ranks.tier.gte(7500)) ret = player.ranks.rank.mul(player.ranks.tier.log(3.14));
         return ret;
       },
     },
@@ -510,7 +512,7 @@ const RANKS = {
                 .floor()
             )
             .softcap(2000, 0.1, 0);
-        if (player.ranks.tier.gte(200)) ret = E(1).add(player.supernova.times.log(1e10));
+        if (player.ranks.tier.gte(200)) ret = player.supernova.times.gt(0) ? E(1).add(player.supernova.times.log(1e10)) : E(1);
         return ret;
       },
       8() {
@@ -660,7 +662,7 @@ const RANKS = {
         return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       6000(x) {
-        return format(x, 0) + "x";
+        return "^" + format(x, 0) + " later";
       },
     },
     tier: {
