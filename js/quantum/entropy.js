@@ -273,7 +273,7 @@ function calcEntropy(dt) {
           .pow(player.qu.en.eth[3] ** (2 / 3))
       )
       .sub(1);
-    if (isNaN(s)) s = E(1);
+    if (Decimal.isNaN(s)) s = E(1);
     if (s.lt(1)) ENTROPY.switch(0);
     else player.supernova.radiation.hz = s;
   }
@@ -288,7 +288,7 @@ function calcEntropy(dt) {
           .pow(player.qu.en.hr[3] ** (2 / 3))
       )
       .sub(1);
-    if (isNaN(s)) s = E(1);
+    if (Decimal.isNaN(s)) s = E(1);
     if (s.lt(1)) ENTROPY.switch(1);
     else player.bh.mass = s;
   }

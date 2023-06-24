@@ -1,3 +1,16 @@
+0.1.5-F1 6/24/2023 IMR:Extended update
+https://officialzygorg.github.io/imr-z/
+Fixed:
+-Hawking radiation evaporation being weak.
+-qu_qol7 not working.
+-Stars going nuts on CH16
+-Free FFS on CH16
+-Tier autobuyer now goes FAST.
+Modified:
+-Softcapped rank 3000 effect just in case it makes last star go nuts.
+-Updated break_eternity.js to the latest version as today and fixed Decimal.clone being absent in it.
+Any inflations, bugs or NaNs, pin me on discord or open an issue in the github.
+
 0.1.5 6/23/2023 IMR:Extended update
 https://officialzygorg.github.io/imr-z/
 Added:

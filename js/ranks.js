@@ -128,7 +128,7 @@ const RANKS = {
       1750: "rank 8 hardcap is now 30%",
       2000: "gain 1 free blackhole condenser every mass upgrade and tickspeed upgrade divided by 200 and added.",
       2500: "rank 8 hardcap is doubled to 60%",
-      3000: "last star is multiplied by Mass Dilation 4th upgrade.",
+      3000: "last star is multiplied by Mass Dilation 4th upgrade (Softcap at 6000x).",
       6000: "mass gain softcap 3 is ^x later, where x is ranks.",
       12000: "Strontium-38 is 2x more powerfull.",
       24000: "Samarium-62 scaling starts 6 later every supernova",
@@ -221,22 +221,6 @@ const RANKS = {
         return ret;
       },
       2() {
-        // let ret = E(player.massUpg[2] || 0)
-        //   .div(10)
-        //   .floor()
-        //   .softcap(200, 0.1, 0);
-        // if (player.ranks.rank.gte(35))
-        //   ret = E(player.massUpg[2] || 0)
-        //     .div(10)
-        //     .floor()
-        //     .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-        //     .softcap(200, 0.1, 0);
-        // if (player.ranks.tier.gte(11))
-        //   ret = E(player.massUpg[2] || 0)
-        //     .div(10)
-        //     .floor()
-        //     .mul(E(1).add(player.mass.div(1e15)).log(3.14).floor())
-        //     .softcap(2000, 0.1, 0);
         let ret = E(player.massUpg[2] || 0)
           .div(10)
           .floor();
@@ -441,7 +425,7 @@ const RANKS = {
         return ret;
       },
       1300() {
-        let ret = player.atom.elements.length > 0 ? E(player.atom.elements.length) : E(1);
+        let ret = player.atom.elements.length > 0 ? E(1).add(E(player.atom.elements.length).log(3.14).div(300)) : E(1);
         return ret;
       },
       1500() {
@@ -463,6 +447,10 @@ const RANKS = {
           )
           .softcap(200, 0.1, 0)
           .floor();
+        return ret;
+      },
+      3000() {
+        let ret = MASS_DILATION.upgs.ids[3].effect().gt(1) ? MASS_DILATION.upgs.ids[3].effect().softcap(6000, 0.001, 0) : E(1);
         return ret;
       },
       6000() {
@@ -527,7 +515,7 @@ const RANKS = {
         return ret;
       },
       150() {
-        let ret = player.md.particles.gt(0) ? player.md.particles.log("1e1000").softcap(5, 0.01, 0) : E(1);
+        let ret = player.md.particles.gt(0) ? E(1).add(player.md.particles.log("1e1000").softcap(5, 0.01, 0)) : E(1);
         return ret;
       },
       2000() {
@@ -648,13 +636,16 @@ const RANKS = {
         return format(x, 0) + "x";
       },
       1300(x) {
-        return format(x, 0) + "x";
+        return format(x) + "x";
       },
       1500(x) {
         return format(x) + "x" + (x.gte("100") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       2000(x) {
         return "+" + format(x, 0) + (x.gte("200") ? "<span class='soft'> (softcapped)</span>" : "");
+      },
+      3000(x) {
+        return format(x) + "x" + (x.gte("6000") ? "<span class='soft'> (softcapped)</span>" : "");
       },
       6000(x) {
         return "^" + format(x, 0) + " later";
@@ -1167,8 +1158,17 @@ function updateRanksTemp() {
     .pow(2)
     .floor()
     .mul(player.ranks.tetr.gte(9) ? 0.7 : 1);
-  tmp.ranks.tier.bulk = player.ranks.rank.max(0).root(2).sub(2).mul(fp).scaleEvery("tier", true, [1, 1, 1, rt_fp2]).mul(ffp2).mul(ifp).add(1).floor();
-
+  tmp.ranks.tier.bulk = player.ranks.rank
+    .max(0)
+    .div(player.ranks.tetr.gte(9) ? 0.7 : 1)
+    .root(2)
+    .sub(2)
+    .mul(fp)
+    .scaleEvery("tier", true, [1, 1, 1, rt_fp2])
+    .mul(ffp2)
+    .mul(ifp)
+    .add(1)
+    .floor();
   fp = E(1).mul(ffp);
   let pow = 2;
   if (hasElement(44)) pow = 1.75;

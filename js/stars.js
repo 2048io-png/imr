@@ -112,7 +112,7 @@ const STARS = {
         .pow(pow);
 
       if (player.ranks.rank.gte(1300) && i == 4) x = x.mul(RANKS.effect.rank[1300]());
-      if (player.ranks.rank.gte(3000) && i == 4) x = x.mul(MASS_DILATION.upgs.ids[3].effect());
+      if (player.ranks.rank.gte(3000) && i == 4) x = x.mul(RANKS.effect.rank[3000]());
 
       if (hasElement(49) && i == 4) x = x.mul(tmp.elements.effect[49]);
       if (hasTree("s1") && i == 4) x = x.mul(tmp.supernova.tree_eff.s1);
