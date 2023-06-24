@@ -1,5 +1,11 @@
 0.1.5-F2 6/24/2023 IMR:Extended update
 https://officialzygorg.github.io/imr-z/
+Fixed:
+-Rank 1,2 rewards we're multiplying by 0 the mass upgrade 1,2 effects if you had less than 10 bought.
+Any inflations, bugs or NaNs, pin me on discord or open an issue in the github.
+
+0.1.5-F2 6/24/2023 IMR:Extended update
+https://officialzygorg.github.io/imr-z/
 Modified:
 -Star gain in CH16 is now ^0.1
 -Changed description of CH16

@@ -209,29 +209,35 @@ const RANKS = {
       1() {
         let ret = E(player.massUpg[1] || 0)
           .div(10)
-          .floor();
+          .floor()
+          .max(1);
         if (player.ranks.rank.gte(14))
           ret = E(player.massUpg[1] || 0)
             .div(5)
-            .floor();
+            .floor()
+            .max(1);
         if (player.ranks.tier.gte(10))
           ret = E(player.massUpg[1] || 0)
             .div(3)
-            .floor();
+            .floor()
+            .max(1);
         return ret;
       },
       2() {
         let ret = E(player.massUpg[2] || 0)
           .div(10)
-          .floor();
+          .floor()
+          .max(1);
         if (player.ranks.rank.gte(35))
           ret = E(player.massUpg[2] || 0)
             .div(5)
-            .floor();
+            .floor()
+            .max(1);
         if (player.ranks.tier.gte(11))
           ret = E(player.massUpg[2] || 0)
             .div(3)
-            .floor();
+            .floor()
+            .max(1);
         return ret;
       },
       3() {
