@@ -86,7 +86,7 @@ const STARS = {
     }
 
     if (tmp.c16active) x = overflow(x, 10, 0.5).min("ee70");
-
+    if (player.chal.active == 16) x = x.pow(0.1);
     return x;
   },
   generators: {
@@ -121,8 +121,12 @@ const STARS = {
       x = x.mul(tmp.stars.generator_boost_eff);
       x = hasElement(213) ? x.pow(tmp.bosons.upgs.photon[3].effect) : x.mul(tmp.bosons.upgs.photon[3].effect);
       if (hasPrestige(1, 1)) x = x.pow(2);
-
+      let y = E(0.1);
       if (QCs.active()) x = expMult(x, tmp.qu.qc_eff[0][0]);
+      if (player.chal.active == 16) player.stars.boost = player.stars.boost.pow(y);
+      // if (player.chal.active == 16) player.stars.generators[4] = player.stars.generators[4].pow(y);
+      if (player.chal.active == 16) pow = pow.pow(y);
+      if (player.chal.active == 16) x = x.pow(y);
       return x;
     },
   },

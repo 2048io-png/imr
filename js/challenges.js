@@ -680,6 +680,7 @@ const CHALS = {
         • You are trapped in Mass Dilation & Dark Run with 100 all glyphs (10 slovak glyphs).<br>
         • Primordium particles are disabled.<br>
         • Pre-Quantum global speed is always set to /100.<br>
+        • All Stars are raised to ^0.1<br>
         You can earn Corrupted Shards based on your mass of black hole, when exiting the challenge.
         `,
     reward: `Improve Hybridized Uran-Astatine.<br><span class="yellow">On first completion, unlock new prestige layer.</span>`,
