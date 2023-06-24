@@ -25,7 +25,7 @@ const QCs = {
   ctn: [
     {
       eff(i) {
-        return [1 - 0.03 * i, 2 / (i + 2)];
+        return [1 - 0.025 * i, 2 / (i + 2)];
       },
       effDesc(x) {
         return `<b>^${format(x[0])}</b> to exponent of all-star resources.<br><b>^${format(x[1])}</b> to strength of star generators.`;
@@ -33,7 +33,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = E(2).pow(i ** 2);
+        let x = E(2).pow(i ** 1.8);
         return x;
       },
       effDesc(x) {
@@ -42,7 +42,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = i ** 1.5 * 0.15 + 1;
+        let x = i ** 1.25 * 0.15 + 1;
         return x;
       },
       effDesc(x) {
@@ -51,7 +51,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 0.9 ** (i ** 1.25);
+        let x = 0.75 ** (i ** 1.25);
         return x;
       },
       effDesc(x) {
@@ -60,7 +60,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 0.8 ** (i ** 1.25);
+        let x = 0.6 ** (i ** 1.25);
         return x;
       },
       effDesc(x) {
@@ -69,7 +69,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 1.2 ** i;
+        let x = 1.15 ** i;
         return x;
       },
       effDesc(x) {
@@ -79,7 +79,7 @@ const QCs = {
     {
       eff(i) {
         if (hasElement(163)) i /= 2;
-        let x = i ** 1.5 / 2 + 1;
+        let x = i ** 1.25 / 2 + 1;
         return x;
       },
       effDesc(x) {
@@ -89,7 +89,7 @@ const QCs = {
     {
       eff(i) {
         if (hasElement(98) && player.qu.rip.active) i *= 0.8;
-        let x = [1 - 0.05 * i, i / 10 + 1];
+        let x = [1 - 0.05 * i, i / 5 + 1];
         return x;
       },
       effDesc(x) {
