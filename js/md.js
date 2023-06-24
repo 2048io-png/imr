@@ -323,7 +323,8 @@ const MASS_DILATION = {
           return player.md.mass.gte("1.5e8056") ? player.md.mass.div("1.5e8056").max(1).log(1e100).max(0).root(2).add(1).floor() : E(0);
         },
         effect(x) {
-          return x.pow(0.5).softcap(3.5, 0.5, 0).div(100).add(1);
+          if (player.ranks.rank.gte(300000)) return x.pow(0.5).softcap(3.5, 0.5, 0).div(100).add(1).mul(2);
+          else return x.pow(0.5).softcap(3.5, 0.5, 0).div(100).add(1);
         },
         effDesc(x) {
           return "+" + format(x.sub(1).mul(100)) + "% stronger";

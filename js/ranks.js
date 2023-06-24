@@ -133,6 +133,8 @@ const RANKS = {
       12000: "Strontium-38 is 2x more powerfull.",
       24000: "Samarium-62 scaling starts 6 later every supernova",
       36000: "Beryllium-4 effect is ^2.",
+      140000: "Quantizes boost very slightly Cosmic String power.",
+      300000: "mass dilation 12th upgrade is 2x",
     },
     tier: {
       1: "reduce rank requirements by 20%.",
@@ -161,6 +163,8 @@ const RANKS = {
       1000: "Tantalum-73 is 2x more powefull.",
       2000: "mass softcap^3 is x later, where x is tiers.",
       7500: "multiply rank 6000 effect by (x)log(3.14), where x is tiers, and it also affects mass softcap 4.",
+      14000: "add 1 more C9-12 challenge maximum completions per x/1000, where x is tier.",
+      30000: "add x/30000 to the max limit of quantum challenge cap, where x is tier (Hardcap at 90).",
     },
     tetr: {
       1: "reduce tier requirements by 25%, and hyper rank scaling is 15% weaker.",
@@ -176,6 +180,7 @@ const RANKS = {
       15: "rank 25 multiplies itself and the softcap is removed.",
       60: "Tetr 8 effect is now ^2",
       75: "Supernovas boost Quantum Foam gain in a logarithmic way.",
+      150: "rank 9 effect is ^2",
     },
     pent: {
       1: "reduce tetr requirements by 15%, and Meta-Rank starts 1.1x later.",
@@ -188,6 +193,7 @@ const RANKS = {
       10: "rage power 7th upgrade is 10x more powerfull",
       15: "remove 3rd softcap of Stronger's effect.",
       16: "Mass gain softcap^3 starts ^(x)log(3.14) later, where x is Quantum Foam.",
+      30: "tier 150 effect is ^2",
     },
     hex: {
       1: "reduce pent reqirements by 20%.",
@@ -311,6 +317,17 @@ const RANKS = {
                 .div(10)
                 .floor()
             )
+            .softcap(2000, 0.1, 0);
+        if (player.ranks.tetr.gte(150))
+          ret = E(player.massUpg[1] || 0)
+            .div(10)
+            .floor()
+            .add(
+              E(player.massUpg[2] || 0)
+                .div(10)
+                .floor()
+            )
+            .pow(2)
             .softcap(2000, 0.1, 0);
         return ret;
       },
@@ -464,6 +481,10 @@ const RANKS = {
         if (player.ranks.tier.gte(7500)) ret = player.ranks.rank.mul(player.ranks.tier.log(3.14));
         return ret;
       },
+      140000() {
+        let ret = player.qu.times.gt(0) ? E(1).add(player.qu.times.log("e15")) : E(1);
+        return ret;
+      },
     },
     tier: {
       6() {
@@ -522,10 +543,19 @@ const RANKS = {
       },
       150() {
         let ret = player.md.particles.gt(0) ? E(1).add(player.md.particles.log("1e1000").softcap(5, 0.01, 0)) : E(1);
+        if (player.ranks.pent.gte(30)) ret = player.md.particles.gt(0) ? E(1).add(player.md.particles.log("1e1000").pow(2).softcap(5, 0.01, 0)) : E(1);
         return ret;
       },
       2000() {
         let ret = player.ranks.tier;
+        return ret;
+      },
+      14000() {
+        let ret = player.ranks.tier.div(1000).floor();
+        return ret;
+      },
+      30000() {
+        let ret = player.ranks.tier.div(30000).floor().softcap(90, 0, 0);
         return ret;
       },
     },
@@ -656,6 +686,9 @@ const RANKS = {
       6000(x) {
         return "^" + format(x, 0) + " later";
       },
+      140000(x) {
+        return format(x) + "x";
+      },
     },
     tier: {
       4(x) {
@@ -684,6 +717,12 @@ const RANKS = {
       },
       2000(x) {
         return "^" + format(x, 0) + " later";
+      },
+      14000(x) {
+        return "+" + format(x, 0) + " max completions";
+      },
+      30000(x) {
+        return "+" + format(x, 0) + " max cap"(x.gte("90") ? "<span class='hard'> (hardcapped)</span>" : "");
       },
     },
     tetr: {

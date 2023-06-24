@@ -117,6 +117,7 @@ const QUANTUM = {
     eff() {
       let pow = E(2);
       if (hasTree("qu6")) pow = pow.mul(treeEff("qu6"));
+      if (player.ranks.rank.gte(140000)) pow = pow.mul(RANKS.effect.rank[140000]());
       pow = pow.mul(tmp.dark.abEff.csp || 1);
       pow = pow.pow(exoticAEff(1, 3));
 
@@ -219,7 +220,7 @@ function getQUSave() {
 function calcQuantum(dt) {
   let inf_gs = tmp.preInfGlobalSpeed.mul(dt);
 
-  if (player.mass.gte(mlt(1e4)) && !player.qu.reached && player.chal.comps[12].gte(1)) {
+  if (player.mass.gte(mlt(1e3)) && !player.qu.reached && player.chal.comps[12].gte(1)) {
     player.qu.reached = true;
     createPopup(POPUP_GROUPS.qu.html(), "quReached");
   }

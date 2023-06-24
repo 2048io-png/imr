@@ -178,6 +178,7 @@ const CHALS = {
       if (hasElement(196) && (i == 13 || i == 14)) x = x.add(200);
       if (hasPrestige(1, 46) && (i == 13 || i == 14 || i == 15)) x = x.add(200);
       if (i == 13 || i == 14 || i == 15) x = x.add(tmp.dark.rayEff.dChal || 0);
+      if (player.ranks.tier.gte(14000) && i >= 9 && i <= 12) x = x.add(RANKS.effect.tier[14000]());
     }
 
     return x.floor();
