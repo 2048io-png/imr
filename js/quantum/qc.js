@@ -60,7 +60,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 0.6 ** (i ** 1.25);
+        let x = 0.95 ** (i ** 1.25);
         return x;
       },
       effDesc(x) {
