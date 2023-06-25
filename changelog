@@ -1,3 +1,21 @@
+0.1.8 6/25/2023 IMR:Extended update
+https://officialzygorg.github.io/imr-z/
+Added:
+-More prestiges,honors.
+Modified:
+-Big Rip upgrade costs.
+-Nerfed Quark gain while big rip.
+-Nerfed Break Dilation relativistic energy gain.
+-Some scalings.
+-Changed qc2 in the supernova tree
+-QC challenges nerf (they're easier)
+Fixed:
+-Break Dilation energy gain NaNing if you exit and enter Big Rip while you're breaking dilation.
+-Quantum challenge UI no telling you can go past 10 in a challenge.
+-Prestige 4 NaNing atom.
+Any inflations, bugs or NaNs, pin me on discord or open an issue in the link in the options tab.
+You can check the version updates also on the options tab.
+
 0.1.7-F1 6/25/2023 IMR:Extended update
 https://officialzygorg.github.io/imr-z/
 Fixed:

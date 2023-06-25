@@ -178,11 +178,16 @@ const TREE_UPGS = {
       desc: `Supernovas boost mass gain at a logarithmical rate.`,
       cost: E(1e60),
       effect() {
-        let x = player.supernova.times.gt(0) ? E(1).add(player.supernova.times.log(1e2).softcap(1.25, 0.001, 0)) : E(1);
-        if (x.gt(2)) x = E(2);
+        let x = player.supernova.times.gt(0)
+          ? E(1)
+              .add(player.supernova.times.log(1e2).softcap(1.25, 0.001, 0))
+              .max(!player.prestiges[0].gte(9) ? 2 : 2.5)
+          : E(1);
         return x;
       },
       effDesc(x) {
+        if (x.gte(2.5)) return "^" + format(x) + (x.gte("2.5") ? " <span class='hard'>(hardcapped)</span>" : "");
+        if (x.lte(2.5)) return "^" + format(x) + (x.gte("1.25") ? " <span class='soft'>(softcapped)</span>" : "");
         if (x.gte(2)) return "^" + format(x) + (x.gte("1.25") ? " <span class='hard'>(hardcapped)</span>" : "");
         return "^" + format(x) + (x.gte("1.1") ? " <span class='soft'>(softcapped)</span>" : "");
       },
@@ -1160,7 +1165,7 @@ const TREE_UPGS = {
       reqDesc() {
         return `Reach ${formatMass(uni("ee5"))} of mass with QS 70 build (before bonus from [qc2]).`;
       },
-      desc: `Get 1 extra shard when a nerf reaches 10.`,
+      desc: `Get 1 extra shard for every 10 of a nerf.`,
       cost: E(1e27),
     },
     qc3: {

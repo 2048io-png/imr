@@ -556,6 +556,7 @@ const RANKS = {
       },
       30000() {
         let ret = player.ranks.tier.div(30000).floor().softcap(90, 0, 0);
+        if (player.prestiges[1].gte(6)) ret = player.ranks.tier.div(25000).floor().softcap(90, 0, 0);
         return ret;
       },
     },
@@ -878,9 +879,12 @@ const PRESTIGES = {
       1: `All Mass softcaps up to ^5 start ^10 later.`,
       2: `Quantum Shard Base is increased by 0.5.`,
       3: `Quadruple Quantum Foam and Death Shard gain.`,
+      4: `15th rage upgrade is exponential.`,
       5: `Pre-Quantum Global Speed is raised by ^2 (before division).`,
       6: `Tickspeed Power softcap starts ^100 later.`,
+      7: `instead of 1 free shard every 10 in qc2, now its 1 free every 9.`,
       8: `Mass softcap^5 starts later based on Prestige.`,
+      9: `qa4 hardcap now is ^2.5`,
       10: `Gain more Relativistic Energy based on Prestige.`,
       12: `Stronger Effect's softcap^2 is 7.04% weaker.`,
       15: `Tetr 2's reward is overpowered.`,
@@ -908,6 +912,7 @@ const PRESTIGES = {
       3: `Bosonic resources are boosted based on Prestige Base.`,
       4: `Gain 5 free levels of each Primordium Particle.`,
       5: `Pent 5's reward is stronger based on Prestige Base.`,
+      6: `tier 30000 is now x/25000, where x is tiers.`,
       7: `Quarks are boosted based on Honor.`,
       15: `Super & Hyper cosmic strings scale weaker based on Honor.`,
       22: `Raise dark shadow gain by 1.1.`,

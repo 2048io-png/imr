@@ -6,7 +6,7 @@ const ATOM = {
     if (player.ranks.rank.gte(1500)) x = x.mul(RANKS.effect.rank[1500]());
     if (x.lt(1)) return E(0);
     x = x.root(5);
-    if (player.mainUpg.rp.includes(15)) x = x.mul(tmp.upgs.main ? tmp.upgs.main[1][15].effect : E(1));
+    if (player.mainUpg.rp.includes(15)) x = !player.prestiges[0].gte(4) ? x.mul(tmp.upgs.main ? tmp.upgs.main[1][15].effect : E(1)) : x.pow(tmp.upgs.main[1][15].effect);
     x = hasElement(204) ? x.pow(tmp.bosons.upgs.gluon[0].effect) : x.mul(tmp.bosons.upgs.gluon[0].effect);
     if (hasElement(17)) x = x.pow(1.1);
     x = x.pow(tmp.prim.eff[3][0]);
@@ -62,6 +62,7 @@ const ATOM = {
     tmp.overflowBefore.quark = o;
     tmp.overflow.quark = calcOverflow(o, x, os);
     tmp.overflow_start.quark = os;
+    if (player.qu.rip.active) x = x.root(6);
 
     return x.floor();
   },

@@ -434,10 +434,13 @@ const UPGS = {
         cost: E("e480"),
         effect() {
           let ret = player.mass.max(1).log10().pow(1.25);
+          if (player.prestiges[0].gte(4)) ret = E(1).add(player.mass.max(1).log10().log10().log10().log10());
+          if (Decimal.isNaN(ret)) ret = E(1);
           return ret;
         },
         effDesc(x = this.effect()) {
-          return "x" + format(x);
+          if (player.prestiges[0].gte(4)) return "^" + format(x);
+          else return "x" + format(x);
         },
       },
       16: {
@@ -959,7 +962,7 @@ const UPGS = {
       },
       3: {
         desc: `Pre-Quantum Global Speed is raised based on Death Shards (before division).`,
-        cost: E(50),
+        cost: E(5000),
         effect() {
           let x = player.qu.rip.amt.add(1).log10().div(25).add(1);
           return x.softcap(30, 0.5, 0);
@@ -970,11 +973,11 @@ const UPGS = {
       },
       4: {
         desc: `Start with 2 tiers of each Fermion in Big Rip.`,
-        cost: E(250),
+        cost: E(10000),
       },
       5: {
         desc: `Root Star Booster’s starting cost by 10. Star Booster’s base is increased based on Death Shards.`,
-        cost: E(2500),
+        cost: E(1e8),
         effect() {
           let x = player.qu.rip.amt.add(1).log10().add(1).pow(3);
           return x;
@@ -985,33 +988,33 @@ const UPGS = {
       },
       6: {
         desc: `Start with all Radiation features unlocked.`,
-        cost: E(15000),
+        cost: E(1.5e8),
       },
       7: {
         desc: `Hybridized Uran-Astatine is twice as effective in Big Rip.`,
-        cost: E(100000),
+        cost: E(5e8),
       },
       8: {
         desc: `Passively gain 10% of Quantum Foams & Death Shards you would get from resetting each second.`,
-        cost: E(750000),
+        cost: E(1e12),
       },
       9: {
         desc: `Unlock Break Dilation and Prestige (in the mass tab).`,
-        cost: E(1e7),
+        cost: E(1e13),
       },
       10: {
         unl() {
           return player.md.break.active || tmp.inf_unl;
         },
         desc: `Chromas are 10% stronger.`,
-        cost: E(2.5e8),
+        cost: E(1e14),
       },
       11: {
         unl() {
           return player.md.break.active || tmp.inf_unl;
         },
         desc: `Prestige Level no longer resets anything.`,
-        cost: E(1e10),
+        cost: E(1e15),
       },
       12: {
         unl() {

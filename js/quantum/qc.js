@@ -6,7 +6,7 @@ const QCs = {
     return CHALS.inChal(15) ? [10, 5, 10, 10, 10, 10, 10, 10][x] : tmp.c16active || inDarkRun() ? 8 : CHALS.inChal(14) ? 5 : player.qu.rip.active ? BIG_RIP_QC[x] : player.qu.qc.mods[x];
   },
   incMod(x, i) {
-    if (!this.active()) player.qu.qc.mods[x] = Math.min(Math.max(player.qu.qc.mods[x] + i, 0), 10 + Number(RANKS.effect.tier[30000]()));
+    if (!this.active()) player.qu.qc.mods[x] = Math.min(Math.max(player.qu.qc.mods[x] + i, 0), tmp.qu.qc_max);
   },
   enter() {
     if (!player.qu.qc.active) {
@@ -21,11 +21,16 @@ const QCs = {
     if (player.qu.qc.active) CONFIRMS_FUNCTION.enterQC();
     else createConfirm("Are you sure to enter the Quantum Challenge? Entering it will force reset!", "qc", CONFIRMS_FUNCTION.enterQC);
   },
+  getQCMaxComps() {
+    let x = E(10);
+    if (player.ranks.tier.gte(30000)) x = x.add(RANKS.effect.tier[30000]());
+    return x;
+  },
   names: ["Black Dwarf", "Time Anomaly", "Hypertiered", "Melted Interactions", "Intense Catalyst", "Ex-Challenge", "Spatial Dilation", "Extreme Scaling"],
   ctn: [
     {
       eff(i) {
-        return [1 - 0.025 * i, 2 / (i + 2)];
+        return [1 - 0.009 * i, 10 / (i + 2)];
       },
       effDesc(x) {
         return `<b>^${format(x[0])}</b> to exponent of all-star resources.<br><b>^${format(x[1])}</b> to strength of star generators.`;
@@ -33,7 +38,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = E(2).pow(i ** 1.8);
+        let x = E(1.5).pow(i ** 1.8);
         return x;
       },
       effDesc(x) {
@@ -51,7 +56,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 0.75 ** (i ** 1.25);
+        let x = 0.99 ** (i ** 1.25);
         return x;
       },
       effDesc(x) {
@@ -60,7 +65,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 0.95 ** (i ** 1.25);
+        let x = 0.99 ** (i ** 1.25);
         return x;
       },
       effDesc(x) {
@@ -69,7 +74,7 @@ const QCs = {
     },
     {
       eff(i) {
-        let x = 1.15 ** i;
+        let x = 1.1 ** i;
         return x;
       },
       effDesc(x) {
@@ -79,7 +84,7 @@ const QCs = {
     {
       eff(i) {
         if (hasElement(163)) i /= 2;
-        let x = i ** 1.25 / 2 + 1;
+        let x = i ** 1.15 / 2 + 1;
         return x;
       },
       effDesc(x) {
@@ -89,8 +94,7 @@ const QCs = {
     {
       eff(i) {
         if (hasElement(98) && player.qu.rip.active) i *= 0.8;
-        let y = 0.009;
-        let x = [1 - y * i, i / 15 + 1];
+        let x = [1 - 0.009 * i, i / 15 + 1];
         return x;
       },
       effDesc(x) {
@@ -158,7 +162,7 @@ function setupQCHTML() {
     table += `
         <div style="margin: 5px;">
         <div style="margin: 5px" id='qc_tooltip${x}' class="tooltip" tooltip-html="${QCs.names[x]}"><img style="cursor: pointer" src="images/qcm${x}.png"></div>
-        <div><span id="qcm_mod${x}">0</span>/10</div>
+        <div><span id="qcm_mod${x}">0</span>/<span id='qcm_max${x}'>0</spam></div>
         <div id="qcm_btns${x}"><button onclick="QCs.incMod(${x},-1)">-</button><button onclick="QCs.incMod(${x},1)">+</button></div>
         </div>
         `;
@@ -204,6 +208,8 @@ function updateQCTemp() {
 
   if (hasElement(226)) tmp.qu.qc_s_b = tmp.qu.qc_s_b.pow(elemEffect(226));
 
+  tmp.qu.qc_max = QCs.getQCMaxComps();
+
   let weak = 1;
   if (tmp.inf_unl) weak *= theoremEff("proto", 3);
 
@@ -215,7 +221,14 @@ function updateQCTemp() {
     let m = QCs.getMod(x);
     s += m;
     tmp.qu.qc_eff[x] = QCs.ctn[x].eff(m * weak);
-    if (hasTree("qc2") && m >= 10) bs++;
+    if (hasTree("qc2") && m >= 10)
+      bs =
+        bs +
+        Number(
+          E(m)
+            .div(!player.prestiges[0].gte(7) ? 10 : 9)
+            .floor()
+        );
   }
   tmp.qu.qc_s = s;
   tmp.qu.qc_s_bouns = bs;
@@ -238,7 +251,7 @@ function updateQCHTML() {
     for (let x = 0; x < QCs_len; x++) {
       tmp.el["qcm_mod" + x].setTxt(QCs.getMod(x));
       tmp.el["qcm_btns" + x].setDisplay(!QCs.active());
-
+      tmp.el["qcm_max" + x].setTxt(tmp.qu.qc_max);
       tmp.el["qc_tooltip" + x].setTooltip(
         `
                 <h3>${QCs.names[x]}</h3>

@@ -353,7 +353,8 @@ const MASS_DILATION = {
       if (!player.md.break.active) return E(0);
       if (!hasElement(136)) if (!player.qu.rip.active) return E(0);
 
-      let x = player.md.mass.add(1).log10().sub(400).div(2).max(0);
+      let x = player.md.mass.add(1).log10().sub(400).div(2).root(5).max(0);
+      if (Decimal.isNaN(x)) x = E(0);
       let p = x.add(1).log10();
 
       if (hasElement(127)) p = p.mul(1.1);

@@ -376,10 +376,8 @@ function getScalingStart(type, name) {
       if (hasBeyondRank(3, 2)) start = start.add(1);
       if (hasBeyondRank(5, 2)) start = start.add(beyondRankEffect(5, 2, 0));
       if (hasElement(246)) start = start.add(elemEffect(246));
-      if (player.ranks.tier.gte(150)) start = start.mul(RANKS.effect.tier[150]());
     } else if (name == "pe") {
       if (hasElement(233)) start = start.add(25);
-      if (player.ranks.tier.gte(150)) start = start.mul(RANKS.effect.tier[150]());
     }
   } else if (type == 1) {
     if (name == "tickspeed") {
