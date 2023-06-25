@@ -89,7 +89,8 @@ const QCs = {
     {
       eff(i) {
         if (hasElement(98) && player.qu.rip.active) i *= 0.8;
-        let x = [1 - 0.05 * i, i / 5 + 1];
+        let y = 0.009;
+        let x = [1 - y * i, i / 15 + 1];
         return x;
       },
       effDesc(x) {

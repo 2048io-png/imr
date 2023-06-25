@@ -722,7 +722,7 @@ const RANKS = {
         return "+" + format(x, 0) + " max completions";
       },
       30000(x) {
-        return "+" + format(x, 0) + " max cap"(x.gte("90") ? "<span class='hard'> (hardcapped)</span>" : "");
+        return "+" + format(x, 0) + " max cap" + (x.gte("90") ? "<span class='hard'> (hardcapped)</span>" : "");
       },
     },
     tetr: {
