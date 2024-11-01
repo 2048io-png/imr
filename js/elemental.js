@@ -1975,6 +1975,8 @@ const ELEMENTS = {
     if (tmp.brokenInf) u += 12;
     if (tmp.tfUnl) u += 12;
     if (tmp.ascensions_unl) u += 10 - 2;
+    if (tmp.element250) u += 6
+    if (tmp.chal18comp) u += 4
 
     return u;
   },
