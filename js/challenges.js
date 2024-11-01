@@ -92,7 +92,7 @@ const CHALS = {
     player.chal.choosed = x;
   },
   inChal(x) {
-    return player.chal.active == x || (player.chal.active == 15 && x <= 12);
+    return player.chal.active == x || (player.chal.active == 18 && x <= 15);
   },
   reset(x, chal_reset = true) {
     if (x < 5) FORMS.bh.doReset();
@@ -716,7 +716,26 @@ const CHALS = {
       return "+" + format(x, 0) + " later";
     },
   },
-  cols: 17,
+  18: {
+    unl() {
+      return hasElement(256);
+    },
+    title: "Challenge Madness",
+    desc: "You are trapped in c1-15 and you are stuck in dark run with 270 all glyphs.",
+    reward: `Normal mass's overflow starts later based on completions again.<br><span class="yellow">On first completion, unlock more elements!</span>`,
+    max: E(100),
+    inc: E("e1e6"),
+    pow: E(2),
+    start: EINF,
+    effect(x) {
+      let ret = x.add(1).pow(2);
+      return ret;
+    },
+    effDesc(x) {
+      return "^" + format(x, 2) + " later";
+    },
+  },
+  cols: 18,
 };
 
 /*
