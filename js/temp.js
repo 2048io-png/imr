@@ -385,6 +385,8 @@ function updateTemp() {
     tmp.brokenInf = hasInfUpgrade(16)
     tmp.tfUnl = hasElement(230)
     tmp.ascensions_unl = player.chal.comps[17].gte(4)
+    tmp.element250 = hasElement(250)
+    tmp.chal18comp = player.chal.comps[18].gte(1)
 
     updateInfTemp()
     updateC16Temp()
